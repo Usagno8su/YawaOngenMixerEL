@@ -1,0 +1,71 @@
+{
+  "name": "yawaongenmixerellocal",
+  "productName": "yawaongenmixerellocal",
+  "version": "0.1.0",
+  "description": "Yawa Ongen Mixer EL",
+  "main": ".vite/build/main.js",
+  "scripts": {
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "publish": "electron-forge publish",
+    "typecheck": "tsc --noEmit",
+    "fix:eslint": "eslint --fix",
+    "fix:prettier": "prettier --write src/*.{ts,vue,json} && prettier --write src/**/*.{ts,vue,json}",
+    "fix": "npm run fix:prettier ; npm run fix:eslint",
+    "lint:eslint": "eslint --ext .ts,.vue .",
+    "lint:prettier": "prettier -c src/*.{ts,vue} && prettier -c src/**/*.{ts,vue}",
+    "lint": "npm run lint:eslint ; npm run lint:prettier"
+  },
+  "build": {
+    "win": {
+      "target": [
+        "portable",
+        "nsis"
+      ]
+    },
+    "linux": {
+      "target": [
+        "deb"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  },
+  "keywords": [],
+  "author": {
+    "name": "Usagi no asu",
+    "email": "usaasu@yawaongen-mixer.org"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@electron-forge/cli": "^7.2.0",
+    "@electron-forge/maker-deb": "^7.2.0",
+    "@electron-forge/maker-rpm": "^7.2.0",
+    "@electron-forge/maker-squirrel": "^7.2.0",
+    "@electron-forge/maker-zip": "^7.2.0",
+    "@electron-forge/plugin-auto-unpack-natives": "^7.2.0",
+    "@electron-forge/plugin-vite": "^7.2.0",
+    "@typescript-eslint/eslint-plugin": "^5.62.0",
+    "@typescript-eslint/parser": "^5.62.0",
+    "@vitejs/plugin-vue": "^5.0.2",
+    "autoprefixer": "^10.4.16",
+    "electron": "28.1.1",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-vue": "^9.21.1",
+    "postcss": "^8.4.33",
+    "prettier": "^3.2.4",
+    "prettier-plugin-tailwindcss": "^0.5.11",
+    "tailwindcss": "^3.4.1",
+    "ts-node": "^10.9.2",
+    "typescript": "~4.5.4"
+  },
+  "dependencies": {
+    "electron-squirrel-startup": "^1.0.0",
+    "vue": "^3.4.5"
+  }
+}
