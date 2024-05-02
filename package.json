@@ -1,6 +1,6 @@
 {
-  "name": "yawaongenmixerellocal",
-  "productName": "yawaongenmixerellocal",
+  "name": "yawaongenmixerel",
+  "productName": "yawaongenmixerel",
   "version": "0.1.0",
   "description": "Yawa Ongen Mixer EL",
   "main": ".vite/build/main.js",
