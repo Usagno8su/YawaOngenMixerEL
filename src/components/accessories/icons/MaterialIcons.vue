@@ -59,6 +59,6 @@ const iconaView: { [key in iconsType]: string } = {
 
 <template>
   <div :class="classString" :title="titleString">
-    <img :src="'/public/MaterialIcons/' + iconaView[icon]" class="h-full w-full" />
+    <img :src="'./MaterialIcons/' + iconaView[icon]" class="h-full w-full" />
   </div>
 </template>
