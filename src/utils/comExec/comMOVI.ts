@@ -234,11 +234,11 @@ export const subTextSplit = async (
   // 字幕テキストの内容を、行ごとに配列に格納する
   const lines = await loadFileLineArray(fileSetting, fileEncode, dirPathName)
 
+  // 出力するテキストファイルのカウント用変数(
+  let ansTextCount = -1
+
   // 行ごとに処理する
   for await (const line of lines) {
-    // 出力するテキストファイルのカウント用変数(
-    let ansTextCount = -1
-
     // 文字列を一旦別の変数に格納する。
     console.log('line: ' + line)
     let tempLine = line
