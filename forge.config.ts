@@ -1,12 +1,10 @@
 import type { ForgeConfig } from '@electron-forge/shared-types';
-import { MakerSquirrel } from '@electron-forge/maker-squirrel';
-import { MakerZIP } from '@electron-forge/maker-zip';
-import { MakerDeb } from '@electron-forge/maker-deb';
-import { MakerRpm } from '@electron-forge/maker-rpm';
 import { VitePlugin } from '@electron-forge/plugin-vite';
 
 const config: ForgeConfig = {
-  packagerConfig: {},
+  packagerConfig: {
+    icon: './public/YOM_logoV2_icon',
+  },
   rebuildConfig: {},
   makers: [
     {
@@ -16,6 +14,15 @@ const config: ForgeConfig = {
           icon: './public/YOM_logoV2_icon.png',
         },
       },
+    },
+    {
+      name: '@electron-forge/maker-zip',
+      config:{
+        authors: 'Usagi no asu',
+        description: 'Yawa Ongen Mixer EL',
+        icon: './public/YOM_logoV2_icon',
+      },
+      platforms:["win32"],
     },
   ],
   plugins: [
