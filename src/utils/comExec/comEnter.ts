@@ -44,7 +44,7 @@ export const createImgFile = async (
     stderr: string
   }> => {
     if (picFileName !== DEFAULT_KYARA_TATIE_UUID) {
-      return await execFile(convertPath, comList.tatieResizeCom.concat([picPath.inputTatie, picPath.tempTatiePic]))
+      return await execFile(convertPath, [picPath.inputTatie].concat(comList.tatieResizeCom, [picPath.tempTatiePic]))
         .then((value) => {
           return value
         })
