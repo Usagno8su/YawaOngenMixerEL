@@ -65,7 +65,13 @@ export const createComImg = async (fileSetting: outSettingType): Promise<createC
     //// 動画の画面サイズの透明な画像を生成するコマンドを作成
     // convert -size ${画像の幅}x${画像の高さ} xc:none 透明な画面サイズの出力ファイル（一時的）.png
     //
-    baseTempPicCom: ['-size', `${fileSetting.tatie.moviW.val}x${fileSetting.tatie.moviH.val}`, 'xc:none'],
+    baseTempPicCom: [
+      '-size',
+      `${fileSetting.tatie.moviW.val}x${fileSetting.tatie.moviH.val}`,
+      'xc:none',
+      '-define',
+      'png:color-type=6',
+    ],
     cnvBackPicmakeCom: [
       '-gravity',
       fileSetting.tatie.tatieSide.val.toString(),
