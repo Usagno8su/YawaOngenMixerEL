@@ -375,7 +375,13 @@ export const enterEncodeVideoData = async (
   //// 動画ファイルの作成
 
   // FFmpeg用のコマンド作成
-  const moviData = await createComMovi(outSettingData.settingList, imgFilePath, voiceFileDirPath, createTempDir())
+  const moviData = await createComMovi(
+    outSettingData.settingList,
+    imgFilePath,
+    voiceFileDirPath,
+    tempDirPath,
+    globalSetting.exeFilePath.ffmpeg,
+  )
 
   console.log('movi ans ----------------------------------------')
   console.log(moviData)
