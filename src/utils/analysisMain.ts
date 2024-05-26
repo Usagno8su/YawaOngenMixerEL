@@ -149,8 +149,11 @@ export const initializationGlobalSetting = (): globalSettingExportType => {
       selectProfile: DEFAULT_KYARA_PROFILE_NAME,
       saveSearchString: true,
       exeFilePath: {
-        ffmpeg: '/usr/bin/ffmpeg',
-        convert: '/usr/bin/convert',
+        ffmpeg:
+          process.platform === 'win32'
+            ? path.join(app.getPath('home'), 'lib', 'ffmpeg', 'bin', 'ffmpeg.exe')
+            : '/usr/bin/ffmpeg',
+        convert: process.platform === 'win32' ? 'magick' : '/usr/bin/convert',
       },
     },
   }
