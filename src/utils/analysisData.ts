@@ -211,6 +211,7 @@ export const createNewDateList = (
   fileName?: string,
   fileExtension?: string,
   voiceID?: string,
+  platform?: NodeJS.Platform,
 ): outSettingType => {
   return {
     dataType: dataType,
@@ -234,7 +235,11 @@ export const createNewDateList = (
     subtitle: {
       subText: { val: subtitle.subText ?? true, active: subtitle.subText !== undefined ? true : false },
       fontsPath: {
-        val: subtitle.fontsPath ?? '/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc',
+        val:
+          subtitle.fontsPath ??
+          (platform === 'win32'
+            ? 'C:\\Windows\\Fonts\\BIZ-UDGothicB.ttc'
+            : '/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc'),
         active: subtitle.fontsPath !== undefined ? true : false,
       },
       subAlignment: {
