@@ -229,7 +229,7 @@ export const createNewDateList = (
         active: tatie.tatieUUID !== undefined ? true : false,
       },
       moviW: { val: tatie.moviW ?? 1280, active: tatie.moviW !== undefined ? true : false },
-      moviH: { val: tatie.moviH ?? 768, active: tatie.moviH !== undefined ? true : false },
+      moviH: { val: tatie.moviH ?? 720, active: tatie.moviH !== undefined ? true : false },
       tatieConp: { val: tatie.tatieConp ?? true, active: tatie.tatieConp !== undefined ? true : false },
       tatieSide: { val: tatie.tatieSide ?? 'SouthEast', active: tatie.tatieSide !== undefined ? true : false },
       tatieHpx: { val: tatie.tatieHpx ?? 40, active: tatie.tatieHpx !== undefined ? true : false },

@@ -37,7 +37,7 @@ export const createDefoKyaraDateList = (platform?: NodeJS.Platform): outSettingT
     {
       tatieUUID: DEFAULT_KYARA_TATIE_UUID,
       moviW: 1280,
-      moviH: 768,
+      moviH: 720,
       tatieConp: true,
       tatieSide: 'SouthEast',
       tatieHpx: 40,
