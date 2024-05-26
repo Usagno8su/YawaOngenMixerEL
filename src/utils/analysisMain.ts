@@ -367,7 +367,7 @@ export const enterEncodeVideoData = async (
     outSettingData.settingList.tatie.tatieUUID.val,
     kyaraTatieDirPath,
     outSettingData.infoSetting.outPicDir,
-    createTempDir(),
+    tempDirPath,
   )
 
   console.log('main への返送結果: ' + imgFilePath)
