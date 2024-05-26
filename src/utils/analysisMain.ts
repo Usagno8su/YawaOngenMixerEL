@@ -356,6 +356,9 @@ export const enterEncodeVideoData = async (
   console.log('img ans ----------------------------------------')
   console.log(imgData)
 
+  // 一時ファイルのディレクトリを作成してpathを取得
+  const tempDirPath = createTempDir()
+
   // ImageMagicを実行
   const imgFilePath = await createImgFile(
     globalSetting.exeFilePath.convert,
