@@ -22,7 +22,7 @@ export const createDefoKyaraProfileList = (): kyaraProfileListType => {
 }
 
 // デフォルトのキャラ設定データを作成して返す
-export const createDefoKyaraDateList = (): outSettingType => {
+export const createDefoKyaraDateList = (platform?: string): outSettingType => {
   return createNewDateList(
     'defo',
     DEFAULT_KYARA_SETTING_UUID,
@@ -41,7 +41,10 @@ export const createDefoKyaraDateList = (): outSettingType => {
     },
     {
       subText: true,
-      fontsPath: '/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc',
+      fontsPath:
+        platform === 'win32'
+          ? 'C:\\Windows\\Fonts\\meiryob.ttc'
+          : '/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc',
       subAlignment: 'Center',
       subAutoRt: true,
       subTextBord: true,

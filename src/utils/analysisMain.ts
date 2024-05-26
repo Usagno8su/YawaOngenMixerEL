@@ -179,7 +179,7 @@ export const initializationKyaraProfileList = (): kyaraProfileListExportType => 
 // これを元にjsonファイルを出力する
 export const initializationSetting = (): profileKyaraExportType => {
   // デフォルトキャラ設定を作成
-  const outData = ref<outSettingType[]>([createDefoKyaraDateList()])
+  const outData = ref<outSettingType[]>([createDefoKyaraDateList(process.platform)])
 
   // initializationSettingDataのデータを記録する
   initializationSettingData.map((e) => {
