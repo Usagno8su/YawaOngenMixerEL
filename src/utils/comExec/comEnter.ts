@@ -3,6 +3,7 @@
 import type { createComImgType } from './comIMG'
 import { outSettingType } from '../../type/data-type'
 import path from 'path'
+import fs from 'fs'
 import * as child_process from 'child_process'
 import * as util from 'util'
 import { DEFAULT_KYARA_TATIE_UUID } from '../../data/data'
@@ -122,6 +123,7 @@ export const createMoviFile = async (
   moviData: string[],
   settingList: outSettingType,
   outDir: string,
+  tempDirPath: string,
 ): Promise<string> => {
   // 出力動画ファイルのパスを作成する
   const makeMoviPath = async (): Promise<string> => {
@@ -131,16 +133,56 @@ export const createMoviFile = async (
 
   console.log(moviData.concat([outFilePath + '.webm']))
 
-  const cnvBackPic = await execFile(ffmpegPath, moviData.concat([outFilePath + '.webm']))
-    .then((value) => {
-      return value
+  // Windowsの場合は一旦コマンドを書き出して、Shift-JISに変換して実行する
+  if (process.platform === 'win32') {
+    console.log('win')
+    const comTempPs1File = path.join(tempDirPath, 'encode_com_temp.txt')
+    const comPs1File = path.join(tempDirPath, 'encode_com.ps1')
+    const cnvBackPic = await new Promise((resolve) => {
+      resolve(fs.writeFileSync(comTempPs1File, `&"${ffmpegPath}" ${moviData.join(' ')} "${outFilePath}.webm"`, 'utf-8'))
     })
-    .catch((e) => {
-      return e
-    })
-  if (cnvBackPic.stderr !== '') {
-    return 'Error: ' + cnvBackPic.stderr.toString()
+      .then(async () => {
+        // コマンドのファイルをShift-JISに変換
+        return await execFile('powershell', [
+          '-NoProfile',
+          '-ExecutionPolicy',
+          'Unrestricted',
+          '-Command',
+          'Get-Content',
+          '-Encoding',
+          'UTF8',
+          `"${comTempPs1File}"`,
+          '|',
+          'Set-Content',
+          `"${comPs1File}"`,
+        ])
+      })
+      .then(async () => {
+        // 実行
+        return await execFile('powershell', ['-NoProfile', '-ExecutionPolicy', 'Unrestricted', `"&'${comPs1File}'"`], {
+          shell: 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe',
+        })
+      })
+    if (cnvBackPic.stderr !== '') {
+      console.error('cnvBackPic error c: ' + cnvBackPic.stderr.toString())
+      return 'Error: ' + cnvBackPic.stderr.toString()
+    } else {
+      console.error('cnvBackPic ans: ' + cnvBackPic.stdout.toString())
+    }
+  } else {
+    const cnvBackPic = await execFile(ffmpegPath, moviData.concat([outFilePath + '.webm']))
+      .then((value) => {
+        console.error('cnvBackPic ans: ' + value)
+        return value
+      })
+      .catch((e) => {
+        console.error('cnvBackPic error b: ' + e)
+        return e
+      })
+    if (cnvBackPic.stderr !== '') {
+      console.error('cnvBackPic error c: ' + cnvBackPic.stderr.toString())
+      return 'Error: ' + cnvBackPic.stderr.toString()
+    }
   }
-
   return `"${outFilePath}.webm"`
 }

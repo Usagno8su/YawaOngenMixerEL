@@ -392,6 +392,7 @@ export const enterEncodeVideoData = async (
     moviData,
     outSettingData.settingList,
     outSettingData.infoSetting.outDir,
+    tempDirPath,
   )
 
   return moviFilePath
