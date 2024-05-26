@@ -9,6 +9,21 @@ import { DEFAULT_KYARA_TATIE_UUID } from '../../data/data'
 
 const execFile = util.promisify(child_process.execFile)
 
+// FFmpeg のバージョン番号を取得する。
+export const LoadFFmpegVersion = async (ffmpegPath: string): Promise<string[]> => {
+  const ffmpegVer: string[] = await execFile(ffmpegPath, ['-version'])
+    .then((value) => {
+      return value.stdout.split(/\n/)[0].split(' ')[2].split('-')[0].split('.')
+    })
+    .catch((e) => {
+      return e
+    })
+  if (ffmpegVer[0] === '') {
+    return ['Error: ' + ffmpegVer.toString()]
+  }
+  return ffmpegVer
+}
+
 // 画像作成コマンドを実行して、作成された画像ファイルの絶対パスを返す。
 export const createImgFile = async (
   convertPath: string,
