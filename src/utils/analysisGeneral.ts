@@ -43,7 +43,7 @@ export const createDefoKyaraDateList = (platform?: string): outSettingType => {
       subText: true,
       fontsPath:
         platform === 'win32'
-          ? 'C:\\Windows\\Fonts\\meiryob.ttc'
+          ? 'C:\\Windows\\Fonts\\BIZ-UDGothicB.ttc'
           : '/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc',
       subAlignment: 'Center',
       subAutoRt: true,
