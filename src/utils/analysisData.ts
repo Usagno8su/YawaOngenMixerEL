@@ -17,7 +17,12 @@ import {
   kyaraProfileListType,
 } from '../type/data-type'
 import { NowTimeData } from './analysisGeneral'
-import { DEFAULT_KYARA_PROFILE_NAME, DEFAULT_KYARA_TATIE_UUID } from '../data/data'
+import {
+  DEFAULT_KYARA_PROFILE_NAME,
+  DEFAULT_KYARA_TATIE_UUID,
+  DEFAULT_FONT_WIN,
+  DEFAULT_FONT_LINUX,
+} from '../data/data'
 import { ref } from 'vue'
 
 const { yomAPI } = window
@@ -235,11 +240,7 @@ export const createNewDateList = (
     subtitle: {
       subText: { val: subtitle.subText ?? true, active: subtitle.subText !== undefined ? true : false },
       fontsPath: {
-        val:
-          subtitle.fontsPath ??
-          (platform === 'win32'
-            ? 'C:\\Windows\\Fonts\\BIZ-UDGothicB.ttc'
-            : '/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc'),
+        val: subtitle.fontsPath ?? (platform === 'win32' ? DEFAULT_FONT_WIN : DEFAULT_FONT_LINUX),
         active: subtitle.fontsPath !== undefined ? true : false,
       },
       subAlignment: {

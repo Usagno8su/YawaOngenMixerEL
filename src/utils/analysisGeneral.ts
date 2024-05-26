@@ -2,7 +2,13 @@
 
 import { createNewDateList, createNewFileListTatie } from './analysisData'
 import { outSettingType, infoSettingType, fileListTatieType, kyaraProfileListType } from '../type/data-type'
-import { DEFAULT_KYARA_TATIE_UUID, DEFAULT_KYARA_PROFILE_NAME, DEFAULT_KYARA_SETTING_UUID } from '../data/data'
+import {
+  DEFAULT_KYARA_TATIE_UUID,
+  DEFAULT_KYARA_PROFILE_NAME,
+  DEFAULT_KYARA_SETTING_UUID,
+  DEFAULT_FONT_WIN,
+  DEFAULT_FONT_LINUX,
+} from '../data/data'
 
 // デフォルトの基本設定データを作成して返す
 export const createDefoInfoDateList = (): infoSettingType => {
@@ -41,10 +47,7 @@ export const createDefoKyaraDateList = (platform?: NodeJS.Platform): outSettingT
     },
     {
       subText: true,
-      fontsPath:
-        platform === 'win32'
-          ? 'C:\\Windows\\Fonts\\BIZ-UDGothicB.ttc'
-          : '/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc',
+      fontsPath: platform === 'win32' ? DEFAULT_FONT_WIN : DEFAULT_FONT_LINUX,
       subAlignment: 'Center',
       subAutoRt: true,
       subTextBord: true,
