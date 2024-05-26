@@ -53,6 +53,11 @@ export const createNewDataID = (dateList: outSettingType[], newName: string): nu
   return newID
 }
 
+// 動作環境がlinuxかWindowsか取得する
+export const getPlatform = (): string => {
+  return yomAPI.getPlatformData()
+}
+
 // dateListに追加や変更を行うときに、キャラ名とスタイル名が同じ要素が入らないように調べる。
 // 同じ要素があればtrueを返す
 export const checkSameValues = (dateList: outSettingType[], item: outSettingType, indexNum?: number): boolean => {

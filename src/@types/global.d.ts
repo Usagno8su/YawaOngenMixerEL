@@ -11,6 +11,7 @@ export interface WGyomAPI {
     exportStatus: number
   }
   getKyaraProfileData: (file: string) => inputProfileSendReType
+  getPlatformData: () => string
   opneVoiceFileDir: (defoDir?: string) => [Array<string>, string]
   opneDir: (defoDir?: string, tatie?: string) => string
   opneFile: (defoDir?: string, title?: string, filtersName?: string, filtersExtensions?: string[]) => string

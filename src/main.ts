@@ -182,6 +182,11 @@ ipcMain.on('newUUID', async (event: IpcMainEvent) => {
   event.returnValue = makeUUID()
 })
 
+// 動作環境がlinuxかWindowsか取得して返す
+ipcMain.on('GetPlatformData', async (event: IpcMainEvent) => {
+  event.returnValue = process.platform
+})
+
 // ソフトのバージョン情報をレンダラー側に渡す
 ipcMain.on('SoftVersionData', async (event: IpcMainEvent) => {
   event.returnValue = outSoftVersion()
