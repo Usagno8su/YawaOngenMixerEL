@@ -35,9 +35,7 @@ import fs from 'fs'
 // 作業用のo一時ファイルを設置するディレクトリをi作成する。
 export const createTempDir = (): string => {
   // temp領域に専用のディレクトリを作成してそのパスを返す。
-  const tempRoot = app.getPath('temp')
-
-  const yomTempRoot = path.join(tempRoot, 'YOMtempDir')
+  const yomTempRoot = path.join(app.getPath('temp'), 'YOMtempDir')
   // ディレクトリ作成
   if (!fs.existsSync(yomTempRoot)) {
     fs.mkdirSync(yomTempRoot)
