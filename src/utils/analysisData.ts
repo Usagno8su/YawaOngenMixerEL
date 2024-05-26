@@ -54,7 +54,7 @@ export const createNewDataID = (dateList: outSettingType[], newName: string): nu
 }
 
 // 動作環境がlinuxかWindowsか取得する
-export const getPlatform = (): string => {
+export const getPlatform = (): NodeJS.Platform => {
   return yomAPI.getPlatformData()
 }
 

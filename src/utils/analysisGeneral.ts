@@ -22,7 +22,7 @@ export const createDefoKyaraProfileList = (): kyaraProfileListType => {
 }
 
 // デフォルトのキャラ設定データを作成して返す
-export const createDefoKyaraDateList = (platform?: string): outSettingType => {
+export const createDefoKyaraDateList = (platform?: NodeJS.Platform): outSettingType => {
   return createNewDateList(
     'defo',
     DEFAULT_KYARA_SETTING_UUID,

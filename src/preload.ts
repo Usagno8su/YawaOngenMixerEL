@@ -12,7 +12,7 @@ contextBridge.exposeInMainWorld('yomAPI', {
   getUUID: () => {
     return ipcRenderer.sendSync('newUUID')
   },
-  getPlatformData: () => {
+  getPlatformData: (): NodeJS.Platform => {
     return ipcRenderer.sendSync('GetPlatformData')
   },
   getSoftVersionData: () => {
