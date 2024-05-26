@@ -140,7 +140,20 @@ const addNewKyara = (dataType: dataTextType, kyaraName: string, kyaraStyle: stri
       undefined
     ) {
       console.log('追加')
-      dateList.value.push(createNewDateList(dataType, yomAPI.getUUID(), kyaraName, kyaraStyle, {}, {}))
+      dateList.value.push(
+        createNewDateList(
+          dataType,
+          yomAPI.getUUID(),
+          kyaraName,
+          kyaraStyle,
+          {},
+          {},
+          undefined,
+          undefined,
+          undefined,
+          yomAPI.getPlatformData(),
+        ),
+      )
     } else {
       console.log('重複があるためキャンセル')
       throw new Error('重複があります')

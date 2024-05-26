@@ -195,13 +195,16 @@ export const initializationSetting = (): profileKyaraExportType => {
         '',
         '',
         '',
+        process.platform,
       ),
     )
 
     // スタイル付きの設定も、存在する場合は入れていく、これにはフォントの色は指定しない
     if (e.kyaraStyle !== undefined) {
       e.kyaraStyle.map((ekyaraStyle) =>
-        outData.value.push(createNewDateList('kyast', makeUUID(), e.kyaraName, ekyaraStyle, {}, {}, '', '', '')),
+        outData.value.push(
+          createNewDateList('kyast', makeUUID(), e.kyaraName, ekyaraStyle, {}, {}, '', '', '', process.platform),
+        ),
       )
     }
   })
