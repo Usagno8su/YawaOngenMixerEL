@@ -170,7 +170,7 @@ export const createMoviFile = async (
       console.error('cnvBackPic ans: ' + cnvBackPic.stdout.toString())
     }
   } else {
-    const cnvBackPic = await execFile(ffmpegPath, moviData.concat([outFilePath + '.webm']))
+    const cnvBackPic = await execFile(ffmpegPath, moviData.concat(`${outFilePath}.webm`))
       .then((value) => {
         console.error('cnvBackPic ans: ' + value)
         return value

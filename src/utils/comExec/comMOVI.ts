@@ -45,9 +45,11 @@ export const createComMovi = async (
       '-r',
       fileSetting.tatie.fps.val.toString(),
       '-i',
-      `"${tatieFile}"`,
+      process.platform === 'win32' ? `"${tatieFile}"` : tatieFile,
       '-i',
-      `"${path.join(voiceFileDirPath, fileSetting.fileName + '.' + fileSetting.fileExtension)}"`,
+      process.platform === 'win32'
+        ? `"${path.join(voiceFileDirPath, fileSetting.fileName + '.' + fileSetting.fileExtension)}"`
+        : path.join(voiceFileDirPath, fileSetting.fileName + '.' + fileSetting.fileExtension),
     ]
       .concat('-auto-alt-ref 0 -c:a libvorbis -c:v libvpx-vp9'.split(' '))
       .concat(
@@ -55,8 +57,8 @@ export const createComMovi = async (
         ffmpegVersion[0] === '4' ? '-shortest -fflags shortest -max_interleave_delta 20M'.split(' ') : '-shortest',
       )
       .concat('-filter_complex')
-      .concat(`"${value}"`)
-      .concat(['-r', fileSetting.tatie.fps.val.toString(), '-f', 'webm'])
+      .concat(process.platform === 'win32' ? `"${value}"` : value)
+      .concat(['-r', fileSetting.tatie.fps.val.toString()])
   })
 
   return ans
