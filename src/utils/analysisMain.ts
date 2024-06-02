@@ -35,9 +35,7 @@ import fs from 'fs'
 // 作業用のo一時ファイルを設置するディレクトリをi作成する。
 export const createTempDir = (): string => {
   // temp領域に専用のディレクトリを作成してそのパスを返す。
-  const tempRoot = app.getPath('temp')
-
-  const yomTempRoot = path.join(tempRoot, 'YOMtempDir')
+  const yomTempRoot = path.join(app.getPath('temp'), 'YOMtempDir')
   // ディレクトリ作成
   if (!fs.existsSync(yomTempRoot)) {
     fs.mkdirSync(yomTempRoot)
@@ -151,8 +149,11 @@ export const initializationGlobalSetting = (): globalSettingExportType => {
       selectProfile: DEFAULT_KYARA_PROFILE_NAME,
       saveSearchString: true,
       exeFilePath: {
-        ffmpeg: '/usr/bin/ffmpeg',
-        convert: '/usr/bin/convert',
+        ffmpeg:
+          process.platform === 'win32'
+            ? path.join(app.getPath('home'), 'lib', 'ffmpeg', 'bin', 'ffmpeg.exe')
+            : '/usr/bin/ffmpeg',
+        convert: process.platform === 'win32' ? 'magick' : '/usr/bin/convert',
       },
     },
   }
@@ -178,7 +179,7 @@ export const initializationKyaraProfileList = (): kyaraProfileListExportType => 
 // これを元にjsonファイルを出力する
 export const initializationSetting = (): profileKyaraExportType => {
   // デフォルトキャラ設定を作成
-  const outData = ref<outSettingType[]>([createDefoKyaraDateList()])
+  const outData = ref<outSettingType[]>([createDefoKyaraDateList(process.platform)])
 
   // initializationSettingDataのデータを記録する
   initializationSettingData.map((e) => {
@@ -194,13 +195,16 @@ export const initializationSetting = (): profileKyaraExportType => {
         '',
         '',
         '',
+        process.platform,
       ),
     )
 
     // スタイル付きの設定も、存在する場合は入れていく、これにはフォントの色は指定しない
     if (e.kyaraStyle !== undefined) {
       e.kyaraStyle.map((ekyaraStyle) =>
-        outData.value.push(createNewDateList('kyast', makeUUID(), e.kyaraName, ekyaraStyle, {}, {}, '', '', '')),
+        outData.value.push(
+          createNewDateList('kyast', makeUUID(), e.kyaraName, ekyaraStyle, {}, {}, '', '', '', process.platform),
+        ),
       )
     }
   })
@@ -355,6 +359,9 @@ export const enterEncodeVideoData = async (
   console.log('img ans ----------------------------------------')
   console.log(imgData)
 
+  // 一時ファイルのディレクトリを作成してpathを取得
+  const tempDirPath = createTempDir()
+
   // ImageMagicを実行
   const imgFilePath = await createImgFile(
     globalSetting.exeFilePath.convert,
@@ -363,7 +370,7 @@ export const enterEncodeVideoData = async (
     outSettingData.settingList.tatie.tatieUUID.val,
     kyaraTatieDirPath,
     outSettingData.infoSetting.outPicDir,
-    createTempDir(),
+    tempDirPath,
   )
 
   console.log('main への返送結果: ' + imgFilePath)
@@ -371,7 +378,13 @@ export const enterEncodeVideoData = async (
   //// 動画ファイルの作成
 
   // FFmpeg用のコマンド作成
-  const moviData = await createComMovi(outSettingData.settingList, imgFilePath, voiceFileDirPath, createTempDir())
+  const moviData = await createComMovi(
+    outSettingData.settingList,
+    imgFilePath,
+    voiceFileDirPath,
+    tempDirPath,
+    globalSetting.exeFilePath.ffmpeg,
+  )
 
   console.log('movi ans ----------------------------------------')
   console.log(moviData)
@@ -382,6 +395,7 @@ export const enterEncodeVideoData = async (
     moviData,
     outSettingData.settingList,
     outSettingData.infoSetting.outDir,
+    tempDirPath,
   )
 
   return moviFilePath

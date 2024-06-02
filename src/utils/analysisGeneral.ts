@@ -2,7 +2,13 @@
 
 import { createNewDateList, createNewFileListTatie } from './analysisData'
 import { outSettingType, infoSettingType, fileListTatieType, kyaraProfileListType } from '../type/data-type'
-import { DEFAULT_KYARA_TATIE_UUID, DEFAULT_KYARA_PROFILE_NAME, DEFAULT_KYARA_SETTING_UUID } from '../data/data'
+import {
+  DEFAULT_KYARA_TATIE_UUID,
+  DEFAULT_KYARA_PROFILE_NAME,
+  DEFAULT_KYARA_SETTING_UUID,
+  DEFAULT_FONT_WIN,
+  DEFAULT_FONT_LINUX,
+} from '../data/data'
 
 // デフォルトの基本設定データを作成して返す
 export const createDefoInfoDateList = (): infoSettingType => {
@@ -22,7 +28,7 @@ export const createDefoKyaraProfileList = (): kyaraProfileListType => {
 }
 
 // デフォルトのキャラ設定データを作成して返す
-export const createDefoKyaraDateList = (): outSettingType => {
+export const createDefoKyaraDateList = (platform?: NodeJS.Platform): outSettingType => {
   return createNewDateList(
     'defo',
     DEFAULT_KYARA_SETTING_UUID,
@@ -31,7 +37,7 @@ export const createDefoKyaraDateList = (): outSettingType => {
     {
       tatieUUID: DEFAULT_KYARA_TATIE_UUID,
       moviW: 1280,
-      moviH: 768,
+      moviH: 720,
       tatieConp: true,
       tatieSide: 'SouthEast',
       tatieHpx: 40,
@@ -41,7 +47,7 @@ export const createDefoKyaraDateList = (): outSettingType => {
     },
     {
       subText: true,
-      fontsPath: '/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc',
+      fontsPath: platform === 'win32' ? DEFAULT_FONT_WIN : DEFAULT_FONT_LINUX,
       subAlignment: 'Center',
       subAutoRt: true,
       subTextBord: true,

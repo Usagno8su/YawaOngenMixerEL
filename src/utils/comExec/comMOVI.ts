@@ -2,6 +2,7 @@
 // FFmpeg関連のコマンドを記載
 import { outSettingType, subAlignmentSideType } from '../../type/data-type'
 import { arrayHalfValue } from '../analysisGeneral'
+import { LoadFFmpegVersion } from './comEnter'
 import fs from 'fs'
 import readline from 'readline'
 import path from 'path'
@@ -25,7 +26,11 @@ export const createComMovi = async (
   tatieFile: string,
   voiceFileDirPath: string,
   textDirPathName: string,
+  ffmpegPath: string,
 ): Promise<string[]> => {
+  // バージョン番号を取得
+  const ffmpegVersion = await LoadFFmpegVersion(ffmpegPath)
+
   const ans: Promise<string[]> = new Promise((resolve) => {
     // 字幕の設定を作成
     return resolve(createSubtitleCom(fileSetting, voiceFileDirPath, textDirPathName))
@@ -40,16 +45,19 @@ export const createComMovi = async (
       '-r',
       fileSetting.tatie.fps.val.toString(),
       '-i',
-      tatieFile,
+      process.platform === 'win32' ? `"${tatieFile}"` : tatieFile,
       '-i',
-      path.join(voiceFileDirPath, fileSetting.fileName + '.' + fileSetting.fileExtension),
+      process.platform === 'win32'
+        ? `"${path.join(voiceFileDirPath, fileSetting.fileName + '.' + fileSetting.fileExtension)}"`
+        : path.join(voiceFileDirPath, fileSetting.fileName + '.' + fileSetting.fileExtension),
     ]
+      .concat('-auto-alt-ref 0 -c:a libvorbis -c:v libvpx-vp9'.split(' '))
       .concat(
-        '-auto-alt-ref 0 -c:a libvorbis -c:v libvpx-vp9 -shortest -fflags shortest -max_interleave_delta 20M'.split(
-          ' ',
-        ),
+        // バージョン番号により、コマンドを変更する。
+        ffmpegVersion[0] === '4' ? '-shortest -fflags shortest -max_interleave_delta 20M'.split(' ') : '-shortest',
       )
-      .concat(value)
+      .concat('-filter_complex')
+      .concat(process.platform === 'win32' ? `"${value}"` : value)
       .concat(['-r', fileSetting.tatie.fps.val.toString()])
   })
 
@@ -97,7 +105,7 @@ export const createSubtitleCom = async (
 
     const textComLine = await makeTextList(fileSetting, textList, subTextBord, subSide)
 
-    return ['-filter_complex', `format=rgba${subBg}${textComLine}`]
+    return [`format=rgba${subBg}${textComLine}`]
   } else {
     return []
   }
@@ -130,7 +138,7 @@ export const makeTextList = async (
 
   for await (const line of textList) {
     ans +=
-      `,drawtext=fontfile='${fileSetting.subtitle.fontsPath.val}':` +
+      `,drawtext=fontfile='${fileSetting.subtitle.fontsPath.val.replace(/\\/g, '\\\\').replace(/:\\/g, '\\:\\')}':` +
       `textfile='${line}':fontcolor=${fileSetting.subtitle.subColor.val}:` +
       `${subTextBord}fontsize=${fileSetting.subtitle.subSize.val}:` +
       `x=${subSide}:y=h-(((${fileSetting.subtitle.subSize.val})*${textLineLength})+${fileSetting.subtitle.subTextSpaceSize.val})`
@@ -266,7 +274,14 @@ export const subTextSplit = async (
       tempLine = tempLine.replace(outText, '')
 
       // テキストを出力した一時ファイル名を記録する。
-      tempFileList.value.push(path.join(textDirPathName, fileName + '.txt'))
+      tempFileList.value.push(
+        process.platform === 'win32'
+          ? path
+              .join(textDirPathName, fileName + '.txt')
+              .replace(/\\/g, '\\\\')
+              .replace(/:\\/g, '\\:\\')
+          : path.join(textDirPathName, fileName + '.txt'),
+      )
     }
   }
 

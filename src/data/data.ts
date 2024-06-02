@@ -14,6 +14,12 @@ export const DEFAULT_KYARA_SETTING_UUID = '0'
 // デフォルトの立ち絵のUUID
 export const DEFAULT_KYARA_TATIE_UUID = '0'
 
+// Windowsのデフォルトフォント
+export const DEFAULT_FONT_WIN = 'C:\\Windows\\Fonts\\BIZ-UDGothicB.ttc'
+
+// Linuxのデフォルトフォント
+export const DEFAULT_FONT_LINUX = '/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc'
+
 export const tatieSideView: { [key in tatieSideType]: string } = {
   NorthWest: '上段左',
   North: '上段中央',

@@ -35,6 +35,7 @@ import {
   getGlobalSetting,
   loadProfile,
   writeGlobalSetting,
+  getPlatform,
 } from '@/utils/analysisData'
 import { DEFAULT_KYARA_SETTING_UUID } from '@/data/data'
 import { createDefoKyaraDateList } from '@/utils/analysisGeneral'
@@ -70,7 +71,7 @@ const voiceLoadDirPath = ref<string>('')
 
 // 読み込んだキャラ設定データが空の場合はデフォルトデータだけを入れる
 if (dateList.value.length === 0) {
-  dateList.value.push(createDefoKyaraDateList())
+  dateList.value.push(createDefoKyaraDateList(getPlatform()))
 }
 
 // ファイルリストのテストデータを追加する
@@ -139,7 +140,20 @@ const addNewKyara = (dataType: dataTextType, kyaraName: string, kyaraStyle: stri
       undefined
     ) {
       console.log('追加')
-      dateList.value.push(createNewDateList(dataType, yomAPI.getUUID(), kyaraName, kyaraStyle, {}, {}))
+      dateList.value.push(
+        createNewDateList(
+          dataType,
+          yomAPI.getUUID(),
+          kyaraName,
+          kyaraStyle,
+          {},
+          {},
+          undefined,
+          undefined,
+          undefined,
+          yomAPI.getPlatformData(),
+        ),
+      )
     } else {
       console.log('重複があるためキャンセル')
       throw new Error('重複があります')

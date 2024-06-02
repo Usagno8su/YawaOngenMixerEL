@@ -17,7 +17,12 @@ import {
   kyaraProfileListType,
 } from '../type/data-type'
 import { NowTimeData } from './analysisGeneral'
-import { DEFAULT_KYARA_PROFILE_NAME, DEFAULT_KYARA_TATIE_UUID } from '../data/data'
+import {
+  DEFAULT_KYARA_PROFILE_NAME,
+  DEFAULT_KYARA_TATIE_UUID,
+  DEFAULT_FONT_WIN,
+  DEFAULT_FONT_LINUX,
+} from '../data/data'
 import { ref } from 'vue'
 
 const { yomAPI } = window
@@ -51,6 +56,11 @@ export const createNewDataID = (dateList: outSettingType[], newName: string): nu
   }
 
   return newID
+}
+
+// 動作環境がlinuxかWindowsか取得する
+export const getPlatform = (): NodeJS.Platform => {
+  return yomAPI.getPlatformData()
 }
 
 // dateListに追加や変更を行うときに、キャラ名とスタイル名が同じ要素が入らないように調べる。
@@ -206,6 +216,7 @@ export const createNewDateList = (
   fileName?: string,
   fileExtension?: string,
   voiceID?: string,
+  platform?: NodeJS.Platform,
 ): outSettingType => {
   return {
     dataType: dataType,
@@ -218,7 +229,7 @@ export const createNewDateList = (
         active: tatie.tatieUUID !== undefined ? true : false,
       },
       moviW: { val: tatie.moviW ?? 1280, active: tatie.moviW !== undefined ? true : false },
-      moviH: { val: tatie.moviH ?? 768, active: tatie.moviH !== undefined ? true : false },
+      moviH: { val: tatie.moviH ?? 720, active: tatie.moviH !== undefined ? true : false },
       tatieConp: { val: tatie.tatieConp ?? true, active: tatie.tatieConp !== undefined ? true : false },
       tatieSide: { val: tatie.tatieSide ?? 'SouthEast', active: tatie.tatieSide !== undefined ? true : false },
       tatieHpx: { val: tatie.tatieHpx ?? 40, active: tatie.tatieHpx !== undefined ? true : false },
@@ -229,7 +240,7 @@ export const createNewDateList = (
     subtitle: {
       subText: { val: subtitle.subText ?? true, active: subtitle.subText !== undefined ? true : false },
       fontsPath: {
-        val: subtitle.fontsPath ?? '/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc',
+        val: subtitle.fontsPath ?? (platform === 'win32' ? DEFAULT_FONT_WIN : DEFAULT_FONT_LINUX),
         active: subtitle.fontsPath !== undefined ? true : false,
       },
       subAlignment: {
