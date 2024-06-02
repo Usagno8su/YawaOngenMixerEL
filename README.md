@@ -85,9 +85,15 @@ Mac については申し訳ございませんが、今のところ対応予定�
 - VOICEVOX
 - SHAREVOX
 - VOICEPEAK
+- COEIROINK
+- A.I.VOICE
+- CeVIO AI
 
 VOICEPEAKについては、テキストファイル出力の有効化と、
 出力ファイル名をVOICEVOXと同じに設定する必要があります。
+
+それ以外のソフトについても[動画](https://www.nicovideo.jp/watch/sm43776899)にて設定方法を解説しております。
+概ねVOICEVOXと同じ様式でファイルを出力して頂ければ問題ございません。
 
 動画編集ソフトは「 [Shotcut](https://www.shotcut.org/) 」を使用しています。
 
