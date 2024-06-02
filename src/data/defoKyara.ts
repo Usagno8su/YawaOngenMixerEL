@@ -185,6 +185,7 @@ export const initializationSettingData: initializationSettingType[] = [
     kyaraName: 'つくよみちゃん',
     subColor: '#f6bfbc',
     subOrdercr: '#4d4c61',
+    kyaraStyle: ['おしとやか', 'げんき'],
   },
   {
     kyaraName: '白痴ー黒聡鵜月',
@@ -339,5 +340,72 @@ export const initializationSettingData: initializationSettingType[] = [
     kyaraName: '羽累',
     subColor: '#e9dfe5',
     subOrdercr: '#2f2f2f',
+  },
+  // COEIROINK
+  {
+    kyaraName: 'おふとんP',
+    subColor: '#00ffe1',
+    subOrdercr: '#ffffff',
+    kyaraStyle: ['よろこび', 'かなしみ', 'あせり'],
+  },
+  {
+    kyaraName: 'MANA',
+    subColor: '#fdeff2',
+    subOrdercr: '#ffffff',
+    kyaraStyle: ['いっしょうけんめい', 'ごきげん', 'どやがお'],
+  },
+  {
+    kyaraName: 'ディアちゃん',
+    subColor: '#ff248e',
+    subOrdercr: '#ffffff',
+  },
+  // A.I.VOICE
+  {
+    kyaraName: 'タンゲ コトエ',
+    subColor: '#c20000',
+    subOrdercr: '#ffffff',
+  },
+  {
+    kyaraName: '咲ちゃん',
+    subColor: '#a8a8a8',
+    subOrdercr: '#ffffff',
+  },
+  {
+    kyaraName: '栗田まろん',
+    subColor: '#ca8269',
+    subOrdercr: '#ffffff',
+  },
+  {
+    kyaraName: '紅桜ショウガ',
+    subColor: '#d7003a',
+    subOrdercr: '#ffffff',
+  },
+  {
+    kyaraName: '琴葉 茜',
+    subColor: '#da81b2',
+    subOrdercr: '#ffffff',
+    kyaraStyle: ['蕾'],
+  },
+  {
+    kyaraName: '琴葉 葵',
+    subColor: '#bbe2f1',
+    subOrdercr: '#ffffff',
+    kyaraStyle: ['蕾'],
+  },
+  // CeVIO AI
+  {
+    kyaraName: 'さとうささら',
+    subColor: '#ffadad',
+    subOrdercr: '#ffffff',
+  },
+  {
+    kyaraName: 'すずきつづみ',
+    subColor: '#668cff',
+    subOrdercr: '#ffffff',
+  },
+  {
+    kyaraName: 'タカハシ',
+    subColor: '#f8f8ff',
+    subOrdercr: '#ffffff',
   },
 ]
