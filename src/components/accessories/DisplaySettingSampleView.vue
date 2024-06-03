@@ -9,6 +9,7 @@ import { SelectTatieSideCSS } from '@/utils/analysisData'
 import { SelectTatieIndexHigherUpData } from '@/utils/analysisData'
 import { watch, ref } from 'vue'
 import DisplayTatiePicFile from '@/components/accessories/DisplayTatiePicFile.vue'
+import { MakeClassString } from '@/utils/analysisGeneral'
 
 //// どの設定データが採用されているか確認する。
 // 立ち絵の配置位置
@@ -66,7 +67,7 @@ watch(
 
 <template>
   <div class="h-36 w-full border-[1px] border-gray-400 p-1" title="位置表示についてはまだ不完全です">
-    <div :class="'h-full w-full' + ' ' + setPositionClass">
+    <div :class="MakeClassString('h-full w-full', setPositionClass)">
       <DisplayTatiePicFile :selectTatieFile="setTatiePicFile" imgClass="max-h-14 max-w-14" personOffClass="h-10 w-10" />
     </div>
   </div>
