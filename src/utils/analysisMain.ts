@@ -446,7 +446,6 @@ export const loadKyraPicFileData = async (
   try {
     // 縮小した画像ファイルが欲しい場合
     if (sizeHeight !== undefined) {
-
       // 縮小ファイルがない場合は作成する。
       new Promise((resolve) => {
         resolve(fs.existsSync(path.join(kyaraTatieDirPath, picFileName + '_' + sizeHeight.toString() + '.png')))
