@@ -55,7 +55,7 @@ watch(
   <div class="fixed right-0 top-0 flex h-screen w-screen items-center justify-center" @click.self="clickClose">
     <!-- 画面外クリックでクローズ -->
   </div>
-  <div class="absolute right-6 flex h-96 border border-gray-700 bg-gray-300">
+  <div class="absolute flex h-96 border border-gray-700 bg-gray-300">
     <div class="overflow-none h-full w-64 border border-gray-700 p-1">
       <div class="h-80 overflow-y-scroll border border-gray-600">
         <!-- デフォルト立ち絵は先に表示する -->
