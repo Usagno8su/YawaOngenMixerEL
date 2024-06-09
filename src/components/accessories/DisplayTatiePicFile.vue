@@ -3,6 +3,7 @@ const props = defineProps<{
   selectTatieFile: string
   imgClass?: string
   personOffClass?: string
+  sizeHeight?: number // 高さをピクセルで指定したい場合は設定する
 }>()
 // 立ち絵画像の表示を行う
 
@@ -14,7 +15,9 @@ const { yomAPI } = window
 // 立ち絵画像を取得
 const img = ref<string | ArrayBuffer>()
 const getKyaraImg = async (sta: string) => {
-  const data = yomAPI.getKyraPicFileData(sta)
+  // 立ち絵画像を取得
+  // 高さをピクセルで指定した場合はその高さで縮小された画像が取得される。
+  const data = yomAPI.getKyraPicFileData(sta, props.sizeHeight)
 
   let bobData = new Blob([data], { type: 'image/png' })
   // ファイreaderを作成
