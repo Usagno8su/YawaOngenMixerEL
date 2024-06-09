@@ -17,6 +17,7 @@ import {
   loadFilePath,
   initializationKyaraProfileList,
   CopyFileDataList,
+  loadKyraPicFileData,
 } from './utils/analysisMain'
 import { createDefoInfoDateList } from './utils/analysisGeneral'
 import { outSettingType, profileKyaraExportType, globalSettingExportType } from './type/data-type'
@@ -287,13 +288,12 @@ ipcMain.on(
 
 // 立ち絵の読み込みを行う
 // fileNameに拡張子は入れないこと
-ipcMain.on('loadKyraPicFileData', async (event: IpcMainEvent, fileName: string) => {
-  try {
-    const buffer = await fs.promises.readFile(path.join(kyaraTatieDirPathGLB, fileName + '.png'))
-    event.returnValue = new Uint8Array(buffer)
-  } catch (e) {
-    event.returnValue = null
-  }
+ipcMain.on('loadKyraPicFileData', async (event: IpcMainEvent, fileName: string, sizeHeight?:number) => {
+
+  // 全体設定を読み込んで、コマンドのパス情報を取得する。
+  const globalSettingData: globalSettingExportType = JSON.parse(readJsonData(globalSettingFilePathGLB))
+
+  event.returnValue = await loadKyraPicFileData(kyaraTatieDirPathGLB, fileName, globalSettingData.globalSetting.exeFilePath.convert, sizeHeight)
 })
 
 // 立ち絵を読み込んで指定のディレクトリに保存する

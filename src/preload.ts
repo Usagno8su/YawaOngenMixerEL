@@ -41,8 +41,8 @@ contextBridge.exposeInMainWorld('yomAPI', {
   },
   entSaveSetting: (listener: () => void) =>
     ipcRenderer.on('SaveSettingKeyCom', (_event: IpcRendererEvent) => listener()),
-  getKyraPicFileData: (fileName: string): Uint8Array => {
-    return ipcRenderer.sendSync('loadKyraPicFileData', fileName)
+  getKyraPicFileData: (fileName: string, sizeHeight?:number): Uint8Array => {
+    return ipcRenderer.sendSync('loadKyraPicFileData', fileName, sizeHeight)
   },
   opneKyaraPicFileDir: (defoDir?: string): { uuid: string; name: string; extname: string }[] => {
     return ipcRenderer.sendSync('selectSaveKyraPicFileData', defoDir)
