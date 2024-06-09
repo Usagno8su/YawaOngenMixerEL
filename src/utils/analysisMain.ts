@@ -32,14 +32,25 @@ import { app, dialog } from 'electron'
 import path from 'path'
 import fs from 'fs'
 
-// 作業用のo一時ファイルを設置するディレクトリをi作成する。
-export const createTempDir = (): string => {
+// 作業用の一時ファイルを設置するディレクトリを作成する。
+export const createTempDir = async (): Promise<string> => {
+  const makeTempDir = async (dir: string) => {
+    fs.mkdirSync(dir)
+  }
+
   // temp領域に専用のディレクトリを作成してそのパスを返す。
   const yomTempRoot = path.join(app.getPath('temp'), 'YOMtempDir')
-  // ディレクトリ作成
-  if (!fs.existsSync(yomTempRoot)) {
-    fs.mkdirSync(yomTempRoot)
-  }
+
+  // ディレクトリがあるか確認する
+  new Promise((resolve) => {
+    resolve(fs.existsSync(yomTempRoot))
+  }).then(async (value: boolean) => {
+    if (!value) {
+      // ディレクトリ作成
+      await makeTempDir(yomTempRoot)
+    }
+  })
+
   console.log('tempディレクトリ: ' + yomTempRoot)
 
   return yomTempRoot
@@ -342,6 +353,34 @@ export const makeUUID = (): string => {
   return NowTimeData('UNIX16') + '-' + randomUUID()
 }
 
+// 画像エンコードを実施します。
+// 実行後に作成した画像ファイルの絶対パスを返します。
+// エラーがあった場合は undefined を返します。
+export const enterEncodeImageData = async (
+  settingList: outSettingType,
+  tempDirPath: string,
+  convertPath: string,
+  kyaraTatieDirPath: string,
+  infoSetting: infoSettingType,
+): Promise<string> => {
+  // ImageMagic用のコマンド作成
+  const imgData = await createComImg(settingList)
+  console.log('img ans ----------------------------------------')
+  console.log(imgData)
+
+  // ImageMagicを実行
+  // 作成したファイルのパスを返す
+  return await createImgFile(
+    convertPath,
+    imgData,
+    settingList.fileName,
+    settingList.tatie.tatieUUID.val,
+    kyaraTatieDirPath,
+    infoSetting.outPicDir,
+    tempDirPath,
+  )
+}
+
 // 動画エンコードを実施
 export const enterEncodeVideoData = async (
   voiceFileDirPath: string,
@@ -352,25 +391,18 @@ export const enterEncodeVideoData = async (
   // JSONデータを変換
   const outSettingData: encodeProfileSendReType = JSON.parse(outJsonData)
 
+  // 一時ファイルのディレクトリを作成してpathを取得
+  const tempDirPath = await createTempDir()
+
   //// 画像ファイルの作成
 
-  // ImageMagic用のコマンド作成
-  const imgData = await createComImg(outSettingData.settingList)
-  console.log('img ans ----------------------------------------')
-  console.log(imgData)
-
-  // 一時ファイルのディレクトリを作成してpathを取得
-  const tempDirPath = createTempDir()
-
-  // ImageMagicを実行
-  const imgFilePath = await createImgFile(
-    globalSetting.exeFilePath.convert,
-    imgData,
-    outSettingData.settingList.fileName,
-    outSettingData.settingList.tatie.tatieUUID.val,
-    kyaraTatieDirPath,
-    outSettingData.infoSetting.outPicDir,
+  // 画像ファイルの作成を実行
+  const imgFilePath = await enterEncodeImageData(
+    outSettingData.settingList,
     tempDirPath,
+    globalSetting.exeFilePath.convert,
+    kyaraTatieDirPath,
+    outSettingData.infoSetting,
   )
 
   console.log('main への返送結果: ' + imgFilePath)
