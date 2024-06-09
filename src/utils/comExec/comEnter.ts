@@ -37,14 +37,15 @@ export const LoadFFmpegVersion = async (ffmpegPath: string): Promise<string[]> =
 export const resizeTatiePath = async (
   picFileName: string,
   convertPath: string,
-  picPath: PicPathType,
-  comList: createComImgType,
+  inputTatie: string,
+  tempTatiePic: string,
+  tatieResizeCom: string[],
 ): Promise<{
   stdout: string
   stderr: string
 }> => {
   if (picFileName !== DEFAULT_KYARA_TATIE_UUID) {
-    return await execFile(convertPath, [picPath.inputTatie].concat(comList.tatieResizeCom, [picPath.tempTatiePic]))
+    return await execFile(convertPath, [inputTatie].concat(tatieResizeCom, [tempTatiePic]))
       .then((value) => {
         return value
       })
@@ -83,7 +84,13 @@ export const createImgFile = async (
   const picPath = await makePicPath()
 
   // 立ち絵画像の縮小
-  const tempTatiePic = await resizeTatiePath(picFileName, convertPath, picPath, comList)
+  const tempTatiePic = await resizeTatiePath(
+    picFileName,
+    convertPath,
+    picPath.inputTatie,
+    picPath.tempTatiePic,
+    comList.tatieResizeCom,
+  )
   if (tempTatiePic.stderr !== '') {
     return 'Error: ' + tempTatiePic.stderr.toString()
   }
