@@ -10,6 +10,13 @@ import { DEFAULT_KYARA_TATIE_UUID } from '../../data/data'
 
 const execFile = util.promisify(child_process.execFile)
 
+type PicPathType = {
+  inputTatie: string
+  tempTatiePic: string
+  baseTempPic: string
+  cnvBackPic: string
+}
+
 // FFmpeg のバージョン番号を取得する。
 export const LoadFFmpegVersion = async (ffmpegPath: string): Promise<string[]> => {
   const ffmpegVer: string[] = await execFile(ffmpegPath, ['-version'])
@@ -25,6 +32,33 @@ export const LoadFFmpegVersion = async (ffmpegPath: string): Promise<string[]> =
   return ffmpegVer
 }
 
+// 立ち絵画像を縮小する処理
+// UUIDが DEFAULT_KYARA_TATIE_UUID なら存在しないので、処理を実行しない
+export const resizeTatiePath = async (
+  picFileName: string,
+  convertPath: string,
+  picPath: PicPathType,
+  comList: createComImgType,
+): Promise<{
+  stdout: string
+  stderr: string
+}> => {
+  if (picFileName !== DEFAULT_KYARA_TATIE_UUID) {
+    return await execFile(convertPath, [picPath.inputTatie].concat(comList.tatieResizeCom, [picPath.tempTatiePic]))
+      .then((value) => {
+        return value
+      })
+      .catch((e) => {
+        return e
+      })
+  } else {
+    return {
+      stdout: '',
+      stderr: '',
+    }
+  }
+}
+
 // 画像作成コマンドを実行して、作成された画像ファイルの絶対パスを返す。
 export const createImgFile = async (
   convertPath: string,
@@ -38,12 +72,7 @@ export const createImgFile = async (
   console.log('変換開始-----------------------------aa-')
 
   // 画像ファイルのパスを作成する
-  const makePicPath = async (): Promise<{
-    inputTatie: string
-    tempTatiePic: string
-    baseTempPic: string
-    cnvBackPic: string
-  }> => {
+  const makePicPath = async (): Promise<PicPathType> => {
     return {
       inputTatie: path.join(kyaraTatieDirPath, picFileName + '.png'), // 立ち絵のUUIDから立ち絵のパスを作る
       tempTatiePic: path.join(tempDir, 'pictemp.png'), // 立ち絵を縮小した立ち絵ファイル
@@ -53,29 +82,8 @@ export const createImgFile = async (
   }
   const picPath = await makePicPath()
 
-  // 立ち絵画像を縮小する処理
-  // UUIDが DEFAULT_KYARA_TATIE_UUID なら存在しないので、処理を実行しない
-  const resizeTatiePath = async (): Promise<{
-    stdout: string
-    stderr: string
-  }> => {
-    if (picFileName !== DEFAULT_KYARA_TATIE_UUID) {
-      return await execFile(convertPath, [picPath.inputTatie].concat(comList.tatieResizeCom, [picPath.tempTatiePic]))
-        .then((value) => {
-          return value
-        })
-        .catch((e) => {
-          return e
-        })
-    } else {
-      return {
-        stdout: '',
-        stderr: '',
-      }
-    }
-  }
   // 立ち絵画像の縮小
-  const tempTatiePic = await resizeTatiePath()
+  const tempTatiePic = await resizeTatiePath(picFileName, convertPath, picPath, comList)
   if (tempTatiePic.stderr !== '') {
     return 'Error: ' + tempTatiePic.stderr.toString()
   }
