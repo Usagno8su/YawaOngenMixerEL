@@ -3,24 +3,17 @@ const props = defineProps<{
   dateList: outSettingType[]
   higherUpList: [number, number]
   selectKyara: number
+  infoData: infoSettingType
 }>()
-import type { outSettingType, tatieSideType } from '@/type/data-type'
+import type { outSettingType, tatieSideType, infoSettingType } from '@/type/data-type'
 import { SelectTatieSideCSS } from '@/utils/analysisData'
 import { SelectTatieIndexHigherUpData } from '@/utils/analysisData'
 import { watch, ref } from 'vue'
 import DisplayTatiePicFile from '@/components/accessories/DisplayTatiePicFile.vue'
+import DisplayMoviePicFile from '@/components/accessories/DisplayMoviePicFile.vue'
 import { MakeClassString } from '@/utils/analysisGeneral'
 
 //// どの設定データが採用されているか確認する。
-// 立ち絵の配置位置
-const selectListTatieSideData = (): tatieSideType => {
-  if (props.dateList[props.selectKyara].tatie.tatieSide.active) {
-    return props.dateList[props.selectKyara].tatie.tatieSide.val
-  } else {
-    return props.dateList[SelectTatieIndexHigherUpData(props.higherUpList, props.dateList, 'tatieSide')].tatie.tatieSide
-      .val
-  }
-}
 // 立ち絵画像のUUID
 const selectTatiePicFile = (): string => {
   if (props.dateList[props.selectKyara].tatie.tatieUUID.active) {
@@ -31,9 +24,6 @@ const selectTatiePicFile = (): string => {
   }
 }
 
-// 設定によって立ち絵の位置を変更する
-const setPositionClass = ref<string>(SelectTatieSideCSS(selectListTatieSideData()))
-
 // 設定によって立ち絵画像のUUIDを変更する
 const setTatiePicFile = ref<string>(selectTatiePicFile())
 
@@ -41,18 +31,8 @@ const setTatiePicFile = ref<string>(selectTatiePicFile())
 watch(
   () => props.selectKyara,
   () => {
-    setPositionClass.value = SelectTatieSideCSS(selectListTatieSideData())
     setTatiePicFile.value = selectTatiePicFile()
   },
-)
-
-// 表示している設定が変更されたら立ち絵の位置も変更
-watch(
-  () => props.dateList[props.selectKyara].tatie.tatieSide,
-  () => {
-    setPositionClass.value = SelectTatieSideCSS(selectListTatieSideData())
-  },
-  { deep: true },
 )
 
 // 表示している設定が変更されたら立ち絵の画像も変更
@@ -66,9 +46,20 @@ watch(
 </script>
 
 <template>
-  <div class="h-36 w-full border-[1px] border-gray-400 p-1" title="位置表示についてはまだ不完全です">
-    <div :class="MakeClassString('h-full w-full', setPositionClass)">
-      <DisplayTatiePicFile :selectTatieFile="setTatiePicFile" imgClass="max-h-14 max-w-14" personOffClass="h-10 w-10" />
+  <div class="relative h-36 w-full border-[1px] border-gray-400 p-1" title="位置表示についてはまだ不完全です">
+    <DisplayMoviePicFile
+      :selectTatieFile="setTatiePicFile"
+      :dateList="dateList"
+      :index="selectKyara"
+      :infoData="infoData"
+      imgClass="w-full h-full"
+    />
+    <div
+      class="absolute left-1 top-1 flex rounded-md opacity-30 hover:bg-sky-300 hover:bg-opacity-40 hover:opacity-100"
+      title="切り替えたときに、すぐ画像の加工を行います"
+    >
+      <input type="checkbox" class="ml-1" />
+      <div class="ml-1">自動表示</div>
     </div>
   </div>
 </template>

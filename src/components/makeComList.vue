@@ -439,6 +439,7 @@ watch(
         :dateList="dateList"
         :higherUpList="higherUpList"
         :selectKyara="selectKyara"
+        :infoData="infoData"
         v-if="dateList[selectKyara] !== undefined"
       />
       <div v-else class="flex h-36 w-full items-center justify-center border-[1px] border-gray-400 p-1">未選択です</div>

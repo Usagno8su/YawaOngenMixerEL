@@ -197,6 +197,17 @@ export const enterEncodeVideoFile = async (
   return yomAPI.enterEncodeVideoData(voiceFileDirPath, outJsonData)
 }
 
+// 指定された立ち絵ファイルの変換を行う。
+export const enterEncodeTatiePicFile = async (
+  encodeSetting: encodeProfileSendReType,
+): Promise<{ buffer: Uint8Array; path: string }> => {
+  // JSONファイルへの変換
+  const outJsonData = JSON.stringify(encodeSetting, undefined, 2)
+
+  // 変換の実施
+  return yomAPI.getEncodePicFileData(outJsonData)
+}
+
 export const changeDirPath = async (path?: string, title?: string): Promise<string> => {
   return yomAPI.opneDir(path, title)
 }
