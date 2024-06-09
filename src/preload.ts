@@ -69,4 +69,7 @@ contextBridge.exposeInMainWorld('yomAPI', {
   writeJsonFileData: (fileType: string, outJsonData: string, fileName?: string): boolean => {
     return ipcRenderer.sendSync('saveJsonString', fileType, outJsonData, fileName)
   },
+  getEncodePicFileData: (outJsonData: string): { buffer: Uint8Array; path: string } => {
+    return ipcRenderer.sendSync('loadEncodePicFileData', outJsonData)
+  },
 })

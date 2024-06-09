@@ -433,6 +433,37 @@ export const enterEncodeVideoData = async (
   return moviFilePath
 }
 
+// 画像エンコードのみを実施し、作成した画像ファイルとファイルパスを返す。
+export const enterEncodePicFileData = async (
+  outJsonData: string,
+  kyaraTatieDirPath: string,
+  globalSetting: globalSettingType,
+): Promise<{ buffer: Uint8Array; path: string }> => {
+  // JSONデータを変換
+  const outSettingData: encodeProfileSendReType = JSON.parse(outJsonData)
+
+  // 一時ファイルのディレクトリを作成してpathを取得
+  const tempDirPath = await createTempDir()
+
+  //// 画像ファイルの作成
+
+  // 画像ファイルの作成を実行
+  const imgFilePath = await enterEncodeImageData(
+    outSettingData.settingList,
+    tempDirPath,
+    globalSetting.exeFilePath.convert,
+    kyaraTatieDirPath,
+    outSettingData.infoSetting,
+  )
+
+  // 作成したファイルを返す
+  const buffer = await fs.promises.readFile(imgFilePath)
+  return {
+    buffer: new Uint8Array(buffer),
+    path: imgFilePath,
+  }
+}
+
 // ファイルの絶対パス(配列)を取得して、それを指定のディレクトリにコピーする。
 // UUIDと、元のファイル名（拡張なし）と、拡張子を出力する。
 export const CopyFileDataList = async (

@@ -29,4 +29,5 @@ export interface WGyomAPI {
   openGlobalSetting: (listener: () => void) => void
   getJsonFileData: (fileType: string, fileName?: string) => string
   writeJsonFileData: (fileType: string, outJsonData: string, fileName?: string) => boolean
+  getEncodePicFileData: (outJsonData: string) => { buffer: Uint8Array; path: string }
 }
