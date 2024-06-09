@@ -202,20 +202,20 @@ export const createMoviFile = async (
   return `"${outFilePath}.webm"`
 }
 
-// siteHeightで指定した高さの立ち絵画像を生成する。
+// sizeHeight で指定した高さの立ち絵画像を生成する。
 export const enterEncodeSmallTatie = async (
+  kyaraTatieDirPath: string,
   picFileName: string,
   convertPath: string,
-  kyaraTatieDirPath: string,
-  siteHeight: number,
+  sizeHeight: number,
 ): Promise<string> => {
   // 立ち絵画像の縮小
   const tempTatiePic = await resizeTatiePath(
     picFileName,
     convertPath,
     path.join(kyaraTatieDirPath, picFileName + '.png'),
-    path.join(kyaraTatieDirPath, picFileName + '_' + siteHeight.toString() + '.png'),
-    ['-resize', `x` + siteHeight.toString()],
+    path.join(kyaraTatieDirPath, picFileName + '_' + sizeHeight.toString() + '.png'),
+    ['-resize', `x` + sizeHeight.toString()],
   )
   if (tempTatiePic.stderr !== '') {
     return 'Error: ' + tempTatiePic.stderr.toString()
