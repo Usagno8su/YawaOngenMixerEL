@@ -26,7 +26,7 @@ import {
 import { DEFAULT_KYARA_PROFILE_NAME } from '../data/data'
 import { createNewDateList } from './analysisData'
 import { createComImg } from './comExec/comIMG'
-import { createImgFile, createMoviFile } from './comExec/comEnter'
+import { createImgFile, createMoviFile, enterEncodeSmallTatie } from './comExec/comEnter'
 import { createComMovi } from './comExec/comMOVI'
 import { app, dialog } from 'electron'
 import path from 'path'
@@ -432,5 +432,40 @@ export const getPathStatus = (filePath: string): pathStatusType => {
     dirname: path.dirname(filePath),
     basename: path.basename(filePath, path.extname(filePath)),
     extname: path.extname(filePath).split('.')[1] ?? '',
+  }
+}
+
+// 立ち絵画像ファイルを読み込む
+// 縮小した画像ファイルが欲しい場合は、sizeHeightに高さを入れる。
+export const loadKyraPicFileData = async (
+  kyaraTatieDirPath: string,
+  picFileName: string,
+  convertPath?: string,
+  sizeHeight?: number,
+): Promise<Uint8Array> => {
+  try {
+    // 縮小した画像ファイルが欲しい場合
+    if (sizeHeight !== undefined) {
+
+      // 縮小ファイルがない場合は作成する。
+      new Promise((resolve) => {
+        resolve(fs.existsSync(path.join(kyaraTatieDirPath, picFileName + '_' + sizeHeight.toString() + '.png')))
+      }).then(async (value: boolean) => {
+        if (!value) {
+          await enterEncodeSmallTatie(kyaraTatieDirPath, picFileName, convertPath, sizeHeight)
+        }
+      })
+
+      // 作成したファイルを返す
+      const buffer = await fs.promises.readFile(
+        path.join(kyaraTatieDirPath, picFileName + '_' + sizeHeight.toString() + '.png'),
+      )
+      return new Uint8Array(buffer)
+    } else {
+      const buffer = await fs.promises.readFile(path.join(kyaraTatieDirPath, picFileName + '.png'))
+      return new Uint8Array(buffer)
+    }
+  } catch (e) {
+    return null
   }
 }
