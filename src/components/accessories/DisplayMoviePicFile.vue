@@ -5,6 +5,7 @@ const props = defineProps<{
   index: number
   infoData: infoSettingType
   imgClass?: string
+  autoGetImage?: boolean
 }>()
 // 立ち絵画像のみ変換を行って表示する
 
@@ -13,6 +14,10 @@ import { ref, watch } from 'vue'
 import { enterEncodeTatiePicFile } from '@/utils/analysisFile'
 import { DEFAULT_KYARA_TATIE_UUID } from '@/data/data'
 import { createVoiceFileEncodeSetting } from '@/utils/analysisData'
+import { MakeClassString } from '@/utils/analysisGeneral'
+
+// 立ち絵の表示を制御
+const onImg = ref<boolean>(props.autoGetImage ?? false)
 
 // 変換した立ち絵画像を取得
 const img = ref<string | ArrayBuffer>()
@@ -29,25 +34,38 @@ const getKyaraImg = async (sta: string) => {
   // 読み込み完了時の処理を設定
   reader.onload = () => {
     img.value = reader.result
+    onImg.value = true // 画像を表示
   }
 
   reader.readAsDataURL(bobData)
 }
-if (props.selectTatieFile !== DEFAULT_KYARA_TATIE_UUID) {
-  getKyaraImg(props.selectTatieFile)
-}
 
-// 立ち絵の設定が変わったら表示する画像も変更する
+// 立ち絵の設定が変わったら表示を変更する
 watch(
   () => props.dateList[props.index].tatie,
   () => {
-    getKyaraImg(props.selectTatieFile)
+    // 自動表示がONの場合は変換を再実施
+    if (props.autoGetImage) {
+      getKyaraImg(props.selectTatieFile)
+    } else {
+      onImg.value = false // 非表示にする
+    }
   },
   { deep: true },
 )
 </script>
 
 <template>
-  <img v-if="selectTatieFile !== DEFAULT_KYARA_TATIE_UUID && typeof img === 'string'" :src="img" :class="imgClass" />
-  <div v-else>変換する場合はここをクリック</div>
+  <img
+    v-if="selectTatieFile !== DEFAULT_KYARA_TATIE_UUID && typeof img === 'string' && onImg"
+    :src="img"
+    :class="imgClass"
+  />
+  <button
+    v-else
+    :class="MakeClassString('rounded-lg bg-sky-100 hover:bg-sky-500 hover:text-gray-200', imgClass)"
+    @click="() => getKyaraImg(selectTatieFile)"
+  >
+    変換する場合はここをクリック
+  </button>
 </template>
