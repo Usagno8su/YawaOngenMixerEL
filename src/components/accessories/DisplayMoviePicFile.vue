@@ -22,22 +22,25 @@ const onImg = ref<boolean>(props.autoGetImage ?? false)
 // 変換した立ち絵画像を取得
 const img = ref<string | ArrayBuffer>()
 const getKyaraImg = async (sta: string) => {
-  // 立ち絵画像を変換して取得
-  const data = await enterEncodeTatiePicFile(
-    createVoiceFileEncodeSetting(props.dateList[props.index], props.index, props.dateList, props.infoData),
-  )
+  // 立ち絵がある場合のみ実施
+  if (props.selectTatieFile !== DEFAULT_KYARA_TATIE_UUID) {
+    // 立ち絵画像を変換して取得
+    const data = await enterEncodeTatiePicFile(
+      createVoiceFileEncodeSetting(props.dateList[props.index], props.index, props.dateList, props.infoData),
+    )
 
-  let bobData = new Blob([data.buffer], { type: 'image/png' })
-  // ファイreaderを作成
-  let reader = new FileReader()
+    let bobData = new Blob([data.buffer], { type: 'image/png' })
+    // ファイreaderを作成
+    let reader = new FileReader()
 
-  // 読み込み完了時の処理を設定
-  reader.onload = () => {
-    img.value = reader.result
-    onImg.value = true // 画像を表示
+    // 読み込み完了時の処理を設定
+    reader.onload = () => {
+      img.value = reader.result
+      onImg.value = true // 画像を表示
+    }
+
+    reader.readAsDataURL(bobData)
   }
-
-  reader.readAsDataURL(bobData)
 }
 
 // 立ち絵の設定が変わったら表示を変更する
@@ -70,10 +73,17 @@ watch(
     :src="img"
     :class="imgClass"
   />
+  <div
+    v-else-if="selectTatieFile === DEFAULT_KYARA_TATIE_UUID"
+    :class="MakeClassString('flex items-center justify-center bg-sky-100', imgClass)"
+  >
+    設定立ち絵なし
+  </div>
   <button
     v-else
     :class="MakeClassString('rounded-lg bg-sky-100 hover:bg-sky-500 hover:text-gray-200', imgClass)"
     @click="() => getKyaraImg(selectTatieFile)"
+    title="立ち絵画像から実際の変換を実施し、この画面に表示します。"
   >
     変換する場合はここをクリック
   </button>

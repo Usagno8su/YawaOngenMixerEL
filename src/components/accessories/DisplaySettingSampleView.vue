@@ -48,7 +48,7 @@ watch(
 </script>
 
 <template>
-  <div class="relative h-36 w-full border-[1px] border-gray-400 p-1" title="位置表示についてはまだ不完全です">
+  <div class="relative h-36 w-full border-[1px] border-gray-400 p-1">
     <DisplayMoviePicFile
       :selectTatieFile="setTatiePicFile"
       :dateList="dateList"
