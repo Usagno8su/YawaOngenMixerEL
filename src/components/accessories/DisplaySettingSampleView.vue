@@ -13,6 +13,8 @@ import DisplayTatiePicFile from '@/components/accessories/DisplayTatiePicFile.vu
 import DisplayMoviePicFile from '@/components/accessories/DisplayMoviePicFile.vue'
 import { MakeClassString } from '@/utils/analysisGeneral'
 
+const onAutoImg = ref<boolean>(false)
+
 //// どの設定データが採用されているか確認する。
 // 立ち絵画像のUUID
 const selectTatiePicFile = (): string => {
@@ -53,13 +55,14 @@ watch(
       :index="selectKyara"
       :infoData="infoData"
       imgClass="w-full h-full"
+      :autoGetImage="onAutoImg"
     />
     <div
-      class="absolute left-1 top-1 flex rounded-md opacity-30 hover:bg-sky-300 hover:bg-opacity-40 hover:opacity-100"
+      class="absolute left-1 top-1 flex rounded-xl border border-gray-400 opacity-30 hover:bg-sky-300 hover:bg-opacity-40 hover:opacity-100"
       title="切り替えたときに、すぐ画像の加工を行います"
     >
-      <input type="checkbox" class="ml-1" />
-      <div class="ml-1">自動表示</div>
+      <input type="checkbox" class="ml-1" v-model="onAutoImg" />
+      <div class="mx-1">自動表示</div>
     </div>
   </div>
 </template>

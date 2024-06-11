@@ -53,6 +53,15 @@ watch(
   },
   { deep: true },
 )
+// 自動表示がONになったら変換をずぐに実施
+watch(
+  () => props.autoGetImage,
+  () => {
+    if (props.autoGetImage === true && props.selectTatieFile !== DEFAULT_KYARA_TATIE_UUID) {
+      getKyaraImg(props.selectTatieFile)
+    }
+  },
+)
 </script>
 
 <template>
