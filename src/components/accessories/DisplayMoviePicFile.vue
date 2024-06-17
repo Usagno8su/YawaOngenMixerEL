@@ -87,6 +87,7 @@ watch(
     :src="img"
     :class="imgClass"
     @click="() => saveImg()"
+    title="クリックで変換画像を保存します。"
   />
   <div
     v-else-if="selectTatieFile === DEFAULT_KYARA_TATIE_UUID"
