@@ -531,3 +531,42 @@ export const loadKyraPicFileData = async (
     return null
   }
 }
+
+// Uint8Arrayバイナリファイルを保存する
+// 保存が完了したら保存したディレクトリを返す。
+export const saveUint8ArrayFileData = (
+  fileData: Uint8Array,
+  fileName: string,
+  fileFiltersName: string, // 対象ファイルの種類名
+  fileFiltersExtensions: string[], // 対象ファイルの拡張子
+  defoDir?: string,
+): string => {
+  // 選択画面で表示するディレクトリを決める
+  const defaultPath = fs.existsSync(defoDir) ? defoDir : app.getPath('home')
+
+  // デフォルトのファイル名とディレクトリパスを結合する。
+  const defaultFilePath = path.join(defaultPath, fileName)
+
+  // 保存場所を選択
+  const savePath = dialog.showSaveDialogSync(null, {
+    title: '保存場所を選択',
+    defaultPath: defaultFilePath,
+    buttonLabel: '保存',
+    filters: [{ name: fileFiltersName, extensions: fileFiltersExtensions }],
+  })
+
+  // ファイルを保存して保存したディレクトリを出力する
+  // 保存をキャンセルした場合はnullを返す
+  if (savePath !== undefined) {
+    const dirName = path.dirname(savePath)
+
+    try {
+      fs.writeFileSync(savePath, fileData)
+      return dirName
+    } catch {
+      return null
+    }
+  } else {
+    return null
+  }
+}

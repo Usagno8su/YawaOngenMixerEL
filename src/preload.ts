@@ -72,4 +72,20 @@ contextBridge.exposeInMainWorld('yomAPI', {
   getEncodePicFileData: (outJsonData: string): { buffer: Uint8Array; path: string } => {
     return ipcRenderer.sendSync('loadEncodePicFileData', outJsonData)
   },
+  writeUint8ArrayFileData: async (
+    fileData: Uint8Array,
+    fileName: string,
+    fileFiltersName: string,
+    fileFiltersExtensions: string[],
+    defoDir?: string,
+  ): Promise<string> => {
+    return await ipcRenderer.invoke(
+      'saveUint8ArrayFileData',
+      fileData,
+      fileName,
+      fileFiltersName,
+      fileFiltersExtensions,
+      defoDir,
+    )
+  },
 })

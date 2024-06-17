@@ -19,6 +19,7 @@ import {
   CopyFileDataList,
   loadKyraPicFileData,
   enterEncodePicFileData,
+  saveUint8ArrayFileData,
 } from './utils/analysisMain'
 import { createDefoInfoDateList } from './utils/analysisGeneral'
 import { outSettingType, profileKyaraExportType, globalSettingExportType } from './type/data-type'
@@ -434,3 +435,18 @@ ipcMain.on('loadEncodePicFileData', async (event: IpcMainEvent, outJsonData: str
 
   event.returnValue = await enterEncodePicFileData(outJsonData, kyaraTatieDirPathGLB, globalSettingData.globalSetting)
 })
+
+// 画像エンコードで作成したファイルを保存する処理を実行
+ipcMain.handle(
+  'saveUint8ArrayFileData',
+  async (
+    event,
+    fileData: Uint8Array,
+    fileName: string,
+    fileFiltersName: string,
+    fileFiltersExtensions: string[],
+    defoDir?: string,
+  ) => {
+    return saveUint8ArrayFileData(fileData, fileName, fileFiltersName, fileFiltersExtensions, defoDir)
+  },
+)

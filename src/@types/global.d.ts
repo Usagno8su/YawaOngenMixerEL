@@ -30,4 +30,11 @@ export interface WGyomAPI {
   getJsonFileData: (fileType: string, fileName?: string) => string
   writeJsonFileData: (fileType: string, outJsonData: string, fileName?: string) => boolean
   getEncodePicFileData: (outJsonData: string) => { buffer: Uint8Array; path: string }
+  writeUint8ArrayFileData: (
+    fileData: Uint8Array,
+    fileName: string,
+    fileFiltersName: string,
+    fileFiltersExtensions: string[],
+    defoDir?: string,
+  ) => string
 }
