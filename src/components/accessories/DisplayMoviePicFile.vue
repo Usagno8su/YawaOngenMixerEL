@@ -11,7 +11,7 @@ const props = defineProps<{
 
 import type { outSettingType, infoSettingType } from '@/type/data-type'
 import { ref, watch } from 'vue'
-import { enterEncodeTatiePicFile } from '@/utils/analysisFile'
+import { enterEncodeTatiePicFile, enterSaveUint8ArrayFileData } from '@/utils/analysisFile'
 import { DEFAULT_KYARA_TATIE_UUID } from '@/data/data'
 import { createVoiceFileEncodeSetting } from '@/utils/analysisData'
 import { MakeClassString } from '@/utils/analysisGeneral'
@@ -19,17 +19,21 @@ import { MakeClassString } from '@/utils/analysisGeneral'
 // 立ち絵の表示を制御
 const onImg = ref<boolean>(props.autoGetImage ?? false)
 
+// 保存ダイアログ表示時のディレクトリを指定
+const defoDir = ref<string>(null)
+
 // 変換した立ち絵画像を取得
 const img = ref<string | ArrayBuffer>()
+const data = ref<{ buffer: Uint8Array; path: string }>({ buffer: undefined, path: '' })
 const getKyaraImg = async (sta: string) => {
   // 立ち絵がある場合のみ実施
   if (props.selectTatieFile !== DEFAULT_KYARA_TATIE_UUID) {
     // 立ち絵画像を変換して取得
-    const data = await enterEncodeTatiePicFile(
+    data.value = await enterEncodeTatiePicFile(
       createVoiceFileEncodeSetting(props.dateList[props.index], props.index, props.dateList, props.infoData),
     )
 
-    let bobData = new Blob([data.buffer], { type: 'image/png' })
+    let bobData = new Blob([data.value.buffer], { type: 'image/png' })
     // ファイreaderを作成
     let reader = new FileReader()
 
@@ -40,6 +44,16 @@ const getKyaraImg = async (sta: string) => {
     }
 
     reader.readAsDataURL(bobData)
+  }
+}
+
+// 変換した立ち絵を保存する
+const saveImg = async () => {
+  const ans = await enterSaveUint8ArrayFileData(data.value.buffer, defoDir.value)
+
+  // 保存に成功していたら、保存ダイアログ表示時のディレクトリを更新
+  if (ans !== null) {
+    defoDir.value = ans
   }
 }
 
@@ -72,6 +86,7 @@ watch(
     v-if="selectTatieFile !== DEFAULT_KYARA_TATIE_UUID && typeof img === 'string' && onImg"
     :src="img"
     :class="imgClass"
+    @click="() => saveImg()"
   />
   <div
     v-else-if="selectTatieFile === DEFAULT_KYARA_TATIE_UUID"

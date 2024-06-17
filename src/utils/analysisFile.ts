@@ -8,7 +8,7 @@ import {
 } from '../type/data-type'
 import { ref } from 'vue'
 import { createNewDataID, createNewDateList } from './analysisData'
-import { createDefoFileListTatie } from './analysisGeneral'
+import { createDefoFileListTatie, NowTimeData } from './analysisGeneral'
 import { DEFAULT_KYARA_TATIE_UUID } from '../data/data'
 const { yomAPI } = window
 
@@ -206,6 +206,22 @@ export const enterEncodeTatiePicFile = async (
 
   // 変換の実施
   return yomAPI.getEncodePicFileData(outJsonData)
+}
+
+// 変換された立ち絵ファイルを保存する。
+// 保存ダイアログ表示時に特定のディレクトリを表示したい場合は defoDir を指定する。
+export const enterSaveUint8ArrayFileData = async (buffer: Uint8Array, defoDir?: string): Promise<string> => {
+  // デフォルトのファイル名を決める
+  const fileName = 'tatie-img-' + NowTimeData('todaybumber') + '.png'
+
+  // 保存ファイルの種類名
+  const fileFiltersName = 'Image'
+
+  // 保存する拡張子
+  const fileFiltersExtensions = ['png']
+
+  // 保存の実施
+  return yomAPI.writeUint8ArrayFileData(buffer, fileName, fileFiltersName, fileFiltersExtensions, defoDir)
 }
 
 export const changeDirPath = async (path?: string, title?: string): Promise<string> => {
