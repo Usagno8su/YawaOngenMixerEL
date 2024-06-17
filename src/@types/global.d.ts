@@ -20,7 +20,7 @@ export interface WGyomAPI {
   writeVoiceFileData: (dirPathName: string, outJsonData: string) => boolean
   writeFileListKyaraData: (outJsonData: string) => boolean
   entSaveSetting: (listener: () => void) => void
-  getKyraPicFileData: (fileName: string) => Uint8Array
+  getKyraPicFileData: (fileName: string, sizeHeight?: number) => Uint8Array
   opneKyaraPicFileDir: (defoDir?: string) => { uuid: string; name: string; extname: string }[]
   getFileListKyaraData: () => string
   enterEncodeVideoData: (dirPathName: string, outJsonData: string) => string
@@ -29,4 +29,12 @@ export interface WGyomAPI {
   openGlobalSetting: (listener: () => void) => void
   getJsonFileData: (fileType: string, fileName?: string) => string
   writeJsonFileData: (fileType: string, outJsonData: string, fileName?: string) => boolean
+  getEncodePicFileData: (outJsonData: string) => { buffer: Uint8Array; path: string }
+  writeUint8ArrayFileData: (
+    fileData: Uint8Array,
+    fileName: string,
+    fileFiltersName: string,
+    fileFiltersExtensions: string[],
+    defoDir?: string,
+  ) => string
 }

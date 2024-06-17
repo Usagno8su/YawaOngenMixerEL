@@ -41,8 +41,8 @@ contextBridge.exposeInMainWorld('yomAPI', {
   },
   entSaveSetting: (listener: () => void) =>
     ipcRenderer.on('SaveSettingKeyCom', (_event: IpcRendererEvent) => listener()),
-  getKyraPicFileData: (fileName: string): Uint8Array => {
-    return ipcRenderer.sendSync('loadKyraPicFileData', fileName)
+  getKyraPicFileData: (fileName: string, sizeHeight?: number): Uint8Array => {
+    return ipcRenderer.sendSync('loadKyraPicFileData', fileName, sizeHeight)
   },
   opneKyaraPicFileDir: (defoDir?: string): { uuid: string; name: string; extname: string }[] => {
     return ipcRenderer.sendSync('selectSaveKyraPicFileData', defoDir)
@@ -68,5 +68,24 @@ contextBridge.exposeInMainWorld('yomAPI', {
   },
   writeJsonFileData: (fileType: string, outJsonData: string, fileName?: string): boolean => {
     return ipcRenderer.sendSync('saveJsonString', fileType, outJsonData, fileName)
+  },
+  getEncodePicFileData: (outJsonData: string): { buffer: Uint8Array; path: string } => {
+    return ipcRenderer.sendSync('loadEncodePicFileData', outJsonData)
+  },
+  writeUint8ArrayFileData: async (
+    fileData: Uint8Array,
+    fileName: string,
+    fileFiltersName: string,
+    fileFiltersExtensions: string[],
+    defoDir?: string,
+  ): Promise<string> => {
+    return await ipcRenderer.invoke(
+      'saveUint8ArrayFileData',
+      fileData,
+      fileName,
+      fileFiltersName,
+      fileFiltersExtensions,
+      defoDir,
+    )
   },
 })

@@ -17,6 +17,7 @@ import type { deleteDialogRefType } from 'src/components/accessories/deleteDialo
 import SelectDisplayHigherUpStatus from '@/components/accessories/SelectDisplayHigherUpStatus.vue'
 import SelectDisplayTatieFile from '@/components/accessories/SelectDisplayTatieFile.vue'
 import { DEFAULT_KYARA_TATIE_UUID } from '@/data/data'
+import DisplayTatiePicFile from '@/components/accessories/DisplayTatiePicFile.vue'
 const { yomAPI } = window
 
 const isOpenTatieFile = ref<boolean>(false)
@@ -173,7 +174,7 @@ const actset = (): string => {
   const setAns = props.dateList[props.selectKyara].tatie.tatieUUID.active
     ? 'hover:bg-blue-600 hover:text-gray-200'
     : 'text-gray-600'
-  return 'h-full w-4/5 truncate border border-gray-800 bg-blue-300 px-1' + ' ' + setAns
+  return 'h-full truncate border border-gray-800 bg-blue-300 px-1' + ' ' + setAns
 }
 
 watch(
@@ -187,7 +188,6 @@ watch(
 <template>
   <div class="flex border-b-[1px] border-gray-400 py-2">
     <div class="mr-2 flex w-full justify-between">
-      <div :title="titleName">{{ editName }}</div>
       <!-- 
           ここの設定を使用する場合に入力できる。
           上位設定を使用する場合は表示のみ。
@@ -196,10 +196,18 @@ watch(
         <button
           :class="actset()"
           @click="setIsOpenTatieFile"
-          :title="useTatieName()"
+          :title="'立ち絵: ' + useTatieName()"
           :disabled="!dateList[selectKyara].tatie.tatieUUID.active"
         >
-          {{ useTatieName() }}
+          <DisplayTatiePicFile
+            :selectTatieFile="
+              dateList[selectKyara].tatie.tatieUUID.active
+                ? dateList[selectKyara].tatie.tatieUUID.val
+                : dateList[higherUpEditKyara].tatie.tatieUUID.val
+            "
+            imgClass="h-16"
+            personOffClass="h-12 w-12"
+          />
         </button>
         <div class="relative" v-if="isOpenTatieFile">
           <SelectDisplayTatieFile
@@ -217,16 +225,18 @@ watch(
         </div>
       </div>
     </div>
-    <SelectDisplayHigherUpStatus
-      :settype="props.settype"
-      :actStatus="dateList[selectKyara].tatie[tatieSetting].active"
-      :higherUpType="dateList[higherUpEditKyara].dataType"
-      :onClick="
-        () =>
-          (props.dateList[props.selectKyara].tatie[props.tatieSetting].active =
-            !props.dateList[props.selectKyara].tatie[props.tatieSetting].active)
-      "
-    />
+    <div class="flex flex-col justify-center">
+      <SelectDisplayHigherUpStatus
+        :settype="props.settype"
+        :actStatus="dateList[selectKyara].tatie[tatieSetting].active"
+        :higherUpType="dateList[higherUpEditKyara].dataType"
+        :onClick="
+          () =>
+            (props.dateList[props.selectKyara].tatie[props.tatieSetting].active =
+              !props.dateList[props.selectKyara].tatie[props.tatieSetting].active)
+        "
+      />
+    </div>
   </div>
   <deleteDialogUUID
     :deleteTitle="deleteDialogRef.deleteTitle"

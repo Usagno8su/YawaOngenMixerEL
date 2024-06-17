@@ -17,6 +17,9 @@ import {
   loadFilePath,
   initializationKyaraProfileList,
   CopyFileDataList,
+  loadKyraPicFileData,
+  enterEncodePicFileData,
+  saveUint8ArrayFileData,
 } from './utils/analysisMain'
 import { createDefoInfoDateList } from './utils/analysisGeneral'
 import { outSettingType, profileKyaraExportType, globalSettingExportType } from './type/data-type'
@@ -287,13 +290,16 @@ ipcMain.on(
 
 // 立ち絵の読み込みを行う
 // fileNameに拡張子は入れないこと
-ipcMain.on('loadKyraPicFileData', async (event: IpcMainEvent, fileName: string) => {
-  try {
-    const buffer = await fs.promises.readFile(path.join(kyaraTatieDirPathGLB, fileName + '.png'))
-    event.returnValue = new Uint8Array(buffer)
-  } catch (e) {
-    event.returnValue = null
-  }
+ipcMain.on('loadKyraPicFileData', async (event: IpcMainEvent, fileName: string, sizeHeight?: number) => {
+  // 全体設定を読み込んで、コマンドのパス情報を取得する。
+  const globalSettingData: globalSettingExportType = JSON.parse(readJsonData(globalSettingFilePathGLB))
+
+  event.returnValue = await loadKyraPicFileData(
+    kyaraTatieDirPathGLB,
+    fileName,
+    globalSettingData.globalSetting.exeFilePath.convert,
+    sizeHeight,
+  )
 })
 
 // 立ち絵を読み込んで指定のディレクトリに保存する
@@ -421,3 +427,26 @@ ipcMain.handle('enterEncodeVideoData', async (event: IpcMainEvent, dirPathName: 
 
   return await enterEncodeVideoData(dirPathName, outJsonData, kyaraTatieDirPathGLB, globalSettingData.globalSetting)
 })
+
+// 画像エンコードのみを実施し、作成した画像ファイルとファイルパスを返す。
+ipcMain.on('loadEncodePicFileData', async (event: IpcMainEvent, outJsonData: string) => {
+  // 全体設定を読み込んで、コマンドのパス情報を取得する。
+  const globalSettingData: globalSettingExportType = JSON.parse(readJsonData(globalSettingFilePathGLB))
+
+  event.returnValue = await enterEncodePicFileData(outJsonData, kyaraTatieDirPathGLB, globalSettingData.globalSetting)
+})
+
+// 画像エンコードで作成したファイルを保存する処理を実行
+ipcMain.handle(
+  'saveUint8ArrayFileData',
+  async (
+    event,
+    fileData: Uint8Array,
+    fileName: string,
+    fileFiltersName: string,
+    fileFiltersExtensions: string[],
+    defoDir?: string,
+  ) => {
+    return saveUint8ArrayFileData(fileData, fileName, fileFiltersName, fileFiltersExtensions, defoDir)
+  },
+)
