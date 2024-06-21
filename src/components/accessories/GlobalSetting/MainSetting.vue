@@ -54,12 +54,6 @@ watch(
           <input class="w-full" v-model="globalSettingList.exeFilePath.ffmpeg" @keydown.enter="saveEnter()" />
         </div>
       </div>
-      <div>
-        <div class="mt-3 text-xl font-medium">ImageMagicのパス</div>
-        <div class="mx-2 mt-1 border border-gray-600 p-1">
-          <input class="w-full" v-model="globalSettingList.exeFilePath.convert" @keydown.enter="saveEnter()" />
-        </div>
-      </div>
     </div>
   </div>
 </template>
