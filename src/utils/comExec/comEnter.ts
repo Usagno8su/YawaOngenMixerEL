@@ -73,11 +73,7 @@ export const createImgFile = async (
   const picPath = await makePicPath()
 
   // 立ち絵画像の縮小
-  const tempTatiePic = await resizeTatiePath(
-    picFileName,
-    picPath.inputTatie,
-    comList.tatieResizeCom,
-  )
+  const tempTatiePic = await resizeTatiePath(picFileName, picPath.inputTatie, comList.tatieResizeCom)
   // 立ち絵ファイルがデフォルト（立ち絵なし）ではないときに、nullだったら処理失敗
   if (picFileName !== DEFAULT_KYARA_TATIE_UUID && tempTatiePic === null) {
     return 'Error: '
@@ -216,11 +212,10 @@ export const enterEncodeSmallTatie = async (
   sizeHeight: number,
 ): Promise<Buffer> => {
   // 立ち絵画像の縮小
-  const tempTatiePic = await resizeTatiePath(
-    picFileName,
-    path.join(kyaraTatieDirPath, picFileName + '.png'),
-    { tatieW: null, tatieH: sizeHeight },
-  )
+  const tempTatiePic = await resizeTatiePath(picFileName, path.join(kyaraTatieDirPath, picFileName + '.png'), {
+    tatieW: null,
+    tatieH: sizeHeight,
+  })
   if (tempTatiePic === null) {
     return null
   }
