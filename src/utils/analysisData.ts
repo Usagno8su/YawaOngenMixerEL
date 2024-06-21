@@ -78,32 +78,6 @@ export const checkSameValues = (dateList: outSettingType[], item: outSettingType
   }
 }
 
-// tatieSide の値によって、DisplaySettingSampleView.vueの表示サンプルを移動させる Tailwind CSS を出力する。
-export const SelectTatieSideCSS = (tatieSide: tatieSideType): string => {
-  switch (tatieSide) {
-    case 'NorthWest': // 上段左
-      return 'flex items-start justify-start'
-    case 'North': // 上段中央
-      return 'flex items-start justify-center'
-    case 'NorthEast': // 上段右
-      return 'flex items-start justify-end'
-    case 'West': // 中段左
-      return 'flex items-center justify-start'
-    case 'Center': // 中段中央
-      return 'flex items-center justify-center'
-    case 'East': // 中段右
-      return 'flex items-center justify-end'
-    case 'SouthWest': // 下段左
-      return 'flex items-end justify-start'
-    case 'South': // 下段中央
-      return 'flex items-end justify-center'
-    case 'SouthEast': // 下段右
-      return 'flex items-end justify-end'
-    default:
-      return ''
-  }
-}
-
 // editKyaraSelectの上位設定が存在するか確認するために、キャラ設定のタイプによって
 // 同じ名前やスタイルの設定が上位dataTypeであるか、確認する。
 export const ansFindIndex = (kyaraType: 'kyast' | 'kyara', dateList: outSettingType[], selectKyara: number): number => {
