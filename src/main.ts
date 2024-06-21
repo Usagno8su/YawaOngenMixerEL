@@ -291,15 +291,7 @@ ipcMain.on(
 // 立ち絵の読み込みを行う
 // fileNameに拡張子は入れないこと
 ipcMain.on('loadKyraPicFileData', async (event: IpcMainEvent, fileName: string, sizeHeight?: number) => {
-  // 全体設定を読み込んで、コマンドのパス情報を取得する。
-  const globalSettingData: globalSettingExportType = JSON.parse(readJsonData(globalSettingFilePathGLB))
-
-  event.returnValue = await loadKyraPicFileData(
-    kyaraTatieDirPathGLB,
-    fileName,
-    globalSettingData.globalSetting.exeFilePath.convert,
-    sizeHeight,
-  )
+  event.returnValue = await loadKyraPicFileData(kyaraTatieDirPathGLB, fileName, sizeHeight)
 })
 
 // 立ち絵を読み込んで指定のディレクトリに保存する
@@ -430,10 +422,7 @@ ipcMain.handle('enterEncodeVideoData', async (event: IpcMainEvent, dirPathName: 
 
 // 画像エンコードのみを実施し、作成した画像ファイルとファイルパスを返す。
 ipcMain.on('loadEncodePicFileData', async (event: IpcMainEvent, outJsonData: string) => {
-  // 全体設定を読み込んで、コマンドのパス情報を取得する。
-  const globalSettingData: globalSettingExportType = JSON.parse(readJsonData(globalSettingFilePathGLB))
-
-  event.returnValue = await enterEncodePicFileData(outJsonData, kyaraTatieDirPathGLB, globalSettingData.globalSetting)
+  event.returnValue = await enterEncodePicFileData(outJsonData, kyaraTatieDirPathGLB)
 })
 
 // 画像エンコードで作成したファイルを保存する処理を実行
