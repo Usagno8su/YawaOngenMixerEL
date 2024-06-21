@@ -6,21 +6,13 @@ const props = defineProps<{
 import { ref, watch } from 'vue'
 import { globalSettingType } from '@/type/data-type'
 import { getGlobalSetting, writeGlobalSetting } from '@/utils/analysisData'
+import { MakeClassString } from '@/utils/analysisGeneral'
 
 // 全体設定を読み込み
 const globalSettingList = ref<globalSettingType>(getGlobalSetting())
 
 // 設定を未保存かどうか
 const seveStatus = ref<boolean>(false)
-
-// 設定編集をしたかによってボタンの色を変更する
-const classSaveButton = (): string => {
-  return (
-    'rounded-lg border border-black px-2 py-1' +
-    ' ' +
-    (seveStatus.value === true ? 'bg-red-500 hover:bg-yellow-500 hover:text-gray-900' : 'text-gray-500 bg-gray-200')
-  )
-}
 
 // 設定を保存する
 const saveEnter = (): void => {
@@ -42,7 +34,16 @@ watch(
   <div :class="classString">
     <div class="flex items-center justify-between">
       <div class="mb-2 ml-2 text-lg font-bold">基本設定</div>
-      <button :class="classSaveButton()" @click="saveEnter()" :disabled="!seveStatus">
+      <button
+        :class="
+          MakeClassString(
+            'rounded-lg border border-black px-2 py-1',
+            seveStatus === true ? 'bg-red-500 hover:bg-yellow-500 hover:text-gray-900' : 'bg-gray-200 text-gray-500',
+          )
+        "
+        @click="saveEnter()"
+        :disabled="!seveStatus"
+      >
         {{ seveStatus === true ? '設定保存' : '保存済み' }}
       </button>
     </div>
