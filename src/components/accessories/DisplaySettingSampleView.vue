@@ -5,13 +5,10 @@ const props = defineProps<{
   selectKyara: number
   infoData: infoSettingType
 }>()
-import type { outSettingType, tatieSideType, infoSettingType } from '@/type/data-type'
-import { SelectTatieSideCSS } from '@/utils/analysisData'
+import type { outSettingType, infoSettingType } from '@/type/data-type'
 import { SelectTatieIndexHigherUpData } from '@/utils/analysisData'
 import { watch, ref } from 'vue'
-import DisplayTatiePicFile from '@/components/accessories/DisplayTatiePicFile.vue'
 import DisplayMoviePicFile from '@/components/accessories/DisplayMoviePicFile.vue'
-import { MakeClassString } from '@/utils/analysisGeneral'
 
 const onAutoImg = ref<boolean>(false)
 
