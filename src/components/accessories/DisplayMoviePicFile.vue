@@ -9,7 +9,7 @@ const props = defineProps<{
 // 立ち絵画像のみ変換を行って表示する
 
 import type { outSettingType, infoSettingType } from '@/type/data-type'
-import { ref } from 'vue'
+import { ref, onUnmounted } from 'vue'
 import { enterEncodeTatiePicFile, enterSaveUint8ArrayFileData } from '@/utils/analysisFile'
 import { DEFAULT_KYARA_TATIE_UUID } from '@/data/data'
 import { createVoiceFileEncodeSetting } from '@/utils/analysisData'
@@ -62,17 +62,22 @@ const saveImg = async () => {
 }
 
 // 立ち絵の設定が変わったら表示を変更する
-const chkkan = ref<string>()
-setInterval(() => {
+const checkConf = ref<string>()
+const onEncodeTatie = setInterval(() => {
   // 比較のために設定内容をJSON形式に変換
   const ans = JSON.stringify(props.dateList[props.index].tatie, undefined, 2)
 
   // 比較して前回の内容と異なっていれば立ち絵画像の表示を更新する。
-  if (chkkan.value !== ans) {
+  if (checkConf.value !== ans) {
     getKyaraImg(props.selectTatieFile)
-    chkkan.value = ans
+    checkConf.value = ans
   }
 }, 2000)
+
+// コンポーネントが表示されなくなったらsetIntervalを停止
+onUnmounted(() => {
+  clearInterval(onEncodeTatie)
+})
 </script>
 
 <template>
@@ -87,6 +92,6 @@ setInterval(() => {
     v-else-if="selectTatieFile === DEFAULT_KYARA_TATIE_UUID"
     :class="MakeClassString('flex items-center justify-center bg-sky-100', imgClass)"
   >
-    設定立ち絵なし
+    未選択です
   </div>
 </template>
