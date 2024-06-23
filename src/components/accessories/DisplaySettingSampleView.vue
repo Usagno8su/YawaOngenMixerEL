@@ -14,9 +14,6 @@ import { watch, ref } from 'vue'
 import DisplayMoviePicFile from '@/components/accessories/DisplayMoviePicFile.vue'
 import { DEFAULT_KYARA_TATIE_UUID } from '@/data/data'
 
-// 立ち絵画像の加工を、表示切り替えをしたら自動で行うか指定
-const onAutoImg = ref<boolean>(false)
-
 //// どの設定データが採用されているか確認する。
 // 立ち絵画像のUUID
 const selectTatiePicFile = (): string => {
@@ -62,15 +59,7 @@ watch(
       :index="selectKyara"
       :infoData="infoData"
       imgClass="w-full h-full"
-      :autoGetImage="onAutoImg"
     />
-    <div
-      class="absolute left-1 top-1 flex rounded-xl border border-gray-400 opacity-30 hover:bg-sky-300 hover:bg-opacity-40 hover:opacity-100"
-      title="切り替えたときに、すぐ画像の加工を行います"
-    >
-      <input type="checkbox" class="ml-1" v-model="onAutoImg" />
-      <div class="mx-1">自動表示</div>
-    </div>
   </div>
   <div v-else class="flex h-36 w-full items-center justify-center border-[1px] border-gray-400 p-1">未選択です</div>
 </template>
