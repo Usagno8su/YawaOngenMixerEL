@@ -18,12 +18,18 @@ import { MakeClassString } from '@/utils/analysisGeneral'
 // 保存ダイアログ表示時のディレクトリを指定
 const defoDir = ref<string>(null)
 
+// getKyaraImgが二重起動するのを防止する。
+const runMakeImg = ref<boolean>(true)
+
 // 変換した立ち絵画像を取得
 const img = ref<string | ArrayBuffer>()
 const data = ref<{ buffer: Uint8Array; path: string }>({ buffer: undefined, path: '' })
 const getKyaraImg = async (sta: string) => {
-  // 立ち絵がある場合のみ実施
-  if (props.selectTatieFile !== DEFAULT_KYARA_TATIE_UUID) {
+  // 立ち絵があり、他の画像取得が動作していない場合のみ実施
+  if (props.selectTatieFile !== DEFAULT_KYARA_TATIE_UUID && runMakeImg) {
+    // 二重起動しないように値を変更
+    runMakeImg.value = false
+
     // 立ち絵画像を変換して取得
     data.value = await enterEncodeTatiePicFile(
       createVoiceFileEncodeSetting(props.dateList[props.index], props.index, props.dateList, props.infoData),
@@ -36,7 +42,9 @@ const getKyaraImg = async (sta: string) => {
     // 読み込み完了時の処理を設定
     reader.onload = () => {
       img.value = reader.result
-      onImg.value = true // 画像を表示
+
+      // 終わったので戻す
+      runMakeImg.value = true
     }
 
     reader.readAsDataURL(bobData)
