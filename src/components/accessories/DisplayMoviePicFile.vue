@@ -61,8 +61,10 @@ const saveImg = async () => {
   }
 }
 
+getKyaraImg(props.selectTatieFile)
+
 // 立ち絵の設定が変わったら表示を変更する
-const checkConf = ref<string>()
+const checkConf = ref<string>(JSON.stringify(props.dateList[props.index].tatie, undefined, 2))
 const onEncodeTatie = setInterval(() => {
   // 比較のために設定内容をJSON形式に変換
   const ans = JSON.stringify(props.dateList[props.index].tatie, undefined, 2)
