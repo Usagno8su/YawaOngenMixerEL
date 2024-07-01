@@ -68,6 +68,7 @@
   },
   "dependencies": {
     "electron-squirrel-startup": "^1.0.0",
+    "jimp": "^0.22.12",
     "vue": "^3.4.5"
   }
 }
