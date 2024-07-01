@@ -5,29 +5,31 @@ const props = defineProps<{
   index: number
   infoData: infoSettingType
   imgClass?: string
-  autoGetImage?: boolean
 }>()
 // 立ち絵画像のみ変換を行って表示する
 
 import type { outSettingType, infoSettingType } from '@/type/data-type'
-import { ref, watch } from 'vue'
+import { ref, onUnmounted } from 'vue'
 import { enterEncodeTatiePicFile, enterSaveUint8ArrayFileData } from '@/utils/analysisFile'
 import { DEFAULT_KYARA_TATIE_UUID } from '@/data/data'
 import { createVoiceFileEncodeSetting } from '@/utils/analysisData'
 import { MakeClassString } from '@/utils/analysisGeneral'
 
-// 立ち絵の表示を制御
-const onImg = ref<boolean>(props.autoGetImage ?? false)
-
 // 保存ダイアログ表示時のディレクトリを指定
 const defoDir = ref<string>(null)
+
+// getKyaraImgが二重起動するのを防止する。
+const runMakeImg = ref<boolean>(true)
 
 // 変換した立ち絵画像を取得
 const img = ref<string | ArrayBuffer>()
 const data = ref<{ buffer: Uint8Array; path: string }>({ buffer: undefined, path: '' })
 const getKyaraImg = async (sta: string) => {
-  // 立ち絵がある場合のみ実施
-  if (props.selectTatieFile !== DEFAULT_KYARA_TATIE_UUID) {
+  // 立ち絵があり、他の画像取得が動作していない場合のみ実施
+  if (props.selectTatieFile !== DEFAULT_KYARA_TATIE_UUID && runMakeImg) {
+    // 二重起動しないように値を変更
+    runMakeImg.value = false
+
     // 立ち絵画像を変換して取得
     data.value = await enterEncodeTatiePicFile(
       createVoiceFileEncodeSetting(props.dateList[props.index], props.index, props.dateList, props.infoData),
@@ -40,7 +42,9 @@ const getKyaraImg = async (sta: string) => {
     // 読み込み完了時の処理を設定
     reader.onload = () => {
       img.value = reader.result
-      onImg.value = true // 画像を表示
+
+      // 終わったので戻す
+      runMakeImg.value = true
     }
 
     reader.readAsDataURL(bobData)
@@ -57,33 +61,30 @@ const saveImg = async () => {
   }
 }
 
+getKyaraImg(props.selectTatieFile)
+
 // 立ち絵の設定が変わったら表示を変更する
-watch(
-  () => props.dateList[props.index].tatie,
-  () => {
-    // 自動表示がONの場合は変換を再実施
-    if (props.autoGetImage) {
-      getKyaraImg(props.selectTatieFile)
-    } else {
-      onImg.value = false // 非表示にする
-    }
-  },
-  { deep: true },
-)
-// 自動表示がONになったら変換をずぐに実施
-watch(
-  () => props.autoGetImage,
-  () => {
-    if (props.autoGetImage === true && props.selectTatieFile !== DEFAULT_KYARA_TATIE_UUID) {
-      getKyaraImg(props.selectTatieFile)
-    }
-  },
-)
+const checkConf = ref<string>(JSON.stringify(props.dateList[props.index].tatie, undefined, 2))
+const onEncodeTatie = setInterval(() => {
+  // 比較のために設定内容をJSON形式に変換
+  const ans = JSON.stringify(props.dateList[props.index].tatie, undefined, 2)
+
+  // 比較して前回の内容と異なっていれば立ち絵画像の表示を更新する。
+  if (checkConf.value !== ans) {
+    getKyaraImg(props.selectTatieFile)
+    checkConf.value = ans
+  }
+}, 2000)
+
+// コンポーネントが表示されなくなったらsetIntervalを停止
+onUnmounted(() => {
+  clearInterval(onEncodeTatie)
+})
 </script>
 
 <template>
   <img
-    v-if="selectTatieFile !== DEFAULT_KYARA_TATIE_UUID && typeof img === 'string' && onImg"
+    v-if="selectTatieFile !== DEFAULT_KYARA_TATIE_UUID && typeof img === 'string'"
     :src="img"
     :class="imgClass"
     @click="() => saveImg()"
@@ -93,14 +94,6 @@ watch(
     v-else-if="selectTatieFile === DEFAULT_KYARA_TATIE_UUID"
     :class="MakeClassString('flex items-center justify-center bg-sky-100', imgClass)"
   >
-    設定立ち絵なし
+    未選択です
   </div>
-  <button
-    v-else
-    :class="MakeClassString('rounded-lg bg-sky-100 hover:bg-sky-500 hover:text-gray-200', imgClass)"
-    @click="() => getKyaraImg(selectTatieFile)"
-    title="立ち絵画像から実際の変換を実施し、この画面に表示します。"
-  >
-    変換する場合はここをクリック
-  </button>
 </template>

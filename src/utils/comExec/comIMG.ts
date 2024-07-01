@@ -76,12 +76,9 @@ export const createComImg = async (fileSetting: outSettingType): Promise<createC
     // 高さについては上が0で下に行くほどプラスされる仕様のため、反転させている。
     cnvBackPicmakeCom: {
       gravity: fileSetting.tatie.tatieSide.val.toString(),
-      top: Number(
-        `${Math.floor((fileSetting.tatie.moviH.val / 100) * -fileSetting.tatie.tatiePhPs.val + tatiePsitionH[0])}`,
-      ),
-      left: Number(
-        `${Math.floor((fileSetting.tatie.moviW.val / 100) * fileSetting.tatie.tatiePwPs.val + tatiePsitionW[0])}`,
-      ),
+      top: Math.floor((fileSetting.tatie.moviH.val / 100) * -fileSetting.tatie.tatiePhPs.val + tatiePsitionH[0]),
+      left: Math.floor((fileSetting.tatie.moviW.val / 100) * fileSetting.tatie.tatiePwPs.val + tatiePsitionW[0]),
+      // 基本位置によって
       psition: {
         width: tatiePsitionW[1],
         height: tatiePsitionH[1],
