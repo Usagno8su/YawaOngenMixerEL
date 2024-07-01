@@ -9,6 +9,7 @@ import * as util from 'util'
 import { DEFAULT_KYARA_TATIE_UUID } from '../../data/data'
 const sharp = require('sharp') // eslint-disable-line
 import type { Metadata as SharpMetadata, Sharp, OutputInfo, CacheOptions } from 'sharp'
+import { pipeline } from 'stream/promises'
 
 const execFile = util.promisify(child_process.execFile)
 
@@ -43,11 +44,19 @@ export const resizeTatiePath = async (
   tatieResizeCom: { tatieW: number; tatieH: number },
 ): Promise<Buffer> => {
   if (picFileName !== DEFAULT_KYARA_TATIE_UUID) {
-    try {
-      return await sharp(inputTatie).resize(tatieResizeCom.tatieW, tatieResizeCom.tatieH).png().toBuffer()
-    } catch {
-      return null
-    }
+    const readStream = fs.createReadStream(inputTatie)
+    const sharpData = sharp().resize(tatieResizeCom.tatieW, tatieResizeCom.tatieH).png()
+
+    return await readStream
+      .on('error', (err) => {
+        console.log(err)
+      })
+      .pipe(sharpData, { end: true })
+      .toBuffer()
+      .then((data: Buffer) => {
+        readStream.close()
+        return data
+      })
   } else {
     return null
   }
@@ -63,6 +72,7 @@ export const createImgFile = async (
   tempDir: string,
 ): Promise<string> => {
   console.log(`変換開始-----------------------------aa-`)
+  sharp.cache({ memory: 100, files: 40, items: 200 })
 
   // 画像ファイルのパスを作成する
   const makePicPath = async (): Promise<PicPathType> => {
@@ -88,17 +98,6 @@ export const createImgFile = async (
   }
   console.log('動画の画面サイズの透明な画像を生成する')
   // 動画の画面サイズの透明な画像を生成する
-  const baseTempPic: Buffer = await sharp({
-    create: {
-      width: comList.baseTempPicCom.moviW,
-      height: comList.baseTempPicCom.moviH,
-      channels: 4,
-      background: { r: 0, g: 0, b: 0, alpha: 0 },
-    },
-  })
-    .png()
-    .toBuffer()
-
   console.log('動画の画面サイズの透明な画像を生成するok')
 
   // 画面サイズの透明画像と立ち絵の画像を合成する
@@ -162,43 +161,71 @@ export const createImgFile = async (
     }
     tempTatiePic = await FitTatie(tempTatiePic)
 
-    console.log('処理開始')
     tatieMetadata = await sharp(tempTatiePic)
       .metadata()
       .then((metadata: SharpMetadata) => {
         return metadata
       })
 
+    console.log('処理開始')
+
     // 透明な背景との合成を実行
     // 立ち絵のtopとleftの座標はi左上が基準となるため、
     // 基本位置に合わせて座標の数値を引いて、立ち絵中央を基準にしている。
-    await sharp(baseTempPic)
-      .composite([
-        {
-          input: tempTatiePic,
-          top:
-            top > 0
-              ? comList.cnvBackPicmakeCom.top -
-                (comList.cnvBackPicmakeCom.psition.height !== 0
-                  ? Math.floor(tatieMetadata.height / comList.cnvBackPicmakeCom.psition.height)
-                  : 0)
-              : 0,
-          left:
-            left > 0
-              ? comList.cnvBackPicmakeCom.left -
-                (comList.cnvBackPicmakeCom.psition.width !== 0
-                  ? Math.floor(tatieMetadata.width / comList.cnvBackPicmakeCom.psition.width)
-                  : 0)
-              : 0,
+    const writeStream = fs.createWriteStream(picPath.cnvBackPic + '.png', 'binary')
+    await pipeline(
+      sharp({
+        create: {
+          width: comList.baseTempPicCom.moviW,
+          height: comList.baseTempPicCom.moviH,
+          channels: 4,
+          background: { r: 0, g: 0, b: 0, alpha: 0 },
         },
-      ])
-      .toFile(picPath.cnvBackPic + '.png')
+      })
+        .png()
+        .composite([
+          {
+            input: tempTatiePic,
+            top:
+              top > 0
+                ? comList.cnvBackPicmakeCom.top -
+                  (comList.cnvBackPicmakeCom.psition.height !== 0
+                    ? Math.floor(tatieMetadata.height / comList.cnvBackPicmakeCom.psition.height)
+                    : 0)
+                : 0,
+            left:
+              left > 0
+                ? comList.cnvBackPicmakeCom.left -
+                  (comList.cnvBackPicmakeCom.psition.width !== 0
+                    ? Math.floor(tatieMetadata.width / comList.cnvBackPicmakeCom.psition.width)
+                    : 0)
+                : 0,
+          },
+        ]),
+      writeStream,
+      { end: true },
+    ).then(() => {
+      console.log('writeStream処理完了')
+      writeStream.close()
+    })
 
+    writeStream.on('end', () => {
+      console.log('閉じました')
+    })
     // 合成した画像のパスを返す。
     return picPath.cnvBackPic + '.png'
   } else {
     // 立ち絵がない場合は透明な画像をtempディレクトリに出力して、そのパスを返す。
-    await sharp(baseTempPic).toFile(picPath.baseTempPic)
+    await sharp({
+      create: {
+        width: comList.baseTempPicCom.moviW,
+        height: comList.baseTempPicCom.moviH,
+        channels: 4,
+        background: { r: 0, g: 0, b: 0, alpha: 0 },
+      },
+    })
+      .png()
+      .toFile(picPath.baseTempPic)
     return picPath.baseTempPic
   }
 }
