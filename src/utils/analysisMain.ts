@@ -524,7 +524,8 @@ export const loadKyraPicFileData = async (
     // 縮小した画像ファイルが欲しい場合
     if (sizeHeight !== undefined) {
       // 作成したファイルを返す
-      const buffer = await enterEncodeSmallTatie(kyaraTatieDirPath, picFileName, sizeHeight)
+      const path = await enterEncodeSmallTatie(kyaraTatieDirPath, picFileName, sizeHeight)
+      const buffer = await fs.promises.readFile(path)
       return new Uint8Array(buffer)
     } else {
       const buffer = await fs.promises.readFile(path.join(kyaraTatieDirPath, picFileName + '.png'))
