@@ -9,12 +9,14 @@ import * as util from 'util'
 import { DEFAULT_KYARA_TATIE_UUID } from '../../data/data'
 const sharp = require('sharp') // eslint-disable-line
 import type { Metadata as SharpMetadata, Sharp, OutputInfo, CacheOptions } from 'sharp'
+import { pipeline } from 'stream/promises'
 
 const execFile = util.promisify(child_process.execFile)
 
 type PicPathType = {
   inputTatie: string
   tempTatiePic: string
+  tempTatieTriPic: string
   baseTempPic: string
   cnvBackPic: string
 }
@@ -41,13 +43,14 @@ export const resizeTatiePath = async (
   inputTatie: string,
   tempTatiePic: string,
   tatieResizeCom: { tatieW: number; tatieH: number },
-): Promise<Buffer> => {
+): Promise<string> => {
   if (picFileName !== DEFAULT_KYARA_TATIE_UUID) {
-    try {
-      return await sharp(inputTatie).resize(tatieResizeCom.tatieW, tatieResizeCom.tatieH).png().toBuffer()
-    } catch {
-      return null
-    }
+    const readStream = fs.createReadStream(inputTatie)
+    const writeStream = fs.createWriteStream(tempTatiePic)
+    const sharpData = sharp().resize(tatieResizeCom.tatieW, tatieResizeCom.tatieH).png()
+
+    await pipeline(readStream, sharpData, writeStream)
+    return tempTatiePic
   } else {
     return null
   }
@@ -63,12 +66,14 @@ export const createImgFile = async (
   tempDir: string,
 ): Promise<string> => {
   console.log(`変換開始-----------------------------aa-`)
+  sharp.cache({ memory: 100, files: 40, items: 200 })
 
   // 画像ファイルのパスを作成する
   const makePicPath = async (): Promise<PicPathType> => {
     return {
       inputTatie: path.join(kyaraTatieDirPath, picFileName + '.png'), // 立ち絵のUUIDから立ち絵のパスを作る
       tempTatiePic: path.join(tempDir, 'pictemp.png'), // 立ち絵を縮小した立ち絵ファイル
+      tempTatieTriPic: path.join(tempDir, 'pictemp2.png'), // トリミングした立ち絵ファイル
       baseTempPic: path.join(tempDir, 'basetemp.png'), // 動画の画面サイズの透明な画像
       cnvBackPic: path.join(outDir, voiceFileName), // 画面に立ち絵を合成したファイルのパス
     }
@@ -76,7 +81,7 @@ export const createImgFile = async (
   const picPath = await makePicPath()
 
   // 立ち絵画像の縮小
-  let tempTatiePic = await resizeTatiePath(
+  const tempTatiePic = await resizeTatiePath(
     picFileName,
     picPath.inputTatie,
     picPath.tempTatiePic,
@@ -88,16 +93,23 @@ export const createImgFile = async (
   }
   console.log('動画の画面サイズの透明な画像を生成する')
   // 動画の画面サイズの透明な画像を生成する
-  const baseTempPic: Buffer = await sharp({
-    create: {
+  const readStreamBK = fs.createReadStream(
+    process.env.NODE_ENV === 'development'
+      ? path.join(path.resolve(), 'public', 'base.png')
+      : path.join(path.resolve(), 'resources', 'app', 'public', 'base.png'),
+  )
+  const writeStreamBK = fs.createWriteStream(picPath.baseTempPic)
+
+  const sharpDataResize = sharp()
+    .resize({
       width: comList.baseTempPicCom.moviW,
       height: comList.baseTempPicCom.moviH,
-      channels: 4,
+      fit: 'contain',
       background: { r: 0, g: 0, b: 0, alpha: 0 },
-    },
-  })
+    })
     .png()
-    .toBuffer()
+
+  await pipeline(readStreamBK, sharpDataResize, writeStreamBK)
 
   console.log('動画の画面サイズの透明な画像を生成するok')
 
@@ -144,8 +156,10 @@ export const createImgFile = async (
 
     // 立ち絵の縦横が動画の画面サイズより大きいと合成できない(sharpの仕様)ため、
     // 配置位置に合わせて立ち絵をトリミングする。
-    const FitTatie = async (tatie: Buffer): Promise<Buffer> => {
-      return await sharp(tatie)
+    const FitTatie = async (tatie: string): Promise<void> => {
+      const readStream = fs.createReadStream(tatie)
+      const writeStream = fs.createWriteStream(picPath.tempTatieTriPic)
+      const sharpData = sharp()
         .extract({
           left: left < 0 ? -left : 0,
           top: top < 0 ? -top : 0,
@@ -158,24 +172,32 @@ export const createImgFile = async (
               ? comList.baseTempPicCom.moviH
               : tatieMetadata.height + (top < 0 ? top : 0),
         })
-        .toBuffer()
-    }
-    tempTatiePic = await FitTatie(tempTatiePic)
+        .png()
 
-    console.log('処理開始')
+      await pipeline(readStream, sharpData, writeStream)
+    }
+    await FitTatie(tempTatiePic)
+
+    console.log('縦横を再取得')
+
     tatieMetadata = await sharp(tempTatiePic)
       .metadata()
       .then((metadata: SharpMetadata) => {
         return metadata
       })
 
+    console.log('処理開始')
+
     // 透明な背景との合成を実行
     // 立ち絵のtopとleftの座標はi左上が基準となるため、
     // 基本位置に合わせて座標の数値を引いて、立ち絵中央を基準にしている。
-    await sharp(baseTempPic)
-      .composite([
+    const readStream = fs.createReadStream(picPath.baseTempPic)
+    const writeStream = fs.createWriteStream(picPath.cnvBackPic + '.png', 'binary')
+    await pipeline(
+      readStream,
+      sharp().composite([
         {
-          input: tempTatiePic,
+          input: picPath.tempTatieTriPic,
           top:
             top > 0
               ? comList.cnvBackPicmakeCom.top -
@@ -191,14 +213,30 @@ export const createImgFile = async (
                   : 0)
               : 0,
         },
-      ])
-      .toFile(picPath.cnvBackPic + '.png')
+      ]),
+      writeStream,
+    ).then(() => {
+      console.log('writeStream処理完了')
+      writeStream.end()
+    })
 
+    writeStream.on('end', () => {
+      console.log('閉じました')
+    })
     // 合成した画像のパスを返す。
     return picPath.cnvBackPic + '.png'
   } else {
     // 立ち絵がない場合は透明な画像をtempディレクトリに出力して、そのパスを返す。
-    await sharp(baseTempPic).toFile(picPath.baseTempPic)
+    await sharp({
+      create: {
+        width: comList.baseTempPicCom.moviW,
+        height: comList.baseTempPicCom.moviH,
+        channels: 4,
+        background: { r: 0, g: 0, b: 0, alpha: 0 },
+      },
+    })
+      .png()
+      .toFile(picPath.baseTempPic)
     return picPath.baseTempPic
   }
 }
@@ -279,7 +317,7 @@ export const enterEncodeSmallTatie = async (
   kyaraTatieDirPath: string,
   picFileName: string,
   sizeHeight: number,
-): Promise<Buffer> => {
+): Promise<string> => {
   // 立ち絵画像の縮小
   const tempTatiePic = await resizeTatiePath(
     picFileName,
