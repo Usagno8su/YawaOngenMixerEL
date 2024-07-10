@@ -31,6 +31,7 @@ import { createComMovi } from './comExec/comMOVI'
 import { app, dialog } from 'electron'
 import path from 'path'
 import fs from 'fs'
+const sharp = require('sharp') // eslint-disable-line
 
 // 作業用の一時ファイルを設置するディレクトリを作成する。
 export const createTempDir = async (): Promise<string> => {
@@ -431,6 +432,21 @@ export const enterEncodeVideoData = async (
   return moviFilePath
 }
 
+export const ansBuffer = async (imgFilePath: string): Promise<Buffer> => {
+  const readStream = fs.createReadStream(imgFilePath)
+  const sharpData = sharp()
+  return await readStream
+    .on('error', (err) => {
+      console.log(err)
+    })
+    .pipe(sharpData)
+    .toBuffer()
+    .then((data: Buffer) => {
+      readStream.close()
+      return data
+    })
+}
+
 // 画像エンコードのみを実施し、作成した画像ファイルとファイルパスを返す。
 export const enterEncodePicFileData = async (
   outJsonData: string,
@@ -451,11 +467,14 @@ export const enterEncodePicFileData = async (
     kyaraTatieDirPath,
     outSettingData.infoSetting,
   )
+  console.log('作成完了')
+
+  const readStream = await ansBuffer(imgFilePath)
 
   // 作成したファイルを返す
-  const buffer = await fs.promises.readFile(imgFilePath)
+  // const buffer = await fs.promises.readFile(imgFilePath)
   return {
-    buffer: new Uint8Array(buffer),
+    buffer: new Uint8Array(readStream),
     path: imgFilePath,
   }
 }
