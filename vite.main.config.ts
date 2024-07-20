@@ -10,4 +10,11 @@ export default defineConfig({
     //  '/@/': path.join(__dirname, 'src'),
     //},
   },
+  build:{
+    rollupOptions:{
+      output: {
+        format: 'es'
+      }
+    }
+  }
 });
