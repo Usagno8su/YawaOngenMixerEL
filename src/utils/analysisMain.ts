@@ -28,9 +28,13 @@ import { createNewDateList } from './analysisData'
 import { createComImg } from './comExec/comIMG'
 import { createImgFile, createMoviFile, enterEncodeSmallTatie } from './comExec/comEnter'
 import { createComMovi } from './comExec/comMOVI'
-import { app, dialog } from 'electron'
+import { app, dialog, utilityProcess, MessageChannelMain } from 'electron'
 import path from 'path'
 import fs from 'fs'
+// import { fork } from 'child_process'
+// import { fileURLToPath } from 'node:url'
+// import conImgEnterFork from './comExec/conImgEnterFork'
+
 
 // 作業用の一時ファイルを設置するディレクトリを作成する。
 export const createTempDir = async (): Promise<string> => {
@@ -368,16 +372,62 @@ export const enterEncodeImageData = async (
   console.log('img ans ----------------------------------------')
   console.log(imgData)
 
+  const ans = await new Promise((resolve) => {
+    // 情報を変換
+    const outSettingData = JSON.stringify(
+      {
+        imgData: imgData,
+        fileName: settingList.fileName,
+        tatieUUID: settingList.tatie.tatieUUID.val,
+        kyaraTatieDirPath: kyaraTatieDirPath,
+        outPicDir: infoSetting.outPicDir,
+        tempDirPath: tempDirPath,
+      },
+      undefined,
+      2,
+    )
+
+    // 画像変換を行う子プロセスを作成する。
+
+    // const path = fileURLToPath(new URL('.', 'src/utils/comExec/conImgEnterFork.mjs'))
+
+    const { port1, port2 } = new MessageChannelMain()
+    const imgChild = utilityProcess.fork('/home/ubuntu/share-progdir/vue/YawaOngenMixerEL/src/utils/comExec/conImgEnterFork.ts', [], {stdio:'ignore', allowLoadingUnsignedLibraries:true})
+    console.log(`ans2 pid: ${imgChild.pid}`)
+    imgChild.postMessage({ message: 'hello' }, [port1])
+    // imgChild.stdout.on('data', (data) => {
+    //   console.log(`Received chunk ${data}`)
+    // })
+
+    port2.on('message', (e) => {
+      console.log(`Message from child: ${e.data}`)
+    })
+    port2.start()
+    port2.postMessage('hello')
+
+
+    imgChild.on('spawn', (message) => {
+      console.log(`ans2data2 spawn: ${message}`)
+    })
+    
+    imgChild.on('message', (message) => {
+      console.log(`ans2data2: ${message}`)
+      resolve(message)
+    })
+    imgChild.on('exit', (message) => {
+      console.log(`ans2data2 exit: ${message}`)
+      resolve(message)
+    })
+    console.log(`ans2data: `)
+  }).then((value: string) => {
+    console.log(`ans: ${value}`)
+    return value
+  })
+
   // sharpを実行
   // 作成したファイルのパスを返す
-  return await createImgFile(
-    imgData,
-    settingList.fileName,
-    settingList.tatie.tatieUUID.val,
-    kyaraTatieDirPath,
-    infoSetting.outPicDir,
-    tempDirPath,
-  )
+  // return ans
+  return '/home/ubuntu/share-progdir/sonota/out-test/001.png'
 }
 
 // 動画エンコードを実施
