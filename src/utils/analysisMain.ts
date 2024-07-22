@@ -149,7 +149,6 @@ export const outInfoData = (): infoSettingType => {
 
 // 初期の全体設定を作成する。
 // これを元にjsonファイルを出力する
-// ImageMagicは必要なくなっているが、変更があるかもしれないので残しておく。
 export const initializationGlobalSetting = (): globalSettingExportType => {
   // バージョン番号を取得
   const softVersion = outSoftVersion()
@@ -360,17 +359,19 @@ export const makeUUID = (): string => {
 export const enterEncodeImageData = async (
   settingList: outSettingType,
   tempDirPath: string,
+  convertPath: string,
   kyaraTatieDirPath: string,
   infoSetting: infoSettingType,
 ): Promise<string> => {
-  // 画像の加工を行うsharp関連の値を作成する。
+  // ImageMagic用のコマンド作成
   const imgData = await createComImg(settingList)
   console.log('img ans ----------------------------------------')
   console.log(imgData)
 
-  // sharpを実行
+  // ImageMagicを実行
   // 作成したファイルのパスを返す
   return await createImgFile(
+    convertPath,
     imgData,
     settingList.fileName,
     settingList.tatie.tatieUUID.val,
@@ -399,6 +400,7 @@ export const enterEncodeVideoData = async (
   const imgFilePath = await enterEncodeImageData(
     outSettingData.settingList,
     tempDirPath,
+    globalSetting.exeFilePath.convert,
     kyaraTatieDirPath,
     outSettingData.infoSetting,
   )
@@ -435,6 +437,7 @@ export const enterEncodeVideoData = async (
 export const enterEncodePicFileData = async (
   outJsonData: string,
   kyaraTatieDirPath: string,
+  globalSetting: globalSettingType,
 ): Promise<{ buffer: Uint8Array; path: string }> => {
   // JSONデータを変換
   const outSettingData: encodeProfileSendReType = JSON.parse(outJsonData)
@@ -448,6 +451,7 @@ export const enterEncodePicFileData = async (
   const imgFilePath = await enterEncodeImageData(
     outSettingData.settingList,
     tempDirPath,
+    globalSetting.exeFilePath.convert,
     kyaraTatieDirPath,
     outSettingData.infoSetting,
   )
@@ -499,13 +503,24 @@ export const getPathStatus = (filePath: string): pathStatusType => {
 export const loadKyraPicFileData = async (
   kyaraTatieDirPath: string,
   picFileName: string,
+  convertPath?: string,
   sizeHeight?: number,
 ): Promise<Uint8Array> => {
   try {
     // 縮小した画像ファイルが欲しい場合
     if (sizeHeight !== undefined) {
+      // 縮小ファイルがない場合は作成する。
+      new Promise((resolve) => {
+        resolve(fs.existsSync(path.join(kyaraTatieDirPath, picFileName + '_' + sizeHeight.toString() + '.png')))
+      }).then(async (value: boolean) => {
+        if (!value) {
+          await enterEncodeSmallTatie(kyaraTatieDirPath, picFileName, convertPath, sizeHeight)
+        }
+      })
       // 作成したファイルを返す
-      const buffer = await enterEncodeSmallTatie(kyaraTatieDirPath, picFileName, sizeHeight)
+      const buffer = await fs.promises.readFile(
+        path.join(kyaraTatieDirPath, picFileName + '_' + sizeHeight.toString() + '.png'),
+      )
       return new Uint8Array(buffer)
     } else {
       const buffer = await fs.promises.readFile(path.join(kyaraTatieDirPath, picFileName + '.png'))
