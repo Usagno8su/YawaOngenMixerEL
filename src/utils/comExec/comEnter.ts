@@ -7,8 +7,6 @@ import fs from 'fs'
 import * as child_process from 'child_process'
 import * as util from 'util'
 import { DEFAULT_KYARA_TATIE_UUID } from '../../data/data'
-const sharp = require('sharp') // eslint-disable-line
-import type { Metadata as SharpMetadata, Sharp, OutputInfo, CacheOptions } from 'sharp'
 
 const execFile = util.promisify(child_process.execFile)
 
@@ -38,23 +36,33 @@ export const LoadFFmpegVersion = async (ffmpegPath: string): Promise<string[]> =
 // UUIDが DEFAULT_KYARA_TATIE_UUID なら存在しないので、処理を実行しない
 export const resizeTatiePath = async (
   picFileName: string,
+  convertPath: string,
   inputTatie: string,
   tempTatiePic: string,
-  tatieResizeCom: { tatieW: number; tatieH: number },
-): Promise<Buffer> => {
+  tatieResizeCom: string[],
+): Promise<{
+  stdout: string
+  stderr: string
+}> => {
   if (picFileName !== DEFAULT_KYARA_TATIE_UUID) {
-    try {
-      return await sharp(inputTatie).resize(tatieResizeCom.tatieW, tatieResizeCom.tatieH).png().toBuffer()
-    } catch {
-      return null
-    }
+    return await execFile(convertPath, [inputTatie].concat(tatieResizeCom, [tempTatiePic]))
+      .then((value) => {
+        return value
+      })
+      .catch((e) => {
+        return e
+      })
   } else {
-    return null
+    return {
+      stdout: '',
+      stderr: '',
+    }
   }
 }
 
 // 画像作成コマンドを実行して、作成された画像ファイルの絶対パスを返す。
 export const createImgFile = async (
+  convertPath: string,
   comList: createComImgType,
   voiceFileName: string,
   picFileName: string,
@@ -76,129 +84,52 @@ export const createImgFile = async (
   const picPath = await makePicPath()
 
   // 立ち絵画像の縮小
-  let tempTatiePic = await resizeTatiePath(
+  const tempTatiePic = await resizeTatiePath(
     picFileName,
+    convertPath,
     picPath.inputTatie,
     picPath.tempTatiePic,
     comList.tatieResizeCom,
   )
-  // 立ち絵ファイルがデフォルト（立ち絵なし）ではないときに、nullだったら処理失敗
-  if (picFileName !== DEFAULT_KYARA_TATIE_UUID && tempTatiePic === null) {
-    return 'Error: '
+  if (tempTatiePic.stderr !== '') {
+    return 'Error: ' + tempTatiePic.stderr.toString()
   }
   console.log('動画の画面サイズの透明な画像を生成する')
   // 動画の画面サイズの透明な画像を生成する
-  const baseTempPic: Buffer = await sharp({
-    create: {
-      width: comList.baseTempPicCom.moviW,
-      height: comList.baseTempPicCom.moviH,
-      channels: 4,
-      background: { r: 0, g: 0, b: 0, alpha: 0 },
-    },
-  })
-    .png()
-    .toBuffer()
+  const baseTempPic = await execFile(convertPath, comList.baseTempPicCom.concat([picPath.baseTempPic]))
+    .then((value) => {
+      return value
+    })
+    .catch((e) => {
+      return e
+    })
+  if (baseTempPic.stderr !== '') {
+    return 'Error: ' + baseTempPic.stderr.toString()
+  }
 
   console.log('動画の画面サイズの透明な画像を生成するok')
 
   // 画面サイズの透明画像と立ち絵の画像を合成する
   // UUIDが DEFAULT_KYARA_TATIE_UUID なら存在しないので、画面サイズの透明画像のパスを返す
   if (picFileName !== DEFAULT_KYARA_TATIE_UUID) {
-    // 縮小した立ち絵の幅と高さを取得
-    let tatieMetadata: SharpMetadata = await sharp(tempTatiePic)
-      .metadata()
-      .then((metadata: SharpMetadata) => {
-        return metadata
+    const cnvBackPic = await execFile(
+      convertPath,
+      [picPath.baseTempPic, picPath.tempTatiePic]
+        .concat(comList.cnvBackPicmakeCom)
+        .concat([picPath.cnvBackPic + '.png']),
+    )
+      .then((value) => {
+        return value
       })
-    console.log('縮小した立ち絵の幅と高さを取得')
-
-    const top =
-      comList.cnvBackPicmakeCom.top -
-      (comList.cnvBackPicmakeCom.psition.height !== 0
-        ? Math.floor(tatieMetadata.height / comList.cnvBackPicmakeCom.psition.height)
-        : 0)
-    const left =
-      comList.cnvBackPicmakeCom.left -
-      (comList.cnvBackPicmakeCom.psition.width !== 0
-        ? Math.floor(tatieMetadata.width / comList.cnvBackPicmakeCom.psition.width)
-        : 0)
-    console.log(`top: ${top}`)
-    console.log(`left: ${left}`)
-
-    console.log(`left: ${left < 0 ? -left : 0}`)
-    console.log(`top: ${top < 0 ? -top : 0}`)
-    console.log(
-      `width: ${
-        tatieMetadata.width + (left < 0 ? left : 0) > comList.baseTempPicCom.moviW
-          ? comList.baseTempPicCom.moviW
-          : tatieMetadata.width + (left < 0 ? left : 0)
-      }`,
-    )
-    console.log(
-      `height: ${
-        tatieMetadata.height + (top < 0 ? top : 0) > comList.baseTempPicCom.moviH
-          ? comList.baseTempPicCom.moviH
-          : tatieMetadata.height + (top < 0 ? top : 0)
-      }`,
-    )
-
-    // 立ち絵の縦横が動画の画面サイズより大きいと合成できない(sharpの仕様)ため、
-    // 配置位置に合わせて立ち絵をトリミングする。
-    const FitTatie = async (tatie: Buffer): Promise<Buffer> => {
-      return await sharp(tatie)
-        .extract({
-          left: left < 0 ? -left : 0,
-          top: top < 0 ? -top : 0,
-          width:
-            tatieMetadata.width + (left < 0 ? left : 0) > comList.baseTempPicCom.moviW
-              ? comList.baseTempPicCom.moviW
-              : tatieMetadata.width + (left < 0 ? left : 0),
-          height:
-            tatieMetadata.height + (top < 0 ? top : 0) > comList.baseTempPicCom.moviH
-              ? comList.baseTempPicCom.moviH
-              : tatieMetadata.height + (top < 0 ? top : 0),
-        })
-        .toBuffer()
+      .catch((e) => {
+        return e
+      })
+    if (cnvBackPic.stderr !== '') {
+      return 'Error: ' + cnvBackPic.stderr.toString()
     }
-    tempTatiePic = await FitTatie(tempTatiePic)
 
-    console.log('処理開始')
-    tatieMetadata = await sharp(tempTatiePic)
-      .metadata()
-      .then((metadata: SharpMetadata) => {
-        return metadata
-      })
-
-    // 透明な背景との合成を実行
-    // 立ち絵のtopとleftの座標はi左上が基準となるため、
-    // 基本位置に合わせて座標の数値を引いて、立ち絵中央を基準にしている。
-    await sharp(baseTempPic)
-      .composite([
-        {
-          input: tempTatiePic,
-          top:
-            top > 0
-              ? comList.cnvBackPicmakeCom.top -
-                (comList.cnvBackPicmakeCom.psition.height !== 0
-                  ? Math.floor(tatieMetadata.height / comList.cnvBackPicmakeCom.psition.height)
-                  : 0)
-              : 0,
-          left:
-            left > 0
-              ? comList.cnvBackPicmakeCom.left -
-                (comList.cnvBackPicmakeCom.psition.width !== 0
-                  ? Math.floor(tatieMetadata.width / comList.cnvBackPicmakeCom.psition.width)
-                  : 0)
-              : 0,
-        },
-      ])
-      .toFile(picPath.cnvBackPic + '.png')
-
-    // 合成した画像のパスを返す。
     return picPath.cnvBackPic + '.png'
   } else {
-    // 立ち絵がない場合は透明な画像をtempディレクトリに出力して、そのパスを返す。
-    await sharp(baseTempPic).toFile(picPath.baseTempPic)
     return picPath.baseTempPic
   }
 }
@@ -274,25 +205,23 @@ export const createMoviFile = async (
 }
 
 // sizeHeight で指定した高さの立ち絵画像を生成してそのデータを返す。
-// 失敗時にはnullを返す。
 export const enterEncodeSmallTatie = async (
   kyaraTatieDirPath: string,
   picFileName: string,
+  convertPath: string,
   sizeHeight: number,
-): Promise<Buffer> => {
+): Promise<string> => {
   // 立ち絵画像の縮小
   const tempTatiePic = await resizeTatiePath(
     picFileName,
+    convertPath,
     path.join(kyaraTatieDirPath, picFileName + '.png'),
     path.join(kyaraTatieDirPath, picFileName + '_' + sizeHeight.toString() + '.png'),
-    {
-      tatieW: null,
-      tatieH: sizeHeight,
-    },
+    ['-resize', `x` + sizeHeight.toString()],
   )
-  if (tempTatiePic === null) {
-    return null
+  if (tempTatiePic.stderr !== '') {
+    return 'Error: ' + tempTatiePic.stderr.toString()
   }
 
-  return tempTatiePic
+  return tempTatiePic.stdout
 }
