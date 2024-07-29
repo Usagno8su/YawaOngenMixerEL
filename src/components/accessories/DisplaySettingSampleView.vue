@@ -56,13 +56,7 @@ watch(
     class="relative h-36 w-full border-[1px] border-gray-400 p-1"
     v-if="onSampleView && setTatiePicFile !== DEFAULT_KYARA_TATIE_UUID"
   >
-    <DisplayMoviePicFile
-      :selectTatieFile="setTatiePicFile"
-      :dateList="dateList"
-      :index="selectKyara"
-      :infoData="infoData"
-      imgClass="w-full h-full"
-    />
+    <DisplayMoviePicFile :dateList="dateList" :index="selectKyara" :infoData="infoData" imgClass="w-full h-full" />
   </div>
   <div v-else class="flex h-36 w-full items-center justify-center border-[1px] border-gray-400 p-1">未選択です</div>
 </template>

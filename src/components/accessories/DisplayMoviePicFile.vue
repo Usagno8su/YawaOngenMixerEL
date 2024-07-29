@@ -1,6 +1,5 @@
 <script setup lang="ts">
 const props = defineProps<{
-  selectTatieFile: string
   dateList: outSettingType[]
   index: number
   infoData: infoSettingType
@@ -87,14 +86,14 @@ onUnmounted(() => {
 
 <template>
   <img
-    v-if="selectTatieFile !== DEFAULT_KYARA_TATIE_UUID && typeof img === 'string'"
+    v-if="profile.settingList.tatie.tatieUUID.val !== DEFAULT_KYARA_TATIE_UUID && typeof img === 'string'"
     :src="img"
     :class="imgClass"
     @click="() => saveImg()"
     title="クリックで変換画像を保存します。"
   />
   <div
-    v-else-if="selectTatieFile === DEFAULT_KYARA_TATIE_UUID"
+    v-else-if="profile.settingList.tatie.tatieUUID.val === DEFAULT_KYARA_TATIE_UUID"
     :class="MakeClassString('flex items-center justify-center bg-sky-100', imgClass)"
   >
     未選択です
