@@ -53,7 +53,7 @@ watch(
 
 <template>
   <div
-    class="relative h-36 w-full border-[1px] border-gray-400 p-1"
+    class="relative h-36 w-full border-[1px] border-gray-400"
     v-if="onSampleView && setTatiePicFile !== DEFAULT_KYARA_TATIE_UUID"
   >
     <DisplayMoviePicFile :dateList="dateList" :index="selectKyara" :infoData="infoData" imgClass="w-full h-full" />
