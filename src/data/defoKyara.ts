@@ -381,6 +381,11 @@ export const initializationSettingData: initializationSettingType[] = [
     subOrdercr: '#ffffff',
   },
   {
+    kyaraName: 'カキョウヨサリ',
+    subColor: '#7accff',
+    subOrdercr: '#ffffff',
+  },
+  {
     kyaraName: '咲ちゃん',
     subColor: '#a8a8a8',
     subOrdercr: '#ffffff',
