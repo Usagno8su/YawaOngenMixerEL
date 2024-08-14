@@ -84,7 +84,7 @@ export const initializationSettingData: initializationSettingType[] = [
     kyaraName: '後鬼',
     subColor: '#b0e0e6',
     subOrdercr: '#0000cd',
-    kyaraStyle: ['ぬいぐるみver.'],
+    kyaraStyle: ['ぬいぐるみver.', '人間（怒り）ver.', '鬼ver.'],
   },
   {
     kyaraName: 'No.7',
