@@ -59,10 +59,12 @@ export const analysisFileName = (
         const voiceID = nameData[1] !== undefined ? nameData[0] : fileName
 
         // nameDataが分割できずに要素が一つしかない場合はundefinedを入れる
-        const kyaraName = nameData[1] !== undefined ? nameData[1].split('（')[0] : undefined
+        const kyaraName = nameData[1] !== undefined ? nameData[1].split(/（|\(/)[0] : undefined
 
         // スタイル名を入れる。なければundefinedにする。
-        const kyaraStyle = list.includes('（') || list.includes('(') ? nameData[1].split(/（|\(|）|\)/)[1] : undefined
+        // スタイル名はカッコで囲われているので、それを削除する。
+        const tempStyle = nameData[1].slice(kyaraName.length)
+        const kyaraStyle = tempStyle !== undefined ? tempStyle.slice(1, -1) : undefined
 
         // ファイル名等が同じ個別設定データがある場合はそれを取り出す
         const fileSetting = inputData.value?.settingList.find(

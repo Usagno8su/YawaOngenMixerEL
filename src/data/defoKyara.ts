@@ -84,7 +84,7 @@ export const initializationSettingData: initializationSettingType[] = [
     kyaraName: '後鬼',
     subColor: '#b0e0e6',
     subOrdercr: '#0000cd',
-    kyaraStyle: ['ぬいぐるみver.'],
+    kyaraStyle: ['ぬいぐるみver.', '人間（怒り）ver.', '鬼ver.'],
   },
   {
     kyaraName: 'No.7',
@@ -317,6 +317,21 @@ export const initializationSettingData: initializationSettingType[] = [
     subOrdercr: '#edfff0',
   },
   {
+    kyaraName: '大江戸ちゃんこ',
+    subColor: '#674598',
+    subOrdercr: '#ffffff',
+  },
+  {
+    kyaraName: '水奈瀬コウ',
+    subColor: '#c38743',
+    subOrdercr: '#ffffff',
+  },
+  {
+    kyaraName: '水奈瀬リト',
+    subColor: '#595857',
+    subOrdercr: '#ffffff',
+  },
+  {
     kyaraName: '可不',
     subColor: '#e9dfe5',
     subOrdercr: '#0f0fff',
@@ -363,6 +378,11 @@ export const initializationSettingData: initializationSettingType[] = [
   {
     kyaraName: 'タンゲ コトエ',
     subColor: '#c20000',
+    subOrdercr: '#ffffff',
+  },
+  {
+    kyaraName: 'カキョウヨサリ',
+    subColor: '#7accff',
     subOrdercr: '#ffffff',
   },
   {
