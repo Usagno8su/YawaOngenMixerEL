@@ -356,12 +356,14 @@ export const makeUUID = (): string => {
 // 画像エンコードを実施します。
 // 実行後に作成した画像ファイルの絶対パスを返します。
 // エラーがあった場合は undefined を返します。
+// fileName が指定されていた場合は、画像ファイル名はそれにする。
 export const enterEncodeImageData = async (
   settingList: outSettingType,
   tempDirPath: string,
   convertPath: string,
   kyaraTatieDirPath: string,
-  infoSetting: infoSettingType,
+  outPicDir: string,
+  fileName?: string,
 ): Promise<string> => {
   // ImageMagic用のコマンド作成
   const imgData = await createComImg(settingList)
@@ -373,10 +375,10 @@ export const enterEncodeImageData = async (
   return await createImgFile(
     convertPath,
     imgData,
-    settingList.fileName,
+    fileName || settingList.fileName,
     settingList.tatie.tatieUUID.val,
     kyaraTatieDirPath,
-    infoSetting.outPicDir,
+    outPicDir,
     tempDirPath,
   )
 }
@@ -402,7 +404,7 @@ export const enterEncodeVideoData = async (
     tempDirPath,
     globalSetting.exeFilePath.convert,
     kyaraTatieDirPath,
-    outSettingData.infoSetting,
+    outSettingData.infoSetting.outPicDir,
   )
 
   console.log('main への返送結果: ' + imgFilePath)
@@ -453,7 +455,8 @@ export const enterEncodePicFileData = async (
     tempDirPath,
     globalSetting.exeFilePath.convert,
     kyaraTatieDirPath,
-    outSettingData.infoSetting,
+    tempDirPath,
+    'tenpMoveSizePic',
   )
 
   // 作成したファイルを返す
