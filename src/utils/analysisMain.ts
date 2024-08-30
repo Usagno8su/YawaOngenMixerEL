@@ -164,7 +164,10 @@ export const initializationGlobalSetting = (): globalSettingExportType => {
           process.platform === 'win32'
             ? path.join(app.getPath('home'), 'lib', 'ffmpeg', 'bin', 'ffmpeg.exe')
             : '/usr/bin/ffmpeg',
-        convert: process.platform === 'win32' ? 'magick' : '/usr/bin/convert',
+        convert:
+          process.platform === 'win32'
+            ? path.join(app.getPath('home'), 'lib', 'ImageMagick', 'magick.exe')
+            : '/usr/bin/convert',
       },
     },
   }
