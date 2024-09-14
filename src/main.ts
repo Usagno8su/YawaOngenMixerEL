@@ -98,8 +98,9 @@ const createWindow = () => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     width: 960,
-    height: 910,
+    height: 875,
     resizable: false, // ウィンドウサイズ変更不可
+    useContentSize: true,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
     },
