@@ -35,6 +35,7 @@ const defoTatieFileListName = 'tatiefile_db' // 立ち絵UUIDとファイル名�
 const kyaraProfileListNameGLB = 'kyaraProfileListDB' // キャラ設定プロファイルの名前とUUIDを記録したDBファイルの名前
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
+// eslint-disable-next-line
 if (require('electron-squirrel-startup')) {
   app.quit()
 }
