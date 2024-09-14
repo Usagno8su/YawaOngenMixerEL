@@ -89,7 +89,7 @@ watch(
               "
               :ref="selectProfileRef"
             >
-              <div class="flex w-5/6 items-start truncate pl-1">
+              <div class="flex w-48 items-start truncate pl-1">
                 {{ item.fileName }}
               </div>
               <div v-if="selectTatieFile === item.uuid" class="h-full" @click.stop="deleteKyaraPicFile(item.uuid)">

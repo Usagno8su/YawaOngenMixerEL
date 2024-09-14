@@ -176,9 +176,9 @@ watch(
           v-if="settype === item.dataType && isEditOpen !== item.uuid"
         >
           <!-- 個々の設定タイプに応じて表示 -->
-          <div v-if="item.dataType === 'kyara'" class="max-w-5/6 truncate" :title="item.name">{{ item.name }}</div>
+          <div v-if="item.dataType === 'kyara'" class="w-5/6 truncate" :title="item.name">{{ item.name }}</div>
           <div v-else-if="item.dataType === 'kyast'" class="flex w-5/6">
-            <div class="max-w-2/3 truncate" :title="item.name">{{ item.name }}</div>
+            <div class="max-w-2/3 min-w-24 truncate" :title="item.name">{{ item.name }}</div>
             <div class="truncate" :title="item.kyaraStyle">（{{ item.kyaraStyle }}）</div>
           </div>
           <div
