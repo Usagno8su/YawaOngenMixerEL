@@ -83,17 +83,23 @@ export const createImgFile = async (
   }
   const picPath = await makePicPath()
 
-  // 立ち絵画像の縮小
-  const tempTatiePic = await resizeTatiePath(
-    picFileName,
-    convertPath,
-    picPath.inputTatie,
-    picPath.tempTatiePic,
-    comList.tatieResizeCom,
-  )
-  if (tempTatiePic.stderr !== '') {
-    return 'Error: ' + tempTatiePic.stderr.toString()
+  // 立ち絵の存在チェック
+  const noTatieFile = !fs.existsSync(picPath.inputTatie)
+
+  // ファイルが存在すれば、立ち絵画像を縮小する。
+  if (!noTatieFile) {
+    const tempTatiePic = await resizeTatiePath(
+      picFileName,
+      convertPath,
+      picPath.inputTatie,
+      picPath.tempTatiePic,
+      comList.tatieResizeCom,
+    )
+    if (tempTatiePic.stderr !== '') {
+      return 'Error: ' + tempTatiePic.stderr.toString()
+    }
   }
+
   console.log('動画の画面サイズの透明な画像を生成する')
   // 動画の画面サイズの透明な画像を生成する
   const baseTempPic = await execFile(convertPath, comList.baseTempPicCom.concat([picPath.baseTempPic]))
@@ -110,8 +116,8 @@ export const createImgFile = async (
   console.log('動画の画面サイズの透明な画像を生成するok')
 
   // 画面サイズの透明画像と立ち絵の画像を合成する
-  // UUIDが DEFAULT_KYARA_TATIE_UUID なら存在しないので、画面サイズの透明画像のパスを返す
-  if (picFileName !== DEFAULT_KYARA_TATIE_UUID) {
+  // UUIDが DEFAULT_KYARA_TATIE_UUID かnoTatieFileがtrueなら存在しないので、画面サイズの透明画像のパスを返す
+  if (picFileName !== DEFAULT_KYARA_TATIE_UUID && !noTatieFile) {
     const cnvBackPic = await execFile(
       convertPath,
       [picPath.baseTempPic, picPath.tempTatiePic]
