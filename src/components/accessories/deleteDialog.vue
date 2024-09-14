@@ -14,7 +14,17 @@ export type deleteDialogRefType = {
   deleteMessage?: string
   deleteButtonTitle?: string
 }
-// tes
+
+// propsに応じて実行コマンドを選択
+const enterDelete = () => {
+  if (props.deleteKyara !== undefined) {
+    props.deleteKyara()
+  } else if (props.deleteProfile !== undefined) {
+    props.deleteProfile(props.uuid)
+  } else {
+    console.log('選択なし')
+  }
+}
 </script>
 
 <template>
@@ -31,7 +41,7 @@ export type deleteDialogRefType = {
         </div>
         <div
           class="ml-5 cursor-pointer rounded-sm border border-gray-400 bg-red-500 px-3 py-1 text-gray-200 hover:bg-red-600"
-          @click="deleteKyara ?? deleteProfile(uuid)"
+          @click="enterDelete"
         >
           {{ deleteButtonTitle || '削除' }}
         </div>
