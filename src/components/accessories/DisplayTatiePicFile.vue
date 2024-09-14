@@ -19,16 +19,22 @@ const getKyaraImg = async (sta: string) => {
   // 高さをピクセルで指定した場合はその高さで縮小された画像が取得される。
   const data = yomAPI.getKyraPicFileData(sta, props.sizeHeight)
 
-  let bobData = new Blob([data], { type: 'image/png' })
-  // ファイreaderを作成
-  let reader = new FileReader()
+  // データが取得（nullではない）できれば表示する
+  if (data !== null) {
+    let bobData = new Blob([data], { type: 'image/png' })
+    // ファイreaderを作成
+    let reader = new FileReader()
 
-  // 読み込み完了時の処理を設定
-  reader.onload = () => {
-    img.value = reader.result
+    // 読み込み完了時の処理を設定
+    reader.onload = () => {
+      img.value = reader.result
+    }
+
+    reader.readAsDataURL(bobData)
+  } else {
+    // 取得できなかったら非表示状態にする。
+    img.value = null
   }
-
-  reader.readAsDataURL(bobData)
 }
 if (props.selectTatieFile !== DEFAULT_KYARA_TATIE_UUID) {
   getKyaraImg(props.selectTatieFile)

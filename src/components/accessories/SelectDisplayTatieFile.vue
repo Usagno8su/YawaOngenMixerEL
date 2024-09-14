@@ -19,9 +19,22 @@ import DisplayTatiePicFile from '@/components/accessories/DisplayTatiePicFile.vu
 import { DEFAULT_KYARA_TATIE_UUID } from '@/data/data'
 import { MakeClassString } from '@/utils/analysisGeneral'
 
+// 立ち絵が存在するか確認する
+const noTatieFile = ref<boolean>(
+  props.viewFileListTatie.find((e) => e.uuid === props.selectTatieFile) === undefined ? true : false,
+)
+
 // 選択中立ち絵の名前とキャラ名を取得
-const fileName = ref<string>(props.viewFileListTatie.find((e) => e.uuid === props.selectTatieFile).fileName)
-const kyaraName = ref<string>(props.viewFileListTatie.find((e) => e.uuid === props.selectTatieFile).kyaraName)
+const fileName = ref<string>(
+  noTatieFile.value === false
+    ? props.viewFileListTatie.find((e) => e.uuid === props.selectTatieFile).fileName
+    : 'NoName',
+)
+const kyaraName = ref<string>(
+  noTatieFile.value === false
+    ? props.viewFileListTatie.find((e) => e.uuid === props.selectTatieFile).kyaraName
+    : 'NoName',
+)
 
 // リストの各項目にrefを設定する
 const profileRefs = ref<HTMLDivElement[]>([])
@@ -45,8 +58,16 @@ nextTick(() => {
 watch(
   () => props.selectTatieFile,
   () => {
-    fileName.value = props.viewFileListTatie.find((e) => e.uuid === props.selectTatieFile).fileName
-    kyaraName.value = props.viewFileListTatie.find((e) => e.uuid === props.selectTatieFile).kyaraName
+    noTatieFile.value =
+      props.viewFileListTatie.find((e) => e.uuid === props.selectTatieFile) === undefined ? true : false
+    fileName.value =
+      noTatieFile.value === false
+        ? props.viewFileListTatie.find((e) => e.uuid === props.selectTatieFile).fileName
+        : 'NoName'
+    kyaraName.value =
+      noTatieFile.value === false
+        ? props.viewFileListTatie.find((e) => e.uuid === props.selectTatieFile).kyaraName
+        : 'NoName'
   },
 )
 </script>
@@ -115,25 +136,30 @@ watch(
           <input
             class="w-2/3"
             v-model="fileName"
-            :disabled="selectTatieFile === DEFAULT_KYARA_TATIE_UUID"
+            :disabled="selectTatieFile === DEFAULT_KYARA_TATIE_UUID || noTatieFile"
             @keydown.enter="editKyaraPicFile(selectTatieFile, fileName, kyaraName, '', '')"
           />
-          <div @click.stop="editKyaraPicFile(selectTatieFile, fileName, kyaraName, '', '')">
+          <button
+            @click.stop="editKyaraPicFile(selectTatieFile, fileName, kyaraName, '', '')"
+            :disabled="selectTatieFile === DEFAULT_KYARA_TATIE_UUID || noTatieFile"
+          >
             <MaterialIcons icon="Save" titleString="変更を保存" />
-          </div>
+          </button>
         </div>
         <div class="flex items-center">
           <MaterialIcons icon="Person" titleString="キャラの名前（後日これを利用する機能を実装予定）" />
           <input
             class="w-2/3"
             v-model="kyaraName"
-            :disabled="selectTatieFile === DEFAULT_KYARA_TATIE_UUID"
+            :disabled="selectTatieFile === DEFAULT_KYARA_TATIE_UUID || noTatieFile"
             @keydown.enter="editKyaraPicFile(selectTatieFile, fileName, kyaraName, '', '')"
           />
         </div>
       </div>
       <div class="flex items-center justify-center border-t border-gray-700 p-2">
+        <div v-if="noTatieFile">立ち絵ファイルが<br />見つかりませんでした</div>
         <DisplayTatiePicFile
+          v-else
           :selectTatieFile="selectTatieFile"
           imgClass="max-h-80 max-w-60"
           personOffClass="h-12 w-12"

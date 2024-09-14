@@ -20,6 +20,9 @@ const defoDir = ref<string>(null)
 // getKyaraImgが二重起動するのを防止する。
 const runMakeImg = ref<boolean>(true)
 
+// 立ち絵の存在チェック
+const noTatieFile = ref<boolean>(false)
+
 // 変換した立ち絵画像を取得
 const img = ref<string | ArrayBuffer>()
 const data = ref<{ buffer: Uint8Array; path: string }>({ buffer: undefined, path: '' })
@@ -32,19 +35,25 @@ const getKyaraImg = async (profile: encodeProfileSendReType) => {
     // 立ち絵画像を変換して取得
     data.value = await enterEncodeTatiePicFile(profile)
 
-    let bobData = new Blob([data.value.buffer], { type: 'image/png' })
-    // ファイreaderを作成
-    let reader = new FileReader()
+    // データが取得（nullではない）できれば表示する
+    if (data.value.buffer !== null) {
+      let bobData = new Blob([data.value.buffer], { type: 'image/png' })
+      // ファイreaderを作成
+      let reader = new FileReader()
 
-    // 読み込み完了時の処理を設定
-    reader.onload = () => {
-      img.value = reader.result
+      // 読み込み完了時の処理を設定
+      reader.onload = () => {
+        img.value = reader.result
 
-      // 終わったので戻す
-      runMakeImg.value = true
+        // 終わったので戻す
+        runMakeImg.value = true
+      }
+
+      reader.readAsDataURL(bobData)
+    } else {
+      // 立ち絵が存在しない
+      noTatieFile.value = true
     }
-
-    reader.readAsDataURL(bobData)
   }
 }
 
@@ -98,4 +107,8 @@ onUnmounted(() => {
   >
     未選択です
   </div>
+  <div v-else-if="noTatieFile" :class="MakeClassString('flex items-center justify-center bg-sky-100', imgClass)">
+    立ち絵ファイルが<br />見つかりませんでした
+  </div>
+  <div v-else :class="MakeClassString('flex items-center justify-center bg-sky-100', imgClass)">表示に失敗しました</div>
 </template>
