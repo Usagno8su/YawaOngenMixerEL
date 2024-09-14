@@ -23,7 +23,7 @@ const changeDir = async (path: string, title: string, changeInfo: 'outDir' | 'ou
       <div class="mr-2 flex w-full justify-between">
         <div title="作成した動画ファイルの出力先" class="flex items-center">動画ファイル出力先</div>
         <button
-          class="w-2/3 truncate rounded-md border border-gray-600 bg-sky-300 px-2 py-1 hover:bg-sky-500"
+          class="w-96 truncate rounded-md border border-gray-600 bg-sky-300 px-2 py-1 hover:bg-sky-500"
           :title="infoData.outDir"
           @click="changeDir(infoData.outDir, '動画ファイル出力先', 'outDir')"
         >
@@ -38,7 +38,7 @@ const changeDir = async (path: string, title: string, changeInfo: 'outDir' | 'ou
           画像保存先
         </div>
         <button
-          class="w-2/3 truncate rounded-md border border-gray-600 bg-sky-300 px-2 py-1 hover:bg-sky-500"
+          class="w-96 truncate rounded-md border border-gray-600 bg-sky-300 px-2 py-1 hover:bg-sky-500"
           :title="infoData.outPicDir"
           @click="changeDir(infoData.outPicDir, '画像保存先', 'outPicDir')"
         >
@@ -50,7 +50,7 @@ const changeDir = async (path: string, title: string, changeInfo: 'outDir' | 'ou
     <div class="flex border-b-[1px] border-gray-400 py-2">
       <div class="mr-2 flex w-full justify-between">
         <div title="「-」を、音声ファイルの判定処理で区切り文字として使う">区切り文字「-」</div>
-        <div class="w-2/3">
+        <div class="w-96">
           <input type="checkbox" id="cutHR" v-model="infoData.cutHR" />
         </div>
       </div>
