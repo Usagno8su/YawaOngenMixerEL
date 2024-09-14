@@ -447,26 +447,40 @@ export const enterEncodePicFileData = async (
   // JSONデータを変換
   const outSettingData: encodeProfileSendReType = JSON.parse(outJsonData)
 
-  // 一時ファイルのディレクトリを作成してpathを取得
-  const tempDirPath = await createTempDir()
-
-  //// 画像ファイルの作成
-
-  // 画像ファイルの作成を実行
-  const imgFilePath = await enterEncodeImageData(
-    outSettingData.settingList,
-    tempDirPath,
-    globalSetting.exeFilePath.convert,
-    kyaraTatieDirPath,
-    tempDirPath,
-    'tenpMoveSizePic',
+  // 立ち絵の存在チェック
+  const noTatieFile = !fs.existsSync(
+    path.join(kyaraTatieDirPath, outSettingData.settingList.tatie.tatieUUID.val + '.png'),
   )
 
-  // 作成したファイルを返す
-  const buffer = await fs.promises.readFile(imgFilePath)
-  return {
-    buffer: new Uint8Array(buffer),
-    path: imgFilePath,
+  // 立ち絵が存在する場合はファイル変換を実行する。
+  if (!noTatieFile) {
+    // 一時ファイルのディレクトリを作成してpathを取得
+    const tempDirPath = await createTempDir()
+
+    //// 画像ファイルの作成
+
+    // 画像ファイルの作成を実行
+    const imgFilePath = await enterEncodeImageData(
+      outSettingData.settingList,
+      tempDirPath,
+      globalSetting.exeFilePath.convert,
+      kyaraTatieDirPath,
+      tempDirPath,
+      'tenpMoveSizePic',
+    )
+
+    // 作成したファイルを返す
+    const buffer = await fs.promises.readFile(imgFilePath)
+    return {
+      buffer: new Uint8Array(buffer),
+      path: imgFilePath,
+    }
+  } else {
+    // 立ち絵がない場合はnullのデータを返す。
+    return {
+      buffer: null,
+      path: 'NoFile',
+    }
   }
 }
 
@@ -512,7 +526,8 @@ export const loadKyraPicFileData = async (
   convertPath?: string,
   sizeHeight?: number,
 ): Promise<Uint8Array> => {
-  try {
+  // 立ち絵ファイルが存在するか確認する。
+  if (fs.existsSync(path.join(kyaraTatieDirPath, picFileName + '.png'))) {
     // 縮小した画像ファイルが欲しい場合
     if (sizeHeight !== undefined) {
       // 縮小ファイルがない場合は作成する。
@@ -532,7 +547,7 @@ export const loadKyraPicFileData = async (
       const buffer = await fs.promises.readFile(path.join(kyaraTatieDirPath, picFileName + '.png'))
       return new Uint8Array(buffer)
     }
-  } catch (e) {
+  } else {
     return null
   }
 }
