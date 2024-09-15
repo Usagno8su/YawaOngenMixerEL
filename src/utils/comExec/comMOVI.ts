@@ -35,6 +35,9 @@ export const createComMovi = async (
     // 字幕の設定を作成
     return resolve(createSubtitleCom(fileSetting, voiceFileDirPath, textDirPathName))
   }).then((value: string[]) => {
+    const subtitle =
+      value !== null ? ['-filter_complex'].concat(process.platform === 'win32' ? `"${value}"` : value) : []
+
     // エンコードを実施するコマンドを作成
     // このとき「-shortest」を入れないとエンコードが止まらない。
     // また「-fflags shortest -max_interleave_delta 100M」を入れないと動画の後ろに余計な無音時間が入る。
@@ -56,8 +59,7 @@ export const createComMovi = async (
         // バージョン番号により、コマンドを変更する。
         ffmpegVersion[0] === '4' ? '-shortest -fflags shortest -max_interleave_delta 20M'.split(' ') : '-shortest',
       )
-      .concat('-filter_complex')
-      .concat(process.platform === 'win32' ? `"${value}"` : value)
+      .concat(subtitle)
       .concat(['-r', fileSetting.tatie.fps.val.toString()])
   })
 
@@ -72,8 +74,12 @@ export const createSubtitleCom = async (
   voiceFileDirPath: string,
   textDirPathName: string,
 ): Promise<string[]> => {
-  // 字幕を入れるか判断する。
-  if (fileSetting.subtitle.subText.active) {
+  // 字幕テキストファイルの存在チェック
+  const noSubtitleFile = !fs.existsSync(path.join(voiceFileDirPath, fileSetting.fileName + '.txt'))
+
+  //// 字幕を入れるか判断する。
+  // 字幕がONになっており、字幕のテキストファイルが存在すれば実行する。
+  if (fileSetting.subtitle.subText.active && noSubtitleFile === false) {
     // 字幕のフチに色をつけるか判断する
     const subTextBord = fileSetting.subtitle.subTextBord.val
       ? `bordercolor=${fileSetting.subtitle.subOrdercr.val}:borderw=${fileSetting.subtitle.subBorderW.val}:`
@@ -107,7 +113,7 @@ export const createSubtitleCom = async (
 
     return [`format=rgba${subBg}${textComLine}`]
   } else {
-    return []
+    return null
   }
 }
 
