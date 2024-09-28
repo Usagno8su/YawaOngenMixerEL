@@ -1,7 +1,7 @@
 {
   "name": "yawaongenmixerel",
   "productName": "yawaongenmixerel",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Yawa Ongen Mixer EL",
   "main": ".vite/build/main.js",
   "scripts": {
