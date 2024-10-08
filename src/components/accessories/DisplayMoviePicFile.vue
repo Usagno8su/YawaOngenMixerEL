@@ -45,6 +45,9 @@ const getKyaraImg = async (profile: encodeProfileSendReType) => {
       reader.onload = () => {
         img.value = reader.result
 
+        // 立ち絵が存在するのでfalesにする
+        noTatieFile.value = false
+
         // 終わったので戻す
         runMakeImg.value = true
       }
@@ -95,7 +98,11 @@ onUnmounted(() => {
 
 <template>
   <img
-    v-if="profile.settingList.tatie.tatieUUID.val !== DEFAULT_KYARA_TATIE_UUID && typeof img === 'string'"
+    v-if="
+      profile.settingList.tatie.tatieUUID.val !== DEFAULT_KYARA_TATIE_UUID &&
+      typeof img === 'string' &&
+      noTatieFile !== true
+    "
     :src="img"
     :class="imgClass"
     @click="() => saveImg()"
