@@ -225,7 +225,7 @@ const askDeleteKyara = (): void => {
 // 指定されたフォルダの音声ファイルを表示する。
 const loadVoiceDirList = (): void => {
   // 音声ファイルのリストとそれらがあるディレクトリのパスを取得
-  const [ans, dir] = analysisFileName(['wav', 'ogg'], true, voiceLoadDirPath.value ?? undefined)
+  const [ans, dir] = analysisFileName(['wav', 'WAV', 'ogg', 'flac', 'opus'], true, voiceLoadDirPath.value ?? undefined)
 
   //
   if (ans.length !== 0) {
