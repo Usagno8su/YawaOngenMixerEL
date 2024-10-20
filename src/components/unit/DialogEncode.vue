@@ -38,7 +38,10 @@ watch(
     :closeDisable="closeDisable"
     :showCanselButton="false"
   >
-    <div class="h-36 w-96 overflow-y-scroll text-red-500" ref="areaRef">
+    <div
+      class="flex h-36 w-96 flex-col items-start overflow-x-auto overflow-y-scroll whitespace-nowrap text-red-500"
+      ref="areaRef"
+    >
       <div v-for="(value, index) in message" v-bind:key="index">
         {{ value }}
       </div>
