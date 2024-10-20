@@ -79,7 +79,7 @@ export const createSubtitleCom = async (
 
   //// 字幕を入れるか判断する。
   // 字幕がONになっており、字幕のテキストファイルが存在すれば実行する。
-  if (fileSetting.subtitle.subText.active && noSubtitleFile === false) {
+  if (fileSetting.subtitle.subText.val && noSubtitleFile === false) {
     // 字幕のフチに色をつけるか判断する
     const subTextBord = fileSetting.subtitle.subTextBord.val
       ? `bordercolor=${fileSetting.subtitle.subOrdercr.val}:borderw=${fileSetting.subtitle.subBorderW.val}:`
