@@ -4,6 +4,7 @@ declare global {
   }
 }
 export interface WGyomAPI {
+  saveStatus: (status: boolean) => void
   getHashData: (data: string) => number
   getUUID: () => string
   getSoftVersionData: () => {
