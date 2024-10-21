@@ -47,8 +47,10 @@ const actset = (stype: dataTextType): string => {
 }
 
 // 設定に編集があったときにはtrueを入れる
+// また、メインプロセスに編集があったことを通知する。
 const setChangeDataSettingSta = (sta: boolean): void => {
   seveStatus.value = sta
+  yomAPI.saveStatus(false)
 }
 
 // 設定編集をしたかによってボタンの色を変更する

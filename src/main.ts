@@ -34,6 +34,8 @@ const defoKyaraSettingJsonFileName = DEFAULT_KYARA_PROFILE_NAME // デフォル�
 const defoTatieFileListName = 'tatiefile_db' // 立ち絵UUIDとファイル名のリストファイルの名前
 const kyaraProfileListNameGLB = 'kyaraProfileListDB' // キャラ設定プロファイルの名前とUUIDを記録したDBファイルの名前
 
+let isSaveStatus: boolean = true // 設定の保存を行っていればtrue
+
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 // eslint-disable-next-line
 if (require('electron-squirrel-startup')) {
@@ -146,6 +148,27 @@ const createWindow = () => {
   if (process.env.NODE_ENV === 'development') {
     mainWindow.webContents.openDevTools({ mode: 'bottom' })
   }
+
+  // アプリ終了前の動作
+  mainWindow.on('close', async (event: Event) => {
+    console.log('終了設定close')
+
+    // 設定ファイルを保存していない場合はダイアログを表示し、
+    // 「キャンセル」を選択した場合は終了処理をキャンセルします。
+    if (isSaveStatus === false) {
+      const num: number = dialog.showMessageBoxSync({
+        type: 'warning',
+        buttons: ['キャンセル', '終了'],
+        defaultId: 0, // 既定で選択されているボタン
+        cancelId: 0, // ESC キーが押された場合、どのボタンを押したことにするのか指定。
+        title: '警告',
+        message: '設定を保存していません。終了しますか？',
+      })
+      if (num === 0) {
+        event.preventDefault() // 終了処理をキャンセル
+      }
+    }
+  })
 }
 
 // This method will be called when Electron has finished
@@ -180,6 +203,12 @@ app.on('activate', () => {
 ipcMain.on('hashData', async (event: IpcMainEvent, data: string) => {
   console.log('メインデータ: ' + data)
   event.returnValue = parseInt(createHash('sha256').update(data).digest('hex'), 16)
+})
+
+// 設定ファイルの保存を行ったかどうかを取得する。
+ipcMain.on('SaveStatus', async (event: IpcMainEvent, status: boolean) => {
+  console.log('設定を保存したか記録: ' + status)
+  isSaveStatus = status
 })
 
 // UUIDを作成して返す

@@ -289,7 +289,9 @@ const writeSettingData = (): void => {
 
   console.log('書き込み結果: ' + ans + ans2)
 
+  // 保存が終わったのでフラグを修正する。
   props.setChangeDataSettingSta(false)
+  yomAPI.saveStatus(true)
 }
 
 // writeProfileData を親コンポーネントから呼び出せるようにします

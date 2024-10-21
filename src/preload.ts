@@ -4,6 +4,9 @@
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron'
 
 contextBridge.exposeInMainWorld('yomAPI', {
+  saveStatus: (status: boolean) => {
+    ipcRenderer.send('SaveStatus', status)
+  },
   getHashData: (mesg: string) => {
     const ans = ipcRenderer.sendSync('hashData', mesg)
     console.log('preload ans: ' + ans.toString(16))
