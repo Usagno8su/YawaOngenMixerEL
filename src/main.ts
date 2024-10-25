@@ -20,6 +20,8 @@ import {
   loadKyraPicFileData,
   enterEncodePicFileData,
   saveUint8ArrayFileData,
+  loadSubTextString,
+  loadSubTextStringList,
 } from './utils/analysisMain'
 import { createDefoInfoDateList } from './utils/analysisGeneral'
 import { outSettingType, profileKyaraExportType, globalSettingExportType } from './type/data-type'
@@ -479,5 +481,18 @@ ipcMain.handle(
     defoDir?: string,
   ) => {
     return saveUint8ArrayFileData(fileData, fileName, fileFiltersName, fileFiltersExtensions, defoDir)
+  },
+)
+
+// 字幕テキストファイルの読み込みを行う
+ipcMain.on('loadSubTextString', async (event: IpcMainEvent, dir: string, fileName: string): Promise<void> => {
+  event.returnValue = loadSubTextString(dir, fileName)
+})
+
+// リストから字幕テキストファイルの読み込みを行う
+ipcMain.on(
+  'loadSubTextStringList',
+  async (event: IpcMainEvent, dir: string, itemList: { uuid: string; fileName: string }[]): Promise<void> => {
+    event.returnValue = await loadSubTextStringList(dir, itemList)
   },
 )

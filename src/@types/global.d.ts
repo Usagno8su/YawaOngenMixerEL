@@ -38,4 +38,9 @@ export interface WGyomAPI {
     fileFiltersExtensions: string[],
     defoDir?: string,
   ) => string
+  getSubTextString: (dir: string, fileName: string) => { val: string; active: boolean }
+  getSubTextStringList: (
+    dir: string,
+    itemList: { uuid: string; fileName: string }[],
+  ) => { [key: string]: { val: string; active: boolean } }
 }

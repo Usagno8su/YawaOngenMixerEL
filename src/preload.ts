@@ -91,4 +91,13 @@ contextBridge.exposeInMainWorld('yomAPI', {
       defoDir,
     )
   },
+  getSubTextString: (dir: string, fileName: string): { val: string; active: boolean } => {
+    return ipcRenderer.sendSync('loadSubTextString', dir, fileName)
+  },
+  getSubTextStringList: (
+    dir: string,
+    itemList: { uuid: string; fileName: string }[],
+  ): { [key: string]: { val: string; active: boolean } } => {
+    return ipcRenderer.sendSync('loadSubTextStringList', dir, itemList)
+  },
 })

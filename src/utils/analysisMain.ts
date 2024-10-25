@@ -590,3 +590,31 @@ export const saveUint8ArrayFileData = (
     return null
   }
 }
+
+// 指定された字幕テキストファイルの内容を取得して返す。
+// ファイルがない場合はfalseを返す。
+export const loadSubTextString = (dir: string, fileName: string): { val: string; active: boolean } => {
+  const fileFullPath = path.join(dir, fileName + '.txt')
+
+  // 字幕テキストファイルが存在するか確認して読み込む。
+  if (fs.existsSync(fileFullPath)) {
+    const ans = fs.readFileSync(fileFullPath, 'utf-8')
+    return { val: ans, active: true }
+  } else {
+    return { val: null, active: false }
+  }
+}
+
+// 指定されたUUIDとファイル名のリストを調べて、同一ファイル名の字幕テキストファイルの内容を取得して返す。
+// 返すときはUUIDをキーとした連想配列にする。
+// ファイルがない場合はfalseを返す。
+export const loadSubTextStringList = async (
+  dir: string,
+  itemList: { uuid: string; fileName: string }[],
+): Promise<{ [key: string]: { val: string; active: boolean } }> => {
+  const subList: { [key: string]: { val: string; active: boolean } } = {}
+  for await (const item of itemList) {
+    subList[item.uuid] = loadSubTextString(dir, item.fileName)
+  }
+  return subList
+}
