@@ -103,6 +103,9 @@ const isEncodeOpen = ref<boolean>(false)
 // エンコード結果の表示を行う
 const encodeAns = ref<string>('')
 
+// 音声ファイルのUUIDのをキーにした字幕テキストファイルの内容を記録したファイル
+const subTextStringList = ref<{ [key: string]: { val: string; active: boolean } }>({})
+
 // setKyaraListの関数を利用するためのRef
 const setKyaraListRef = ref(null)
 
@@ -235,7 +238,14 @@ const loadVoiceDirList = (): void => {
     // dateList.value[selectKyara.value] をいったん0を指すようにする。
     selectKyara.value = 0
 
+    // 別ディレクトリの音声ファイル情報がある場合はそれを排除します。
     dateList.value = tempbuf.filter((item) => item.dataType !== 'seid')
+
+    // 音声ファイル名と同じ名前の字幕テキストファイルを読み込んで、字幕の内容をUUIDをキーにした連想配列に入れる。
+    const itemList: { uuid: string; fileName: string }[] = ans.map((item) => {
+      return { uuid: item.uuid, fileName: item.fileName }
+    })
+    subTextStringList.value = yomAPI.getSubTextStringList(voiceLoadDirPath.value, itemList)
 
     dateList.value.push(...ans)
     console.table(dateList.value)
@@ -457,6 +467,7 @@ watch(
         :onChangeKyaraProfile="onChangeKyaraProfile"
         :inputProfileUUID="inputProfileUUID"
         :createProfileData="createProfileData"
+        :subTextStringList="subTextStringList"
         ref="setKyaraListRef"
       />
       <!-- キャラ設定プロファイルの追加ボタンは、defoでのみ表示 -->
