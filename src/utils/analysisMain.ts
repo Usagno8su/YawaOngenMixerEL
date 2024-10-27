@@ -619,3 +619,36 @@ export const loadSubTextStringList = async (
   }
   return subList
 }
+
+// 全体設定を読み込み、 設定が古い場合は、内容を更新する。
+export const loadGlobalSettingData = async (confPath: string): Promise<string> => {
+  const jsonData = ref<string>(readJsonData(confPath))
+
+  // JSONファイル読み込み
+  const inputJsonData: globalSettingExportType = JSON.parse(jsonData.value)
+
+  ///////
+  // 古い設定ファイルだった場合、必要な項目を追加します。
+
+  // var 0.2.1 以下の場合
+  // useSubText がないので追加する
+  await new Promise((resolve, reject) => {
+    if (inputJsonData.globalSetting.useSubText === undefined) {
+      resolve(true)
+    } else {
+      reject()
+    }
+  })
+    .then(() => {
+      inputJsonData.globalSetting.useSubText = true
+    })
+    .then(() => {
+      // 追加したデータを書き込む
+      inputJsonData.softVer = outSoftVersion().softVer
+      jsonData.value = JSON.stringify(inputJsonData, undefined, 2)
+      writeJsonData(confPath, jsonData.value)
+    })
+    .catch(() => {})
+
+  return jsonData.value
+}

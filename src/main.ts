@@ -22,6 +22,7 @@ import {
   saveUint8ArrayFileData,
   loadSubTextString,
   loadSubTextStringList,
+  loadGlobalSettingData,
 } from './utils/analysisMain'
 import { createDefoInfoDateList } from './utils/analysisGeneral'
 import { outSettingType, profileKyaraExportType, globalSettingExportType } from './type/data-type'
@@ -381,7 +382,7 @@ ipcMain.on('saveFileListKyaraData', async (event: IpcMainEvent, outJsonData: str
 
 // 全体設定の読み込みを行う
 ipcMain.on('loadGlobalSettingData', async (event: IpcMainEvent) => {
-  event.returnValue = readJsonData(globalSettingFilePathGLB)
+  event.returnValue = await loadGlobalSettingData(globalSettingFilePathGLB)
 })
 
 // 全体設定の書き込みを行う
