@@ -12,6 +12,7 @@ const props = defineProps<{
   inputProfileUUID: string
   createProfileData: (copyUuid: boolean) => Promise<string>
   subTextStringList: { [key: string]: { val: string; active: boolean } }
+  useSubText: boolean
 }>()
 import { watch, ref } from 'vue'
 import { outSettingType, dataTextType, editKyaraNameType } from '@/type/data-type'
@@ -182,17 +183,17 @@ watch(
             <div class="max-w-2/3 min-w-24 truncate" :title="item.name">{{ item.name }}</div>
             <div class="truncate" :title="item.kyaraStyle">（{{ item.kyaraStyle }}）</div>
           </div>
-          <!-- 字幕テキストファイルがある場合はその内容を表示 -->
+          <!-- 設定が有効で、字幕テキストファイルがある場合はその内容を表示 -->
           <div
             v-else-if="item.dataType === 'seid'"
             class="w-full truncate"
             :title="
-              subTextStringList[item.uuid].active
+              useSubText && subTextStringList[item.uuid].active
                 ? subTextStringList[item.uuid].val
                 : item.fileName + '.' + item.fileExtension
             "
           >
-            {{ subTextStringList[item.uuid].active ? subTextStringList[item.uuid].val : item.fileName }}
+            {{ useSubText && subTextStringList[item.uuid].active ? subTextStringList[item.uuid].val : item.fileName }}
           </div>
           <div class="flex h-full" v-if="selectKyara === index && settype !== 'seid'">
             <MaterialIcons icon="Edit" @click="editDataClik(item.uuid, item.name, item.kyaraStyle)" />
