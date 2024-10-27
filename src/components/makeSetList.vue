@@ -69,8 +69,8 @@ const seveProfile = (): void => {
 </script>
 
 <template>
-  <GlobalSettingInfo v-if="openGlobalSettingView" :clickClose="() => setGlobalSetting()" />
-  <div class="h-[775px]" v-else>
+  <GlobalSettingInfo v-show="openGlobalSettingView" :clickClose="() => setGlobalSetting()" />
+  <div class="h-[775px]" v-show="!openGlobalSettingView">
     <div class="flex justify-between">
       <div class="flex items-end">
         <button :class="actset('defo')" @click="setClick('defo')">デフォルト設定</button>
