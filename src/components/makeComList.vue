@@ -468,6 +468,7 @@ watch(
         :inputProfileUUID="inputProfileUUID"
         :createProfileData="createProfileData"
         :subTextStringList="subTextStringList"
+        :useSubText="globalSetting.useSubText"
         ref="setKyaraListRef"
       />
       <!-- キャラ設定プロファイルの追加ボタンは、defoでのみ表示 -->

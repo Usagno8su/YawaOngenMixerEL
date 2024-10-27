@@ -69,7 +69,7 @@ watch(
         <div class="mt-2 flex justify-between bg-gray-200 py-2">
           <div class="mx-2 my-1 text-xl font-medium">ファイルリストで字幕の内容を表示</div>
           <div class="mx-2 mt-1 flex items-center p-1">
-            <input class="" type="checkbox" />
+            <input class="" type="checkbox" v-model="globalSettingList.useSubText" />
           </div>
         </div>
       </div>
