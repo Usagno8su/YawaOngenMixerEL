@@ -169,6 +169,7 @@ export const initializationGlobalSetting = (): globalSettingExportType => {
             ? path.join(app.getPath('home'), 'lib', 'ImageMagick', 'magick.exe')
             : '/usr/bin/convert',
       },
+      useSubText: true,
     },
   }
 }

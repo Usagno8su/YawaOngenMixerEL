@@ -191,6 +191,7 @@ export type globalSettingType = {
     ffmpeg: string
     convert: string
   }
+  useSubText: boolean // 音声ファイルリストで字幕の内容を表示するかどうか
 }
 
 // キャラ設定プロファイルの名前とUUIDのリスト
