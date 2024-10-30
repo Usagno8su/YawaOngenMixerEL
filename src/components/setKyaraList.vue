@@ -21,6 +21,7 @@ import AccEditKyaraName from '@/components/accessories/AccEditKyaraName.vue'
 import MaterialIcons from '@/components/accessories/icons/MaterialIcons.vue'
 import { createNewDateList } from '@/utils/analysisData'
 import SelectProfileList from '@/components/unit/SelectProfileList.vue'
+import SearchInputUnit from '@/components/unit/SearchInputUnit.vue'
 
 const isNewOpen = ref<boolean>(false)
 const isEditOpen = ref<string | boolean>(null)
@@ -158,6 +159,8 @@ const onInData = (index?: number): void => {
   }
 }
 
+const refSearchString = ref(null)
+
 // props.settype, props.selectKyaraが変更されたときの処理
 watch(
   () => [props.settype, props.selectKyara],
@@ -171,11 +174,16 @@ watch(
 <template>
   <div class="overflow-none mt-2 h-[550px] w-72 border border-gray-700">
     <div class="border-gray-600d max-h-full overflow-y-scroll border border-b-4" ref="selectAreaRef">
+      <SearchInputUnit ref="refSearchString" />
       <div v-if="settype !== 'defo'" v-for="(item, index) in dateList" v-bind:key="item.uuid">
         <div
           :class="actSet(item.uuid)"
           @click="setDataTypeClick(index, item)"
-          v-if="settype === item.dataType && isEditOpen !== item.uuid"
+          v-if="
+            settype === item.dataType &&
+            isEditOpen !== item.uuid &&
+            (refSearchString.searchString !== undefined ? ~item.name.indexOf(refSearchString.searchString) : true)
+          "
         >
           <!-- 個々の設定タイプに応じて表示 -->
           <div v-if="item.dataType === 'kyara'" class="w-5/6 truncate" :title="item.name">{{ item.name }}</div>
