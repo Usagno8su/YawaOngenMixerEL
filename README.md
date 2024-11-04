@@ -106,13 +106,41 @@ VOICEPEAKについては、テキストファイル出力の有効化と、
 
 debファイルのインストール前に、依存するソフトのインストールが必要です。
 
-```
+```bash
 sudo apt install ffmpeg imagemagick
 ```
 
 ## Windowsの場合
 
 [FFmpeg](https://ffmpeg.org/)と[ImageMagick](https://imagemagick.org/)のインストールを行う必要があります。
+
+# 開発環境の構築方法
+
+Ubuntuで開発を行うことを前提に記載します。
+
+事前に`ffmpeg`と`imagemagick`のインストールを行ってください。
+
+コードを`clone`した後に、ディレクトリ内で下記を実行してビルドと実行を行います。
+
+```bash
+npm install
+npm run start
+```
+
+また、配布用パッケージをビルドしたい場合は、各環境に合わせて下記を実行します。
+
+- Ubuntu (deb形式)
+
+```bash
+npm run make
+```
+
+- Windows（zipファイル）
+
+```bash
+npm run makewin
+```
+
 
 # ライセンス
 
