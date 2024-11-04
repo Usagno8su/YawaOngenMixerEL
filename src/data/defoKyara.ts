@@ -361,6 +361,27 @@ export const initializationSettingData: initializationSettingType[] = [
     subColor: '#e9dfe5',
     subOrdercr: '#2f2f2f',
   },
+  {
+    kyaraName: '女性1',
+  },
+  {
+    kyaraName: '女性2',
+  },
+  {
+    kyaraName: '女性3',
+  },
+  {
+    kyaraName: '男性1',
+  },
+  {
+    kyaraName: '男性2',
+  },
+  {
+    kyaraName: '男性3',
+  },
+  {
+    kyaraName: '女の子',
+  },
   // COEIROINK
   {
     kyaraName: 'おふとんP',
