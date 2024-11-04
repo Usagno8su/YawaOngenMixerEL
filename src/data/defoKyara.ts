@@ -173,6 +173,11 @@ export const initializationSettingData: initializationSettingType[] = [
     subColor: '#0095d9',
     subOrdercr: '#0d0015',
   },
+  {
+    kyaraName: 'Voidoll',
+    subColor: '#fffafa',
+    subOrdercr: '#7cfc00',
+  },
   // SHAREVOX
   {
     kyaraName: '小春音アミ',
