@@ -438,6 +438,30 @@ export const initializationSettingData: initializationSettingType[] = [
     subOrdercr: '#ffffff',
     kyaraStyle: ['蕾'],
   },
+  {
+    kyaraName: '伊織 弓鶴',
+    subColor: '#fcc800',
+    subOrdercr: '#f8f4e6',
+    kyaraStyle: ['冥'],
+  },
+  {
+    kyaraName: '結月 ゆかり',
+    subColor: '#e7e7eb',
+    subOrdercr: '#65318e',
+    kyaraStyle: ['雫', '凪'],
+  },
+  {
+    kyaraName: '紲星 あかり',
+    subColor: '#fff1cf',
+    subOrdercr: '#f7b977',
+    kyaraStyle: ['蕾', '萌'],
+  },
+  {
+    kyaraName: '羽ノ華',
+    subColor: '#009e9f',
+    subOrdercr: '#bee0c2',
+    kyaraStyle: ['雫'],
+  },
   // CeVIO AI
   {
     kyaraName: 'さとうささら',
