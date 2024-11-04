@@ -478,4 +478,15 @@ export const initializationSettingData: initializationSettingType[] = [
     subColor: '#f8f8ff',
     subOrdercr: '#ffffff',
   },
+  // VOICEROID
+  {
+    kyaraName: '月読アイ',
+    subColor: '#f19ca7',
+    subOrdercr: '#e73562',
+  },
+  {
+    kyaraName: '月読ショウタ',
+    subColor: '#bbe2f1',
+    subOrdercr: '#0075c2',
+  },
 ]
