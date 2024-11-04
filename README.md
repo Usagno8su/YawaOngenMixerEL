@@ -92,6 +92,12 @@ Mac については申し訳ございませんが、今のところ対応予定�
 VOICEPEAKについては、テキストファイル出力の有効化と、
 出力ファイル名をVOICEVOXと同じに設定する必要があります。
 
+下記は出力ファイル名をうまく設定できないため、暫定対応とさせて頂きます。
+
+- VOICEROID+ EX
+- VOICEROID2
+- CoeFont
+
 それ以外のソフトについても[動画](https://www.nicovideo.jp/watch/sm43776899)にて設定方法を解説しております。
 概ねVOICEVOXと同じ様式でファイルを出力して頂ければ問題ございません。
 
@@ -106,13 +112,41 @@ VOICEPEAKについては、テキストファイル出力の有効化と、
 
 debファイルのインストール前に、依存するソフトのインストールが必要です。
 
-```
+```bash
 sudo apt install ffmpeg imagemagick
 ```
 
 ## Windowsの場合
 
 [FFmpeg](https://ffmpeg.org/)と[ImageMagick](https://imagemagick.org/)のインストールを行う必要があります。
+
+# 開発環境の構築方法
+
+Ubuntuで開発を行うことを前提に記載します。
+
+事前に`ffmpeg`と`imagemagick`のインストールを行ってください。
+
+コードを`clone`した後に、ディレクトリ内で下記を実行してビルドと実行を行います。
+
+```bash
+npm install
+npm run start
+```
+
+また、配布用パッケージをビルドしたい場合は、各環境に合わせて下記を実行します。
+
+- Ubuntu (deb形式)
+
+```bash
+npm run make
+```
+
+- Windows（zipファイル）
+
+```bash
+npm run makewin
+```
+
 
 # ライセンス
 

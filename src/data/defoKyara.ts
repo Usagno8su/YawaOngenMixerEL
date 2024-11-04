@@ -173,6 +173,11 @@ export const initializationSettingData: initializationSettingType[] = [
     subColor: '#0095d9',
     subOrdercr: '#0d0015',
   },
+  {
+    kyaraName: 'Voidoll',
+    subColor: '#fffafa',
+    subOrdercr: '#7cfc00',
+  },
   // SHAREVOX
   {
     kyaraName: '小春音アミ',
@@ -356,6 +361,27 @@ export const initializationSettingData: initializationSettingType[] = [
     subColor: '#e9dfe5',
     subOrdercr: '#2f2f2f',
   },
+  {
+    kyaraName: '女性1',
+  },
+  {
+    kyaraName: '女性2',
+  },
+  {
+    kyaraName: '女性3',
+  },
+  {
+    kyaraName: '男性1',
+  },
+  {
+    kyaraName: '男性2',
+  },
+  {
+    kyaraName: '男性3',
+  },
+  {
+    kyaraName: '女の子',
+  },
   // COEIROINK
   {
     kyaraName: 'おふとんP',
@@ -412,6 +438,30 @@ export const initializationSettingData: initializationSettingType[] = [
     subOrdercr: '#ffffff',
     kyaraStyle: ['蕾'],
   },
+  {
+    kyaraName: '伊織 弓鶴',
+    subColor: '#fcc800',
+    subOrdercr: '#f8f4e6',
+    kyaraStyle: ['冥'],
+  },
+  {
+    kyaraName: '結月 ゆかり',
+    subColor: '#e7e7eb',
+    subOrdercr: '#65318e',
+    kyaraStyle: ['雫', '凪'],
+  },
+  {
+    kyaraName: '紲星 あかり',
+    subColor: '#fff1cf',
+    subOrdercr: '#f7b977',
+    kyaraStyle: ['蕾', '萌'],
+  },
+  {
+    kyaraName: '羽ノ華',
+    subColor: '#009e9f',
+    subOrdercr: '#bee0c2',
+    kyaraStyle: ['雫'],
+  },
   // CeVIO AI
   {
     kyaraName: 'さとうささら',
@@ -427,5 +477,16 @@ export const initializationSettingData: initializationSettingType[] = [
     kyaraName: 'タカハシ',
     subColor: '#f8f8ff',
     subOrdercr: '#ffffff',
+  },
+  // VOICEROID
+  {
+    kyaraName: '月読アイ',
+    subColor: '#f19ca7',
+    subOrdercr: '#e73562',
+  },
+  {
+    kyaraName: '月読ショウタ',
+    subColor: '#bbe2f1',
+    subOrdercr: '#0075c2',
   },
 ]
