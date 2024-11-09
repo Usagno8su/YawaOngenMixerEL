@@ -9,6 +9,7 @@ const props = defineProps<{
   deleteKyaraPicFile: (uuid: string) => void
   importKyaraPicFile: () => void
   viewFileListTatie: fileListTatieType[]
+  selectKyaraName: string | undefined
 }>()
 // 立ち絵のアップロードと選択を行う画面
 
@@ -18,6 +19,10 @@ import MaterialIcons from '@/components/accessories/icons/MaterialIcons.vue'
 import DisplayTatiePicFile from '@/components/accessories/DisplayTatiePicFile.vue'
 import { DEFAULT_KYARA_TATIE_UUID } from '@/data/data'
 import { MakeClassString } from '@/utils/analysisGeneral'
+import { FindAllString } from '@/utils/analysisData'
+import SearchInputUnit from '@/components/unit/SearchInputUnit.vue'
+
+const refSearchString = ref<{ searchString: string }>({ searchString: undefined })
 
 // 立ち絵が存在するか確認する
 const noTatieFile = ref<boolean>(
@@ -79,6 +84,12 @@ watch(
   <div class="absolute flex h-96 border border-gray-700 bg-gray-300">
     <div class="overflow-none h-full w-64 border border-gray-700 p-1">
       <div class="h-80 overflow-y-scroll border border-gray-600">
+        <SearchInputUnit
+          :defaultString="selectKyaraName"
+          classSetting="bg-gray-300"
+          inputTitle="立ち絵名かキャラ名で検索"
+          ref="refSearchString"
+        />
         <!-- デフォルト立ち絵は先に表示する -->
         <div class="flex">
           <button
@@ -98,7 +109,13 @@ watch(
         </div>
         <!-- デフォルト立ち絵以外を表示する -->
         <div v-for="item in viewFileListTatie" v-bind:key="item.uuid">
-          <div class="flex" v-if="item.uuid !== DEFAULT_KYARA_TATIE_UUID">
+          <div
+            class="flex"
+            v-if="
+              item.uuid !== DEFAULT_KYARA_TATIE_UUID &&
+              FindAllString(refSearchString.searchString, [item.fileName, item.kyaraName])
+            "
+          >
             <button
               @click="clickEdit(item.uuid)"
               :class="

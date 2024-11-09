@@ -169,6 +169,18 @@ const askDeleteKyaraPic = (uuid: string): void => {
   }).then(() => (isDeleteDialogOpen.value = true))
 }
 
+// 現在選択中のキャラ名が、各キャラ設定に存在するか確認する。
+// ない場合はundefinedを返す。
+const FindFileListKyaraName = (): string | undefined => {
+  if (
+    props.dateList.findIndex((e) => e.dataType === 'kyara' && e.name === props.dateList[props.selectKyara].name) !== -1
+  ) {
+    return props.dateList[props.selectKyara].name
+  } else {
+    return undefined
+  }
+}
+
 // 状態によってボタンのTailwindを変更
 const actset = (): string => {
   const setAns = props.dateList[props.selectKyara].tatie.tatieUUID.active
@@ -220,6 +232,7 @@ watch(
             :deleteKyaraPicFile="askDeleteKyaraPic"
             :importKyaraPicFile="importKyaraPicFile"
             :viewFileListTatie="viewFileListTatie"
+            :selectKyaraName="FindFileListKyaraName()"
             ref="tatieFileRef"
           />
         </div>
