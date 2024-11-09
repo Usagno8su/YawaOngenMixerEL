@@ -16,10 +16,9 @@ const props = defineProps<{
 }>()
 import { watch, ref } from 'vue'
 import { outSettingType, dataTextType, editKyaraNameType } from '@/type/data-type'
-import { checkSameValues } from '@/utils/analysisData'
+import { checkSameValues, FindAllString, createNewDateList } from '@/utils/analysisData'
 import AccEditKyaraName from '@/components/accessories/AccEditKyaraName.vue'
 import MaterialIcons from '@/components/accessories/icons/MaterialIcons.vue'
-import { createNewDateList } from '@/utils/analysisData'
 import SelectProfileList from '@/components/unit/SelectProfileList.vue'
 import SearchInputUnit from '@/components/unit/SearchInputUnit.vue'
 
@@ -30,6 +29,9 @@ const editBeforeKyaraNameType = ref<editKyaraNameType>({
   name: undefined,
   kyaraStyle: undefined,
 })
+
+// SearchInputUnitに入力した検索文字列を取得するための変数
+const refSearchString = ref<{ searchString: string }>({ searchString: undefined })
 
 // selectProfileListの関数を利用するためのRef
 const selectProfileListRef = ref(null)
@@ -159,8 +161,6 @@ const onInData = (index?: number): void => {
   }
 }
 
-const refSearchString = ref(null)
-
 // props.settype, props.selectKyaraが変更されたときの処理
 watch(
   () => [props.settype, props.selectKyara],
@@ -174,7 +174,11 @@ watch(
 <template>
   <div class="overflow-none mt-2 h-[550px] w-72 border border-gray-700">
     <div class="border-gray-600d max-h-full overflow-y-scroll border border-b-4" ref="selectAreaRef">
-      <SearchInputUnit ref="refSearchString" />
+      <SearchInputUnit
+        v-show="settype === 'kyara' || settype === 'kyast'"
+        inputTitle="キャラ名やスタイル名で検索"
+        ref="refSearchString"
+      />
       <div v-if="settype !== 'defo'" v-for="(item, index) in dateList" v-bind:key="item.uuid">
         <div
           :class="actSet(item.uuid)"
@@ -182,7 +186,9 @@ watch(
           v-if="
             settype === item.dataType &&
             isEditOpen !== item.uuid &&
-            (refSearchString.searchString !== undefined ? ~item.name.indexOf(refSearchString.searchString) : true)
+            (settype !== 'seid'
+              ? FindAllString(refSearchString.searchString, [item.name, settype === 'kyast' && item.kyaraStyle])
+              : true)
           "
         >
           <!-- 個々の設定タイプに応じて表示 -->
