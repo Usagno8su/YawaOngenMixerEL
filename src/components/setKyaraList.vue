@@ -15,7 +15,7 @@ const props = defineProps<{
   useSubText: boolean
   searchKyaraEvent: (text: string) => void
 }>()
-import { watch, ref } from 'vue'
+import { watch, ref, nextTick } from 'vue'
 import { outSettingType, dataTextType, editKyaraNameType } from '@/type/data-type'
 import { checkSameValues, FindAllString, createNewDateList } from '@/utils/analysisData'
 import AccEditKyaraName from '@/components/accessories/AccEditKyaraName.vue'
@@ -34,11 +34,17 @@ const editBeforeKyaraNameType = ref<editKyaraNameType>({
 // SearchInputUnitに入力した検索文字列を取得するための変数
 const refSearchString = ref<{ searchString: string }>({ searchString: undefined })
 
-// selectProfileListの関数を利用するためのRef
+// スクロールエリアの自動移動のため、リストの各項目にrefを設定する
 const selectProfileListRef = ref(null)
 
 // スクロールエリアの自動移動のための変数
-const selectAreaRef = ref<HTMLDivElement>()
+const kyaraRefs = ref<HTMLDivElement[]>([])
+const selectKyaraRef = (e: HTMLDivElement) => {
+  // 存在するか＆重複があるか確認する
+  if (e && !kyaraRefs.value.includes(e)) {
+    kyaraRefs.value.push(e)
+  }
+}
 
 // selectProfileListRef を親コンポーネントから呼び出せるようにします
 defineExpose({ selectProfileListRef })
@@ -162,6 +168,14 @@ const onInData = (index?: number): void => {
   }
 }
 
+// 表示後に現在選択中のプロファイル項目を表示するようにスクロールする
+nextTick(() => {
+  const selectDiv = props.dateList.findIndex((item) => item.uuid === props.dateList[props.selectKyara].uuid)
+  if (selectDiv !== -1) {
+    kyaraRefs.value[selectDiv]?.scrollIntoView(false)
+  }
+})
+
 // props.settype, props.selectKyaraが変更されたときの処理
 watch(
   () => [props.settype, props.selectKyara],
@@ -174,14 +188,14 @@ watch(
 
 <template>
   <div class="overflow-none mt-2 h-[550px] w-72 border border-gray-700">
-    <div class="border-gray-600d max-h-full overflow-y-scroll border border-b-4" ref="selectAreaRef">
+    <div class="border-gray-600d max-h-full overflow-y-scroll border border-b-4">
       <SearchInputUnit
         v-show="settype === 'kyara' || settype === 'kyast'"
         inputTitle="キャラ名やスタイル名で検索"
         @searchKyaraEvent="searchKyaraEvent"
         ref="refSearchString"
       />
-      <div v-if="settype !== 'defo'" v-for="(item, index) in dateList" v-bind:key="item.uuid">
+      <div v-if="settype !== 'defo'" v-for="(item, index) in dateList" v-bind:key="item.uuid" :ref="selectKyaraRef">
         <div
           :class="actSet(item.uuid)"
           @click="setDataTypeClick(index, item)"
