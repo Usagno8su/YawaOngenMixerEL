@@ -5,15 +5,24 @@ const props = defineProps<{
   inputTitle?: string
   deleteTitke?: string
 }>()
+const emit = defineEmits(['searchKyaraEvent'])
 import { ref } from 'vue'
 import MaterialIcons from '@/components/accessories/icons/MaterialIcons.vue'
 import { MakeClassString } from '@/utils/analysisGeneral'
 
+// 検索文字列が変更されたら、親コンポーネントにも伝える。
+const onChange = (text: string): void => {
+  emit('searchKyaraEvent', text)
+}
+
 const searchString = ref<string>(props.defaultString)
 
 // 検索文字列をすべて削除します。
+// searchString.value を空にするだけでなく、
+// searchKyaraEventで親コンポーネントにも変更を伝える必要があります。
 const deleteString = () => {
-  searchString.value = undefined
+  searchString.value = ''
+  emit('searchKyaraEvent', '')
 }
 
 // searchString を親コンポーネントから呼び出せるようにします
@@ -25,6 +34,7 @@ defineExpose({ searchString })
     <input
       class="ml-1 w-10/12 truncate bg-opacity-0 outline-none"
       v-model="searchString"
+      @input="onChange(searchString)"
       :title="inputTitle ?? '検索文字列を入力'"
     />
     <button class="absolute right-2 top-1" @click="deleteString" :title="deleteTitke ?? '検索文字列を削除'">

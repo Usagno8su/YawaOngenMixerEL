@@ -371,6 +371,14 @@ const onChangeKyaraProfile = (uuid: string): void => {
   writeGlobalSetting({ ...globalSetting, selectProfile: uuid })
 }
 
+// キャラ名とスタイル名で検索
+const searchKyaraString = ref<string>(undefined)
+const searchKyaraEvent = (text: string) => {
+  searchKyaraString.value = text
+  console.log('searchKyaraString: ' + searchKyaraString.value)
+}
+
+
 // 設定タイプを切り替え(settype)があったら現在編集中のキャラ設定を変える。
 watch(
   () => props.settype,
@@ -469,6 +477,7 @@ watch(
         :createProfileData="createProfileData"
         :subTextStringList="subTextStringList"
         :useSubText="globalSetting.useSubText"
+        :searchKyaraEvent="searchKyaraEvent"
         ref="setKyaraListRef"
       />
       <!-- キャラ設定プロファイルの追加ボタンは、defoでのみ表示 -->

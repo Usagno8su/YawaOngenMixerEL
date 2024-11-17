@@ -13,6 +13,7 @@ const props = defineProps<{
   createProfileData: (copyUuid: boolean) => Promise<string>
   subTextStringList: { [key: string]: { val: string; active: boolean } }
   useSubText: boolean
+  searchKyaraEvent: (text: string) => void
 }>()
 import { watch, ref } from 'vue'
 import { outSettingType, dataTextType, editKyaraNameType } from '@/type/data-type'
@@ -48,7 +49,7 @@ const actSet = (ltype: string): string => {
   return (
     'h-8 flex items-center justify-between mt-1 mx-1 p-1 border border-gray-600' +
     ' ' +
-    (props.dateList[props.selectKyara].uuid === ltype
+    (props.dateList[props.selectKyara]?.uuid === ltype
       ? 'bg-blue-400 hover:bg-blue-500 hover:text-gray-200'
       : 'bg-blue-200 hover:bg-blue-500 hover:text-gray-200')
   )
@@ -177,6 +178,7 @@ watch(
       <SearchInputUnit
         v-show="settype === 'kyara' || settype === 'kyast'"
         inputTitle="キャラ名やスタイル名で検索"
+        @searchKyaraEvent="searchKyaraEvent"
         ref="refSearchString"
       />
       <div v-if="settype !== 'defo'" v-for="(item, index) in dateList" v-bind:key="item.uuid">
