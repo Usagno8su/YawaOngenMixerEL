@@ -36,6 +36,7 @@ import {
   loadProfile,
   writeGlobalSetting,
   getPlatform,
+  FindAllString,
 } from '@/utils/analysisData'
 import { DEFAULT_KYARA_SETTING_UUID } from '@/data/data'
 import { createDefoKyaraDateList } from '@/utils/analysisGeneral'
@@ -371,6 +372,54 @@ const onChangeKyaraProfile = (uuid: string): void => {
   writeGlobalSetting({ ...globalSetting, selectProfile: uuid })
 }
 
+// キャラ名とスタイル名で検索
+const searchKyaraString = ref<string>(undefined)
+const searchKyaraEvent = (text: string) => {
+  searchKyaraString.value = text
+  console.log('searchKyaraString: ' + searchKyaraString.value)
+}
+
+// キャラ名やスタイル名で検索したときに、
+// 現在表示中のキャラ設定がリストに表示されなくなったか確認する。
+// 表示されなくなったら、表示されている項目に切り替える。
+// もし検索がヒットしない場合は、表示なしに切り替える
+watch(
+  () => searchKyaraString.value,
+  () => {
+    console.log('searchKyaraString.value: ' + searchKyaraString.value)
+    if (searchKyaraString.value === '' || searchKyaraString.value === undefined) {
+      // 検索文字列が空になった場合は、それ以外で検索して表示する。
+      // 表示できるものがなければ何も表示しない。
+      if (dateList.value[selectKyara.value]?.name === undefined) {
+        const ans = dateList.value.findIndex((item) => item.dataType === props.settype)
+        if (ans !== -1) {
+          setDataTypeClick(ans, dateList.value[ans])
+        } else {
+          setDataTypeClick(-1, dateList.value[0])
+        }
+      }
+    } else if (
+      FindAllString(searchKyaraString.value, [
+        dateList.value[selectKyara.value]?.name,
+        props.settype === 'kyast' && dateList.value[selectKyara.value]?.kyaraStyle,
+      ]) === false
+    ) {
+      // 検索文字列で検索して、部分一致があればそれを表示する。
+      // 表示できるものがなければ何も表示しない。
+      const ans = dateList.value.findIndex(
+        (item) =>
+          item.dataType === props.settype &&
+          FindAllString(searchKyaraString.value, [item.name, props.settype === 'kyast' && item.kyaraStyle]) === true,
+      )
+      if (ans !== -1) {
+        setDataTypeClick(ans, dateList.value[ans])
+      } else {
+        setDataTypeClick(-1, dateList.value[0])
+      }
+    }
+  },
+)
+
 // 設定タイプを切り替え(settype)があったら現在編集中のキャラ設定を変える。
 watch(
   () => props.settype,
@@ -402,14 +451,51 @@ watch(
       (e) => dateList.value[e.selectedKyaraIndex]?.dataType === props.settype,
     )
     if (afterSelect === undefined) {
+      // 何も選択されていなかった場合の処理
       // dateList.value[selectKyara.value] が、一瞬でも存在しない値を指すとエラーになるので、いったん別の変数に入れる
       // const newSelextKyaraIndex = dateList.value.findIndex((e) => e.dataType === props.settype)
-      selectKyara.value = dateList.value.findIndex((e) => e.dataType === props.settype)
+      const ans = dateList.value.findIndex(
+        (e) =>
+          e.dataType === props.settype &&
+          FindAllString(searchKyaraString.value, [e.name, props.settype === 'kyast' && e.kyaraStyle]) === true,
+      )
+      if (ans !== -1) {
+        setDataTypeClick(ans, dateList.value[ans])
+      } else {
+        setDataTypeClick(-1, dateList.value[0])
+      }
       editData.value = 'tatie'
-    } else {
+    } else if (props.settype === 'defo') {
+      // デフォルト画面の場合
       editData.value = afterSelect.selectedEditData
-      selectKyara.value = afterSelect.selectedKyaraIndex
-      higherUpList.value = SelectHigherUpIndexList(props.settype, dateList.value, afterSelect.selectedKyaraIndex)
+      setDataTypeClick(afterSelect.selectedKyaraIndex, dateList.value[afterSelect.selectedKyaraIndex])
+    } else {
+      // なにか選択されていた場合でも、検索の内容を確認して操作する。
+      if (
+        afterSelect.selectedKyaraIndex === -1 ||
+        FindAllString(searchKyaraString.value, [
+          dateList.value[afterSelect.selectedKyaraIndex]?.name,
+          props.settype === 'kyast' && dateList.value[afterSelect.selectedKyaraIndex]?.kyaraStyle,
+        ]) === false
+      ) {
+        // 以前に開いたキャラが検索に一致しない場合は、一致するキャラを表示する。
+        // 検索して何もキャラが見つからない場合は、表示しない。
+        const ans = dateList.value.findIndex(
+          (item) =>
+            item.dataType === props.settype &&
+            FindAllString(searchKyaraString.value, [item.name, props.settype === 'kyast' && item.kyaraStyle]) === true,
+        )
+        if (ans !== -1) {
+          setDataTypeClick(ans, dateList.value[ans])
+        } else {
+          setDataTypeClick(-1, dateList.value[0])
+        }
+        editData.value = 'tatie'
+      } else {
+        // 検索に一致する場合それを表示する。
+        editData.value = afterSelect.selectedEditData
+        setDataTypeClick(afterSelect.selectedKyaraIndex, dateList.value[afterSelect.selectedKyaraIndex])
+      }
     }
   },
 )
@@ -469,6 +555,7 @@ watch(
         :createProfileData="createProfileData"
         :subTextStringList="subTextStringList"
         :useSubText="globalSetting.useSubText"
+        :searchKyaraEvent="searchKyaraEvent"
         ref="setKyaraListRef"
       />
       <!-- キャラ設定プロファイルの追加ボタンは、defoでのみ表示 -->

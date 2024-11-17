@@ -13,14 +13,15 @@ const props = defineProps<{
   createProfileData: (copyUuid: boolean) => Promise<string>
   subTextStringList: { [key: string]: { val: string; active: boolean } }
   useSubText: boolean
+  searchKyaraEvent: (text: string) => void
 }>()
 import { watch, ref } from 'vue'
 import { outSettingType, dataTextType, editKyaraNameType } from '@/type/data-type'
-import { checkSameValues } from '@/utils/analysisData'
+import { checkSameValues, FindAllString, createNewDateList } from '@/utils/analysisData'
 import AccEditKyaraName from '@/components/accessories/AccEditKyaraName.vue'
 import MaterialIcons from '@/components/accessories/icons/MaterialIcons.vue'
-import { createNewDateList } from '@/utils/analysisData'
 import SelectProfileList from '@/components/unit/SelectProfileList.vue'
+import SearchInputUnit from '@/components/unit/SearchInputUnit.vue'
 
 const isNewOpen = ref<boolean>(false)
 const isEditOpen = ref<string | boolean>(null)
@@ -29,6 +30,9 @@ const editBeforeKyaraNameType = ref<editKyaraNameType>({
   name: undefined,
   kyaraStyle: undefined,
 })
+
+// SearchInputUnitに入力した検索文字列を取得するための変数
+const refSearchString = ref<{ searchString: string }>({ searchString: undefined })
 
 // selectProfileListの関数を利用するためのRef
 const selectProfileListRef = ref(null)
@@ -45,7 +49,7 @@ const actSet = (ltype: string): string => {
   return (
     'h-8 flex items-center justify-between mt-1 mx-1 p-1 border border-gray-600' +
     ' ' +
-    (props.dateList[props.selectKyara].uuid === ltype
+    (props.dateList[props.selectKyara]?.uuid === ltype
       ? 'bg-blue-400 hover:bg-blue-500 hover:text-gray-200'
       : 'bg-blue-200 hover:bg-blue-500 hover:text-gray-200')
   )
@@ -171,11 +175,23 @@ watch(
 <template>
   <div class="overflow-none mt-2 h-[550px] w-72 border border-gray-700">
     <div class="border-gray-600d max-h-full overflow-y-scroll border border-b-4" ref="selectAreaRef">
+      <SearchInputUnit
+        v-show="settype === 'kyara' || settype === 'kyast'"
+        inputTitle="キャラ名やスタイル名で検索"
+        @searchKyaraEvent="searchKyaraEvent"
+        ref="refSearchString"
+      />
       <div v-if="settype !== 'defo'" v-for="(item, index) in dateList" v-bind:key="item.uuid">
         <div
           :class="actSet(item.uuid)"
           @click="setDataTypeClick(index, item)"
-          v-if="settype === item.dataType && isEditOpen !== item.uuid"
+          v-if="
+            settype === item.dataType &&
+            isEditOpen !== item.uuid &&
+            (settype !== 'seid'
+              ? FindAllString(refSearchString.searchString, [item.name, settype === 'kyast' && item.kyaraStyle])
+              : true)
+          "
         >
           <!-- 個々の設定タイプに応じて表示 -->
           <div v-if="item.dataType === 'kyara'" class="w-5/6 truncate" :title="item.name">{{ item.name }}</div>
