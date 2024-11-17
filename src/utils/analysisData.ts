@@ -88,11 +88,11 @@ export const ansFindIndex = (kyaraType: 'kyast' | 'kyara', dateList: outSettingT
     ansFindIndex.value = dateList.findIndex(
       (e) =>
         e.dataType === 'kyast' &&
-        e.kyaraStyle === dateList[selectKyara].kyaraStyle &&
-        e.name === dateList[selectKyara].name,
+        e.kyaraStyle === dateList[selectKyara]?.kyaraStyle &&
+        e.name === dateList[selectKyara]?.name,
     )
   } else {
-    ansFindIndex.value = dateList.findIndex((e) => e.dataType === 'kyara' && e.name === dateList[selectKyara].name)
+    ansFindIndex.value = dateList.findIndex((e) => e.dataType === 'kyara' && e.name === dateList[selectKyara]?.name)
   }
 
   if (ansFindIndex.value !== -1) {
@@ -472,7 +472,7 @@ export const loadProfile = (profileName?: string): inputProfileSendReType => {
 // 第１引数の文字列は半角・全角スペースで分割しAND検索を行う。
 export const FindAllString = (searchString: string | undefined, findList: string[]): boolean => {
   // 検索文字列がない場合はtrueを返す
-  if (searchString === undefined) {
+  if (searchString === undefined || searchString === '') {
     return true
   }
 
