@@ -6,11 +6,10 @@ const props = defineProps<{
   onChangeKyaraProfile: (uuid: string) => void
   inputProfileUUID: string
   classSetting?: string
-  selectAreaRef: HTMLDivElement
   createProfileData: (copyUuid: boolean) => Promise<string>
 }>()
 
-import { ref, watch, nextTick } from 'vue'
+import { ref, nextTick } from 'vue'
 import { kyaraProfileListType } from '@/type/data-type'
 import {
   getKyaraProfileList,
@@ -39,7 +38,7 @@ const isEditOpen = ref<boolean>(false)
 // キャラ設定プロファイルのリストを取得
 const kyaraProfileList = ref<kyaraProfileListType[]>(getKyaraProfileList())
 
-// リストの各項目にrefを設定する
+// スクロールエリアの自動移動のため、リストの各項目にrefを設定する
 const profileRefs = ref<HTMLDivElement[]>([])
 const selectProfileRef = (e: HTMLDivElement) => {
   // 存在するか＆重複があるかかくにんする
@@ -63,7 +62,8 @@ const newProfile = async (copySta: boolean): Promise<void> => {
   reloadProfile().then(() => {
     // 一番下までスクロールする
     nextTick(() => {
-      props.selectAreaRef.scrollTop = props.selectAreaRef.scrollHeight
+      const selectDiv = kyaraProfileList.value.findIndex((e) => e.uuid === props.inputProfileUUID)
+      profileRefs.value[selectDiv].scrollIntoView(false)
     })
   })
 }

@@ -247,7 +247,6 @@ watch(
           :onChangeKyaraProfile="onChangeKyaraProfile"
           :inputProfileUUID="inputProfileUUID"
           :createProfileData="createProfileData"
-          :selectAreaRef="selectAreaRef"
           ref="selectProfileListRef"
         />
       </div>
