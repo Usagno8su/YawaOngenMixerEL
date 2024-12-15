@@ -144,6 +144,31 @@ const createWindow = () => {
       ],
     }),
   )
+  menu.append(
+    new MenuItem({
+      label: '編集',
+      submenu: [
+        {
+          label: '名前の変更',
+          accelerator: 'CmdOrCtrl+Space',
+          click: () => {
+            if (app.isReady()) {
+              mainWindow.webContents.send('EditNameKeyCom')
+            }
+          },
+        },
+        {
+          label: '削除',
+          accelerator: 'CmdOrCtrl+D',
+          click: () => {
+            if (app.isReady()) {
+              mainWindow.webContents.send('AskDeleteKeyCom')
+            }
+          },
+        },
+      ],
+    }),
+  )
 
   Menu.setApplicationMenu(menu)
 

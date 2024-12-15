@@ -43,4 +43,6 @@ export interface WGyomAPI {
     dir: string,
     itemList: { uuid: string; fileName: string }[],
   ) => { [key: string]: { val: string; active: boolean } }
+  EntEditName: (listener: () => void) => void
+  EntAskDelete: (listener: () => void) => void
 }
