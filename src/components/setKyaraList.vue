@@ -240,7 +240,7 @@ watch(
               @click="() => console.log(kyaraRefs[index].offsetTop)"
               title="右クリックでメニュー表示"
             />
-            <div v-if="isMenuOpen === true" class="sticky">
+            <div v-show="isMenuOpen === true" class="sticky">
               <SelectDisplayKyaraRightClickMenu
                 :clickClose="() => (isMenuOpen = false)"
                 :editDataClik="() => editDataClik(item.uuid, item.name, item.kyaraStyle)"
