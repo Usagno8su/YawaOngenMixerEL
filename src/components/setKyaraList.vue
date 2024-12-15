@@ -22,9 +22,11 @@ import AccEditKyaraName from '@/components/accessories/AccEditKyaraName.vue'
 import MaterialIcons from '@/components/accessories/icons/MaterialIcons.vue'
 import SelectProfileList from '@/components/unit/SelectProfileList.vue'
 import SearchInputUnit from '@/components/unit/SearchInputUnit.vue'
+import SelectDisplayKyaraRightClickMenu from '@/components/accessories/SelectDisplayKyaraRightClickMenu.vue'
 
 const isNewOpen = ref<boolean>(false)
 const isEditOpen = ref<string | boolean>(null)
+const isMenuOpen = ref<boolean>(false)
 const editKyaraName = ref<outSettingType>(createNewDateList(undefined, undefined, '', '', {}, {}))
 const editBeforeKyaraNameType = ref<editKyaraNameType>({
   name: undefined,
@@ -232,8 +234,19 @@ watch(
             {{ useSubText && subTextStringList[item.uuid].active ? subTextStringList[item.uuid].val : item.fileName }}
           </div>
           <div class="flex h-full" v-if="selectKyara === index && settype !== 'seid'">
-            <MaterialIcons icon="Edit" @click="editDataClik(item.uuid, item.name, item.kyaraStyle)" />
-            <MaterialIcons icon="Delete" @click="askDeleteKyara(index)" />
+            <MaterialIcons
+              icon="MoreHoriz"
+              @click.right="() => (isMenuOpen = true)"
+              @click="() => console.log(kyaraRefs[index].offsetTop)"
+              title="右クリックでメニュー表示"
+            />
+            <div v-if="isMenuOpen === true" class="sticky">
+              <SelectDisplayKyaraRightClickMenu
+                :clickClose="() => (isMenuOpen = false)"
+                :editDataClik="() => editDataClik(item.uuid, item.name, item.kyaraStyle)"
+                :askDeleteKyara="() => askDeleteKyara(index)"
+              />
+            </div>
           </div>
           <button
             class="h-full rounded-md border border-gray-700 bg-yellow-300"
