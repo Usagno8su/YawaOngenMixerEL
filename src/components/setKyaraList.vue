@@ -151,15 +151,17 @@ const newDataClik = (): void => {
 // キャラ設定の変更ポタンが押された場合
 // 変更用のinput項目を表示
 const editDataClik = (uuid: string, name: string | undefined, kyaraStyle: string | undefined): void => {
-  // 新規追加中の場合は閉じる
-  if (isNewOpen.value !== false) {
-    cancelEditKyaraData()
-  }
-  isEditOpen.value = uuid
-  // 変更前の状態を記録
-  editBeforeKyaraNameType.value = {
-    name: name,
-    kyaraStyle: kyaraStyle,
+  if (props.settype === 'kyara' || props.settype === 'kyast') {
+    // 新規追加中の場合は閉じる
+    if (isNewOpen.value !== false) {
+      cancelEditKyaraData()
+    }
+    isEditOpen.value = uuid
+    // 変更前の状態を記録
+    editBeforeKyaraNameType.value = {
+      name: name,
+      kyaraStyle: kyaraStyle,
+    }
   }
 }
 

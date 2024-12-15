@@ -211,18 +211,20 @@ const deleteKyara = (): void => {
 
 //キャラ削除の確認ダイアログをひらく
 const askDeleteKyara = (): void => {
-  console.log('削除キャラ: ' + dateList.value[selectKyara.value].name)
-  deleteDialogRef.value = {
-    ...deleteDialogRef.value,
-    deleteMessage:
-      dateList.value[selectKyara.value].name +
-      (dateList.value[selectKyara.value].dataType === 'kyast'
-        ? '（' + dateList.value[selectKyara.value].kyaraStyle + '）'
-        : '') +
-      'を削除しますか？',
+  if (props.settype === 'kyara' || props.settype === 'kyast') {
+    console.log('削除キャラ: ' + dateList.value[selectKyara.value].name)
+    deleteDialogRef.value = {
+      ...deleteDialogRef.value,
+      deleteMessage:
+        dateList.value[selectKyara.value].name +
+        (dateList.value[selectKyara.value].dataType === 'kyast'
+          ? '（' + dateList.value[selectKyara.value].kyaraStyle + '）'
+          : '') +
+        'を削除しますか？',
+    }
+    // deleteIndex.value = index
+    isDeleteDialogOpen.value = true
   }
-  // deleteIndex.value = index
-  isDeleteDialogOpen.value = true
 }
 
 // フォルダの選択画面の表示して、
