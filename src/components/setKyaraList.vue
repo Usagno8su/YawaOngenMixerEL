@@ -15,7 +15,7 @@ const props = defineProps<{
   useSubText: boolean
   searchKyaraEvent: (text: string) => void
 }>()
-import { watch, ref } from 'vue'
+import { watch, ref, nextTick } from 'vue'
 import { outSettingType, dataTextType, editKyaraNameType } from '@/type/data-type'
 import { checkSameValues, FindAllString, createNewDateList } from '@/utils/analysisData'
 import AccEditKyaraName from '@/components/accessories/AccEditKyaraName.vue'
@@ -53,6 +53,15 @@ const actSet = (ltype: string): string => {
       ? 'bg-blue-400 hover:bg-blue-500 hover:text-gray-200'
       : 'bg-blue-200 hover:bg-blue-500 hover:text-gray-200')
   )
+}
+
+// リストの各項目にrefを設定する
+const kyaraRefs = ref<HTMLDivElement[]>([])
+const selectKyaraRef = (e: HTMLDivElement) => {
+  // 存在するか＆重複があるか確認する
+  if (e && !kyaraRefs.value.includes(e)) {
+    kyaraRefs.value.push(e)
+  }
 }
 
 // キャラの追加
@@ -170,6 +179,17 @@ watch(
     cancelEditKyaraData()
   },
 )
+
+watch(
+  () => [props.settype],
+  () => {
+    // 表示後に現在選択中のキャラ項目を表示するようにスクロールする
+    nextTick(() => {
+      const selectDiv = props.dateList.findIndex((e) => e.uuid === props.dateList[props.selectKyara].uuid)
+      kyaraRefs.value[selectDiv].scrollIntoView(false)
+    })
+  },
+)
 </script>
 
 <template>
@@ -181,7 +201,7 @@ watch(
         @searchKyaraEvent="searchKyaraEvent"
         ref="refSearchString"
       />
-      <div v-if="settype !== 'defo'" v-for="(item, index) in dateList" v-bind:key="item.uuid">
+      <div v-if="settype !== 'defo'" v-for="(item, index) in dateList" v-bind:key="item.uuid" :ref="selectKyaraRef">
         <div
           :class="actSet(item.uuid)"
           @click="setDataTypeClick(index, item)"
