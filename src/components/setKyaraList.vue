@@ -24,6 +24,8 @@ import SelectProfileList from '@/components/unit/SelectProfileList.vue'
 import SearchInputUnit from '@/components/unit/SearchInputUnit.vue'
 import SelectDisplayKyaraRightClickMenu from '@/components/accessories/SelectDisplayKyaraRightClickMenu.vue'
 
+const { yomAPI } = window
+
 const isNewOpen = ref<boolean>(false)
 const isEditOpen = ref<string | boolean>(null)
 const isMenuOpen = ref<boolean>(false)
@@ -174,6 +176,22 @@ const onInData = (index?: number): void => {
     newKyaraData()
   }
 }
+
+// ショートカットキーで名前の変更のコマンドがあった場合は編集画面を表示する
+yomAPI.EntEditName(() => {
+  isMenuOpen.value = false
+  editDataClik(
+    props.dateList[props.selectKyara].uuid,
+    props.dateList[props.selectKyara].name,
+    props.dateList[props.selectKyara].kyaraStyle,
+  )
+})
+
+// ショートカットキーで削除のコマンドがあった場合は削除ダイアログを開く
+yomAPI.EntAskDelete(() => {
+  isMenuOpen.value = false
+  props.askDeleteKyara(props.selectKyara)
+})
 
 // props.settype, props.selectKyaraが変更されたときの処理
 watch(

@@ -5,18 +5,6 @@ const props = defineProps<{
   askDeleteKyara: () => void
 }>()
 // キャラ設定のコピーや削除の選択を行う右クリックメニュー
-
-const { yomAPI } = window
-
-// ショートカットキーで名前の変更のコマンドがあった場合は保存を行う
-yomAPI.EntEditName(() => {
-  props.editDataClik()
-})
-
-// ショートカットキーで削除のコマンドがあった場合は保存を行う
-yomAPI.EntAskDelete(() => {
-  props.askDeleteKyara()
-})
 </script>
 
 <template>
