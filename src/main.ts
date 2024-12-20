@@ -149,6 +149,24 @@ const createWindow = () => {
       label: '編集',
       submenu: [
         {
+          label: 'キャラ設定にコピー',
+          accelerator: 'CmdOrCtrl+E',
+          click: () => {
+            if (app.isReady()) {
+              mainWindow.webContents.send('CopyToKyaraCom', 'kyara')
+            }
+          },
+        },
+        {
+          label: 'スタイル付きキャラ設定にコピー',
+          accelerator: 'CmdOrCtrl+R',
+          click: () => {
+            if (app.isReady()) {
+              mainWindow.webContents.send('CopyToKyaraCom', 'kyast')
+            }
+          },
+        },
+        {
           label: '名前の変更',
           accelerator: 'CmdOrCtrl+Space',
           click: () => {

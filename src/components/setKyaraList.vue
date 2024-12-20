@@ -178,6 +178,16 @@ const onInData = (index?: number): void => {
   }
 }
 
+// ショートカットキーでキャラ設定コピーのコマンドがあった場合はコピーを行う。
+yomAPI.CopyToKyara((dataType: string) => {
+  isMenuOpen.value = false
+  if (dataType === 'kyara') {
+    props.CopyKyaraSetting('kyara', props.dateList[props.selectKyara].uuid)
+  } else if (dataType === 'kyast') {
+    props.CopyKyaraSetting('kyast', props.dateList[props.selectKyara].uuid)
+  }
+})
+
 // ショートカットキーで名前の変更のコマンドがあった場合は編集画面を表示する
 yomAPI.EntEditName(() => {
   isMenuOpen.value = false

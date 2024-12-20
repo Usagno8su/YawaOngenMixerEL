@@ -45,4 +45,5 @@ export interface WGyomAPI {
   ) => { [key: string]: { val: string; active: boolean } }
   EntEditName: (listener: () => void) => void
   EntAskDelete: (listener: () => void) => void
+  CopyToKyara: (listener: (dataType: string) => void) => void
 }
