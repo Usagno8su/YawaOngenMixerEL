@@ -14,6 +14,7 @@ const props = defineProps<{
   subTextStringList: { [key: string]: { val: string; active: boolean } }
   useSubText: boolean
   searchKyaraEvent: (text: string) => void
+  CopyKyaraSetting: (dataType: dataTextType, uuid: string) => void
 }>()
 import { watch, ref, nextTick } from 'vue'
 import { outSettingType, dataTextType, editKyaraNameType } from '@/type/data-type'
@@ -263,6 +264,7 @@ watch(
             <div v-show="isMenuOpen === true" class="sticky">
               <SelectDisplayKyaraRightClickMenu
                 :clickClose="() => (isMenuOpen = false)"
+                :CopyKyaraSetting="(settype: dataTextType) => CopyKyaraSetting(settype, item.uuid)"
                 :editDataClik="() => editDataClik(item.uuid, item.name, item.kyaraStyle)"
                 :askDeleteKyara="() => askDeleteKyara(index)"
               />

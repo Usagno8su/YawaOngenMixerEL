@@ -37,6 +37,7 @@ import {
   writeGlobalSetting,
   getPlatform,
   FindAllString,
+  CreateCopyDateList,
 } from '@/utils/analysisData'
 import { DEFAULT_KYARA_SETTING_UUID } from '@/data/data'
 import { createDefoKyaraDateList } from '@/utils/analysisGeneral'
@@ -173,6 +174,28 @@ const addNewKyara = (dataType: dataTextType, kyaraName: string, kyaraStyle: stri
   console.log('現在編集中のキャラ設定: ' + dateList.value[selectKyara.value].name)
 
   return true
+}
+
+// 既存のキャラ設定をコピー
+const CopyKyaraSetting = (dataType: dataTextType, uuid: string): void => {
+  try {
+    // UUID で検索
+    const copykyara = dateList.value.find((e) => e.uuid === uuid)
+
+    if (copykyara !== undefined) {
+      dateList.value.push(CreateCopyDateList(copykyara, dataType))
+
+      // 追加した要素を選択状態にする
+      selectKyara.value = dateList.value.length - 1
+      console.log('現在編集中のキャラ設定: ' + dateList.value[selectKyara.value].name)
+      if (props.settype !== dataType) {
+        props.setTypeChange(dataType)
+      }
+    }
+  } catch (e) {
+    // something wrong
+    console.log('キャラ設定エラー')
+  }
 }
 
 const deleteDialogRef = ref<deleteDialogRefType>({
@@ -558,6 +581,7 @@ watch(
         :subTextStringList="subTextStringList"
         :useSubText="globalSetting.useSubText"
         :searchKyaraEvent="searchKyaraEvent"
+        :CopyKyaraSetting="CopyKyaraSetting"
         ref="setKyaraListRef"
       />
       <!-- キャラ設定プロファイルの追加ボタンは、defoでのみ表示 -->

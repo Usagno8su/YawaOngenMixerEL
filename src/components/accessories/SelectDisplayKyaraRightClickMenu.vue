@@ -1,10 +1,12 @@
 <script setup lang="ts">
 const props = defineProps<{
   clickClose: () => void
+  CopyKyaraSetting: (settype: dataTextType) => void
   editDataClik: () => void
   askDeleteKyara: () => void
 }>()
 // キャラ設定のコピーや削除の選択を行う右クリックメニュー
+import { dataTextType } from '@/type/data-type'
 </script>
 
 <template>
@@ -19,14 +21,14 @@ const props = defineProps<{
     @click.stop="clickClose"
   >
     <button
-      @click="console.log('キャラ設定にコピー')"
+      @click="CopyKyaraSetting('kyara')"
       class="flex justify-between bg-blue-100 px-2 py-1 text-gray-700 hover:bg-blue-600 hover:text-gray-200"
     >
       <div>キャラ設定にコピー</div>
       <div>Ctrl+E</div>
     </button>
     <button
-      @click="console.log('スタイル付きキャラ設定にコピー')"
+      @click="CopyKyaraSetting('kyast')"
       class="flex justify-between bg-blue-100 px-2 py-1 text-gray-700 hover:bg-blue-600 hover:text-gray-200"
     >
       <div>スタイル付きキャラ設定にコピー</div>
