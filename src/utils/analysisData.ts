@@ -257,6 +257,21 @@ export const createNewDateList = (
   }
 }
 
+// 指定された既存のキャラ設定をコピーしたものを出力します。
+export const CreateCopyDateList = (kyraData: outSettingType, dataType: dataTextType): outSettingType => {
+  return {
+    dataType: dataType,
+    uuid: yomAPI.getUUID(),
+    name: kyraData.name + (dataType === 'kyara' ? 'コピー' + NowTimeData('todaybumber') : ''),
+    kyaraStyle: dataType === 'kyast' ? 'コピー' + NowTimeData('todaybumber') : undefined,
+    tatie: JSON.parse(JSON.stringify(kyraData.tatie)),
+    subtitle: JSON.parse(JSON.stringify(kyraData.subtitle)),
+    fileName: '',
+    fileExtension: '',
+    voiceID: '',
+  }
+}
+
 // 立ち絵のUUIDリストにpushする新しいデータを作成する
 export const createNewFileListTatie = (uuid: string, fileName?: string, kyaraName?: string): fileListTatieType => {
   return {
