@@ -14,17 +14,22 @@ const props = defineProps<{
   subTextStringList: { [key: string]: { val: string; active: boolean } }
   useSubText: boolean
   searchKyaraEvent: (text: string) => void
+  CopyKyaraSetting: (dataType: dataTextType, uuid: string) => void
 }>()
-import { watch, ref } from 'vue'
+import { watch, ref, nextTick } from 'vue'
 import { outSettingType, dataTextType, editKyaraNameType } from '@/type/data-type'
 import { checkSameValues, FindAllString, createNewDateList } from '@/utils/analysisData'
 import AccEditKyaraName from '@/components/accessories/AccEditKyaraName.vue'
 import MaterialIcons from '@/components/accessories/icons/MaterialIcons.vue'
 import SelectProfileList from '@/components/unit/SelectProfileList.vue'
 import SearchInputUnit from '@/components/unit/SearchInputUnit.vue'
+import SelectDisplayKyaraRightClickMenu from '@/components/accessories/SelectDisplayKyaraRightClickMenu.vue'
+
+const { yomAPI } = window
 
 const isNewOpen = ref<boolean>(false)
 const isEditOpen = ref<string | boolean>(null)
+const isMenuOpen = ref<boolean>(false)
 const editKyaraName = ref<outSettingType>(createNewDateList(undefined, undefined, '', '', {}, {}))
 const editBeforeKyaraNameType = ref<editKyaraNameType>({
   name: undefined,
@@ -53,6 +58,15 @@ const actSet = (ltype: string): string => {
       ? 'bg-blue-400 hover:bg-blue-500 hover:text-gray-200'
       : 'bg-blue-200 hover:bg-blue-500 hover:text-gray-200')
   )
+}
+
+// リストの各項目にrefを設定する
+const kyaraRefs = ref<HTMLDivElement[]>([])
+const selectKyaraRef = (e: HTMLDivElement) => {
+  // 存在するか＆重複があるか確認する
+  if (e && !kyaraRefs.value.includes(e)) {
+    kyaraRefs.value.push(e)
+  }
 }
 
 // キャラの追加
@@ -140,15 +154,17 @@ const newDataClik = (): void => {
 // キャラ設定の変更ポタンが押された場合
 // 変更用のinput項目を表示
 const editDataClik = (uuid: string, name: string | undefined, kyaraStyle: string | undefined): void => {
-  // 新規追加中の場合は閉じる
-  if (isNewOpen.value !== false) {
-    cancelEditKyaraData()
-  }
-  isEditOpen.value = uuid
-  // 変更前の状態を記録
-  editBeforeKyaraNameType.value = {
-    name: name,
-    kyaraStyle: kyaraStyle,
+  if (props.settype === 'kyara' || props.settype === 'kyast') {
+    // 新規追加中の場合は閉じる
+    if (isNewOpen.value !== false) {
+      cancelEditKyaraData()
+    }
+    isEditOpen.value = uuid
+    // 変更前の状態を記録
+    editBeforeKyaraNameType.value = {
+      name: name,
+      kyaraStyle: kyaraStyle,
+    }
   }
 }
 
@@ -162,12 +178,49 @@ const onInData = (index?: number): void => {
   }
 }
 
+// ショートカットキーでキャラ設定コピーのコマンドがあった場合はコピーを行う。
+yomAPI.CopyToKyara((dataType: string) => {
+  isMenuOpen.value = false
+  if (dataType === 'kyara') {
+    props.CopyKyaraSetting('kyara', props.dateList[props.selectKyara].uuid)
+  } else if (dataType === 'kyast') {
+    props.CopyKyaraSetting('kyast', props.dateList[props.selectKyara].uuid)
+  }
+})
+
+// ショートカットキーで名前の変更のコマンドがあった場合は編集画面を表示する
+yomAPI.EntEditName(() => {
+  isMenuOpen.value = false
+  editDataClik(
+    props.dateList[props.selectKyara].uuid,
+    props.dateList[props.selectKyara].name,
+    props.dateList[props.selectKyara].kyaraStyle,
+  )
+})
+
+// ショートカットキーで削除のコマンドがあった場合は削除ダイアログを開く
+yomAPI.EntAskDelete(() => {
+  isMenuOpen.value = false
+  props.askDeleteKyara(props.selectKyara)
+})
+
 // props.settype, props.selectKyaraが変更されたときの処理
 watch(
   () => [props.settype, props.selectKyara],
   () => {
     // キャラの追加・変更処理をキャンセルする。
     cancelEditKyaraData()
+  },
+)
+
+watch(
+  () => [props.settype],
+  () => {
+    // 表示後に現在選択中のキャラ項目を表示するようにスクロールする
+    nextTick(() => {
+      const selectDiv = props.dateList.findIndex((e) => e.uuid === props.dateList[props.selectKyara].uuid)
+      kyaraRefs.value[selectDiv].scrollIntoView(false)
+    })
   },
 )
 </script>
@@ -181,7 +234,7 @@ watch(
         @searchKyaraEvent="searchKyaraEvent"
         ref="refSearchString"
       />
-      <div v-if="settype !== 'defo'" v-for="(item, index) in dateList" v-bind:key="item.uuid">
+      <div v-if="settype !== 'defo'" v-for="(item, index) in dateList" v-bind:key="item.uuid" :ref="selectKyaraRef">
         <div
           :class="actSet(item.uuid)"
           @click="setDataTypeClick(index, item)"
@@ -212,8 +265,20 @@ watch(
             {{ useSubText && subTextStringList[item.uuid].active ? subTextStringList[item.uuid].val : item.fileName }}
           </div>
           <div class="flex h-full" v-if="selectKyara === index && settype !== 'seid'">
-            <MaterialIcons icon="Edit" @click="editDataClik(item.uuid, item.name, item.kyaraStyle)" />
-            <MaterialIcons icon="Delete" @click="askDeleteKyara(index)" />
+            <MaterialIcons
+              icon="MoreHoriz"
+              @click.right="() => (isMenuOpen = true)"
+              @click="() => console.log(kyaraRefs[index].offsetTop)"
+              title="右クリックでメニュー表示"
+            />
+            <div v-show="isMenuOpen === true" class="sticky">
+              <SelectDisplayKyaraRightClickMenu
+                :clickClose="() => (isMenuOpen = false)"
+                :CopyKyaraSetting="(settype: dataTextType) => CopyKyaraSetting(settype, item.uuid)"
+                :editDataClik="() => editDataClik(item.uuid, item.name, item.kyaraStyle)"
+                :askDeleteKyara="() => askDeleteKyara(index)"
+              />
+            </div>
           </div>
           <button
             class="h-full rounded-md border border-gray-700 bg-yellow-300"

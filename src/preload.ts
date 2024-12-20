@@ -100,4 +100,8 @@ contextBridge.exposeInMainWorld('yomAPI', {
   ): { [key: string]: { val: string; active: boolean } } => {
     return ipcRenderer.sendSync('loadSubTextStringList', dir, itemList)
   },
+  EntEditName: (listener: () => void) => ipcRenderer.on('EditNameKeyCom', () => listener()),
+  EntAskDelete: (listener: () => void) => ipcRenderer.on('AskDeleteKeyCom', () => listener()),
+  CopyToKyara: (listener: (dataType: string) => void) =>
+    ipcRenderer.on('CopyToKyaraCom', (_event: IpcRendererEvent, dataType: string) => listener(dataType)),
 })

@@ -144,6 +144,49 @@ const createWindow = () => {
       ],
     }),
   )
+  menu.append(
+    new MenuItem({
+      label: '編集',
+      submenu: [
+        {
+          label: 'キャラ設定にコピー',
+          accelerator: 'CmdOrCtrl+E',
+          click: () => {
+            if (app.isReady()) {
+              mainWindow.webContents.send('CopyToKyaraCom', 'kyara')
+            }
+          },
+        },
+        {
+          label: 'スタイル付きキャラ設定にコピー',
+          accelerator: 'CmdOrCtrl+R',
+          click: () => {
+            if (app.isReady()) {
+              mainWindow.webContents.send('CopyToKyaraCom', 'kyast')
+            }
+          },
+        },
+        {
+          label: '名前の変更',
+          accelerator: 'CmdOrCtrl+Space',
+          click: () => {
+            if (app.isReady()) {
+              mainWindow.webContents.send('EditNameKeyCom')
+            }
+          },
+        },
+        {
+          label: '削除',
+          accelerator: 'CmdOrCtrl+D',
+          click: () => {
+            if (app.isReady()) {
+              mainWindow.webContents.send('AskDeleteKeyCom')
+            }
+          },
+        },
+      ],
+    }),
+  )
 
   Menu.setApplicationMenu(menu)
 
