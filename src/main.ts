@@ -24,6 +24,7 @@ import {
   loadSubTextStringList,
   loadGlobalSettingData,
   loadKyaraProfileData,
+  loadVoiceFileData,
 } from './utils/analysisMain'
 import { createDefoInfoDateList } from './utils/analysisGeneral'
 import { outSettingType, profileKyaraExportType, globalSettingExportType } from './type/data-type'
@@ -317,7 +318,7 @@ ipcMain.on('saveKyaraProfileData', async (event: IpcMainEvent, fileName: string,
 
 // 音声ファイルの個別設定データの読み込みを行う
 ipcMain.on('loadVoiceFileData', async (event: IpcMainEvent, dirPathName: string) => {
-  event.returnValue = readJsonData(path.join(dirPathName, 'yomVoiceSetting'))
+  event.returnValue = await loadVoiceFileData(path.join(dirPathName, 'yomVoiceSetting'))
 })
 
 // 音声ファイルの個別設定データの書き込みを行う
