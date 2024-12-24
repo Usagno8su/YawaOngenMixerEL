@@ -194,6 +194,17 @@ export type globalSettingType = {
   useSubText: boolean // 音声ファイルリストで字幕の内容を表示するかどうか
 }
 
+// var 0.2.1 以下の場合
+// useSubText がない
+export type globalSettingV021Type = {
+  selectProfile: string // 最後に開いていた設定プロファイルの名前
+  saveSearchString: boolean // 検索欄への入力を別タブに行っても保存するか
+  exeFilePath: {
+    ffmpeg: string
+    convert: string
+  }
+}
+
 // キャラ設定プロファイルの名前とUUIDのリスト
 export type kyaraProfileListType = {
   uuid: string // ファイル名（拡張子.jsonは入れない）
@@ -213,11 +224,25 @@ export type fileListTatieExportType = {
   fileListTatie: fileListTatieType[]
 }
 
+// 全体設定のJSONファイルを読み込んでバージョンを確認するType
+export type globalSettingExportTempType = {
+  softVer: [number, number, number] // バージョン番号を数値の配列にする
+  exportStatus: number // 出力エラーがあると0ではなくなる（増える）
+  globalSetting: string
+}
+
 // 全体設定のJSONファイルを作るためのType
 export type globalSettingExportType = {
   softVer: [number, number, number] // バージョン番号を数値の配列にする
   exportStatus: number // 出力エラーがあると0ではなくなる（増える）
   globalSetting: globalSettingType
+}
+
+// var 0.2.1 以下の全体設定JSONファイルを読み込むType
+export type globalSettingExportV021Type = {
+  softVer: [number, number, number] // バージョン番号を数値の配列にする
+  exportStatus: number // 出力エラーがあると0ではなくなる（増える）
+  globalSetting: globalSettingV021Type
 }
 
 // パスからファイル名等の情報を取り出すためのType
