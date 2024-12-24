@@ -65,6 +65,7 @@ export const typeColor: { [key: string]: { bg: string; hoverBG: string; hoverTex
 // 立ち絵の項目リスト
 export const tatieSettingList = [
   'tatiePath',
+  'waitTatiePath',
   'moviW',
   'moviH',
   'tatieConp',

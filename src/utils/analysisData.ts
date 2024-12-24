@@ -156,6 +156,7 @@ export const createNewDateList = (
   kyaraStyle: string,
   tatie?: {
     tatieUUID?: string
+    waitTatieUUID?: string
     moviW?: number
     moviH?: number
     tatieConp?: boolean
@@ -201,6 +202,10 @@ export const createNewDateList = (
       tatieUUID: {
         val: tatie.tatieUUID ?? DEFAULT_KYARA_TATIE_UUID,
         active: tatie.tatieUUID !== undefined ? true : false,
+      },
+      waitTatieUUID: {
+        val: tatie.waitTatieUUID ?? DEFAULT_KYARA_TATIE_UUID,
+        active: tatie.waitTatieUUID !== undefined ? true : false,
       },
       moviW: { val: tatie.moviW ?? 1280, active: tatie.moviW !== undefined ? true : false },
       moviH: { val: tatie.moviH ?? 720, active: tatie.moviH !== undefined ? true : false },
@@ -293,6 +298,7 @@ export const createVoiceFileEncodeSetting = (
   // 結果を格納する連想配列を作成
   const outDataTatie = ref<tatieSetting>({
     tatieUUID: { val: '', active: false },
+    waitTatieUUID: { val: '', active: false },
     moviW: { val: 0, active: false },
     moviH: { val: 0, active: false },
     tatieConp: { val: false, active: false },
@@ -367,6 +373,7 @@ export const createVoiceFileEncodeSetting = (
       fileSetting.kyaraStyle,
       {
         tatieUUID: outDataTatie.value.tatieUUID.val,
+        waitTatieUUID: outDataTatie.value.waitTatieUUID.val,
         moviW: outDataTatie.value.moviW.val,
         moviH: outDataTatie.value.moviH.val,
         tatieConp: outDataTatie.value.tatieConp.val,

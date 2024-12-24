@@ -1,6 +1,7 @@
 // 立ち絵関連の設定
 export type tatieSetting = {
   tatieUUID: statusString // 立ち絵のUUID
+  waitTatieUUID: statusString // 待機中の立ち絵のUUID
   moviW: statusNumber // 画面の横
   moviH: statusNumber // 画面の縦
   tatieConp: statusBoolean // 立ち絵の加工をするか
@@ -67,6 +68,7 @@ export type statusSubAlignment = {
 // 立ち絵の項目のタイプ
 export type tatieSettingType =
   | 'tatieUUID'
+  | 'waitTatieUUID'
   | 'moviW'
   | 'moviH'
   | 'tatieConp'
