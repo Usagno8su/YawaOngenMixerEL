@@ -26,7 +26,7 @@ import {
   globalSettingExportV021Type,
   globalSettingV021Type,
 } from '../type/data-type'
-import { DEFAULT_KYARA_PROFILE_NAME } from '../data/data'
+import { DEFAULT_KYARA_PROFILE_NAME, DEFAULT_KYARA_TATIE_UUID } from '../data/data'
 import { createNewDateList } from './analysisData'
 import { createComImg } from './comExec/comIMG'
 import { createImgFile, createMoviFile, enterEncodeSmallTatie } from './comExec/comEnter'
@@ -657,6 +657,77 @@ export const loadGlobalSettingData = async (confPath: string): Promise<string> =
       const out = outSoftVersion()
       return JSON.stringify(
         { exportStatus: out.exportStatus, softVar: out.softVer, globalSetting: result },
+        undefined,
+        2,
+      )
+    })
+    .then((result: string) => {
+      return writeJsonData(confPath, result)
+    })
+    .then(() => {
+      console.log('再読込')
+      jsonData.value = readJsonData(confPath)
+    })
+    .catch(() => {
+      console.log('問題なし')
+    })
+
+  return jsonData.value
+}
+
+// キャラ設定プロファイルを読み込み、 設定が古い場合は、内容を更新する。
+export const loadKyaraProfileData = async (confPath: string): Promise<string> => {
+  const jsonData = ref<string>(readJsonData(confPath))
+
+  const inputJsonData: profileKyaraExportType = JSON.parse(jsonData.value)
+
+  ///////
+  // 古い設定ファイルだった場合、必要な項目を追加します。
+
+  // var 0.2 以下の場合
+  // waitTatieUUID がないので追加する
+  await new Promise((resolve, reject) => {
+    if (inputJsonData.softVer[0] <= 0 && inputJsonData.softVer[1] <= 2) {
+      console.log('var 0.2 以下の場合')
+      resolve('waitTatieUUID')
+    } else {
+      reject()
+    }
+  })
+    .then(() => {
+      console.log('waitTatieUUID を追加')
+      const ans: outSettingType[] = inputJsonData.settingList.map((item) => {
+        return {
+          dataType: item.dataType,
+          uuid: item.uuid,
+          name: item.name,
+          kyaraStyle: item.kyaraStyle,
+          tatie: {
+            ...item.tatie,
+            waitTatieUUID: {
+              val: DEFAULT_KYARA_TATIE_UUID,
+              active: false,
+            },
+          },
+          subtitle: item.subtitle,
+          fileName: item.fileName,
+          fileExtension: item.fileExtension,
+          voiceID: item.voiceID,
+        }
+      })
+      return ans
+    })
+    .then((result: outSettingType[]) => {
+      console.log('追加したデータを書き込む')
+      // 追加したデータを書き込む
+      const out = outSoftVersion()
+      return JSON.stringify(
+        {
+          softVar: out.softVer,
+          exportStatus: out.exportStatus,
+          infoSetting: inputJsonData.infoSetting,
+          settingList: result,
+        },
         undefined,
         2,
       )

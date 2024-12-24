@@ -23,6 +23,7 @@ import {
   loadSubTextString,
   loadSubTextStringList,
   loadGlobalSettingData,
+  loadKyaraProfileData,
 } from './utils/analysisMain'
 import { createDefoInfoDateList } from './utils/analysisGeneral'
 import { outSettingType, profileKyaraExportType, globalSettingExportType } from './type/data-type'
@@ -281,7 +282,7 @@ ipcMain.on('loadKyaraProfileData', async (event: IpcMainEvent, file: string) => 
   // 取得に失敗した場合はデフォルトデータを作成する
   try {
     if (fs.existsSync(defoKyaraSettingFilePath + '.json')) {
-      const inputData: profileKyaraExportType = JSON.parse(readJsonData(defoKyaraSettingFilePath))
+      const inputData: profileKyaraExportType = JSON.parse(await loadKyaraProfileData(defoKyaraSettingFilePath))
       event.returnValue = {
         infoSetting: inputData.infoSetting,
         settingList: inputData.settingList,
