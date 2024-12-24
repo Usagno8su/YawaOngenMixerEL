@@ -164,6 +164,14 @@ export type profileKyaraExportType = {
   settingList: outSettingType[]
 }
 
+// 音声ファイルの個別設定データをJSONファルに出力するために、
+// 出力時のソフトのバージョンと出力エラーの有無を記録するType
+export type profileVoiceFileExportType = {
+  softVer: [number, number, number] // バージョン番号を数値の配列にする
+  exportStatus: number // 出力エラーがあると0ではなくなる（増える）
+  settingList: outSettingType[]
+}
+
 // JSONファイルから読み込んだデータをメインからレンダラー側へ送るためのType
 export type inputProfileSendReType = {
   infoSetting: infoSettingType
