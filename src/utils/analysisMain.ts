@@ -22,6 +22,9 @@ import {
   kyaraProfileListExportType,
   kyaraProfileListType,
   pathStatusType,
+  globalSettingExportTempType,
+  globalSettingExportV021Type,
+  globalSettingV021Type,
 } from '../type/data-type'
 import { DEFAULT_KYARA_PROFILE_NAME } from '../data/data'
 import { createNewDateList } from './analysisData'
@@ -29,7 +32,7 @@ import { createComImg } from './comExec/comIMG'
 import { createImgFile, createMoviFile, enterEncodeSmallTatie } from './comExec/comEnter'
 import { createComMovi } from './comExec/comMOVI'
 import { app, dialog } from 'electron'
-import path from 'path'
+import path, { resolve } from 'path'
 import fs from 'fs'
 
 // 作業用の一時ファイルを設置するディレクトリを作成する。
@@ -625,7 +628,7 @@ export const loadGlobalSettingData = async (confPath: string): Promise<string> =
   const jsonData = ref<string>(readJsonData(confPath))
 
   // JSONファイル読み込み
-  const inputJsonData: globalSettingExportType = JSON.parse(jsonData.value)
+  const inputJsonData: globalSettingExportTempType = JSON.parse(jsonData.value)
 
   ///////
   // 古い設定ファイルだった場合、必要な項目を追加します。
@@ -633,22 +636,41 @@ export const loadGlobalSettingData = async (confPath: string): Promise<string> =
   // var 0.2.1 以下の場合
   // useSubText がないので追加する
   await new Promise((resolve, reject) => {
-    if (inputJsonData.globalSetting.useSubText === undefined) {
-      resolve(true)
+    if (inputJsonData.softVer[0] <= 0 && inputJsonData.softVer[1] <= 2 && inputJsonData.softVer[2] <= 1) {
+      console.log('var 0.2.1 以下の場合')
+      const inputJsonV021Data: globalSettingExportV021Type = JSON.parse(jsonData.value)
+      resolve(inputJsonV021Data.globalSetting)
     } else {
       reject()
     }
   })
-    .then(() => {
-      inputJsonData.globalSetting.useSubText = true
+    .then((result: globalSettingV021Type) => {
+      console.log('useSubText を追加')
+      return {
+        ...result,
+        useSubText: true,
+      }
     })
-    .then(() => {
+    .then((result: globalSettingType) => {
+      console.log('追加したデータを書き込む')
       // 追加したデータを書き込む
-      inputJsonData.softVer = outSoftVersion().softVer
-      jsonData.value = JSON.stringify(inputJsonData, undefined, 2)
-      writeJsonData(confPath, jsonData.value)
+      const out = outSoftVersion()
+      return JSON.stringify(
+        { exportStatus: out.exportStatus, softVar: out.softVer, globalSetting: result },
+        undefined,
+        2,
+      )
     })
-    .catch(() => {})
+    .then((result: string) => {
+      return writeJsonData(confPath, result)
+    })
+    .then(() => {
+      console.log('再読込')
+      jsonData.value = readJsonData(confPath)
+    })
+    .catch(() => {
+      console.log('問題なし')
+    })
 
   return jsonData.value
 }
