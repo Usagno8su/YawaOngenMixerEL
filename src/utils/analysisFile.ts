@@ -5,6 +5,7 @@ import {
   fileListTatieExportType,
   fileListTatieType,
   encodeProfileSendReType,
+  profileVoiceFileExportType,
 } from '../type/data-type'
 import { ref } from 'vue'
 import { createNewDataID, createNewDateList } from './analysisData'
@@ -27,11 +28,7 @@ export const analysisFileName = (
   const [lists, dir] = yomAPI.opneVoiceFileDir(defoSelectDir)
 
   // ディレクトリに個別設定データの設定ファイルがある場合は取得する
-  const inputData = ref<{
-    softVer: [number, number, number]
-    exportStatus: number
-    settingList: outSettingType[]
-  }>(null)
+  const inputData = ref<profileVoiceFileExportType>(null)
   if (dir !== null) {
     try {
       inputData.value = JSON.parse(yomAPI.getVoiceFileDirData(dir))
@@ -134,7 +131,7 @@ export const writeVoiceFileSettingData = (voiceFileDirPath: string, settingList:
   const softVerData = yomAPI.getSoftVersionData()
 
   // 送付するデータを作成して、JSON形式に変換する
-  const outPrData = {
+  const outPrData: profileVoiceFileExportType = {
     softVer: softVerData.softVer,
     exportStatus: softVerData.exportStatus,
     settingList: settingList,
