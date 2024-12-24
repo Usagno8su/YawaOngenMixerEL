@@ -218,8 +218,10 @@ watch(
   () => {
     // 表示後に現在選択中のキャラ項目を表示するようにスクロールする
     nextTick(() => {
-      const selectDiv = props.dateList.findIndex((e) => e.uuid === props.dateList[props.selectKyara].uuid)
-      kyaraRefs.value[selectDiv].scrollIntoView(false)
+      const selectDiv = props.dateList.findIndex((e) => e.uuid === props.dateList[props.selectKyara]?.uuid)
+      if (selectDiv !== -1) {
+        kyaraRefs.value[selectDiv].scrollIntoView(false)
+      }
     })
   },
 )
