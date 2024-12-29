@@ -228,7 +228,7 @@ watch(
 </script>
 
 <template>
-  <div class="overflow-none mt-2 h-[550px] w-72 border border-gray-700">
+  <div class="overflow-none mt-2 h-[550px] w-80 border border-gray-700">
     <div class="border-gray-600d max-h-full overflow-y-scroll border border-b-4" ref="selectAreaRef">
       <SearchInputUnit
         v-show="settype === 'kyara' || settype === 'kyast'"
