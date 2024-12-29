@@ -199,12 +199,13 @@ export const enterEncodeVideoFile = async (
 // 指定された立ち絵ファイルの変換を行う。
 export const enterEncodeTatiePicFile = async (
   encodeSetting: encodeProfileSendReType,
+  tatieSituation: string,
 ): Promise<{ buffer: Uint8Array; path: string }> => {
   // JSONファイルへの変換
   const outJsonData = JSON.stringify(encodeSetting, undefined, 2)
 
   // 変換の実施
-  return yomAPI.getEncodePicFileData(outJsonData)
+  return yomAPI.getEncodePicFileData([{ outJsonData: outJsonData, tatieSituation: tatieSituation }])
 }
 
 // 変換された立ち絵ファイルを保存する。

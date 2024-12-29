@@ -30,7 +30,10 @@ export interface WGyomAPI {
   openGlobalSetting: (listener: () => void) => void
   getJsonFileData: (fileType: string, fileName?: string) => string
   writeJsonFileData: (fileType: string, outJsonData: string, fileName?: string) => boolean
-  getEncodePicFileData: (outJsonData: string) => { buffer: Uint8Array; path: string }
+  getEncodePicFileData: (outState: { outJsonData: string; tatieSituation: string }[]) => {
+    buffer: Uint8Array
+    path: string
+  }
   writeUint8ArrayFileData: (
     fileData: Uint8Array,
     fileName: string,

@@ -1,10 +1,14 @@
 <script setup lang="ts">
-const props = defineProps<{
-  dateList: outSettingType[]
-  index: number
-  infoData: infoSettingType
-  imgClass?: string
-}>()
+const props = withDefaults(
+  defineProps<{
+    dateList: outSettingType[]
+    index: number
+    tatieSituation: 'tatieUUID' | 'waitTatieUUID'
+    infoData: infoSettingType
+    imgClass?: string
+  }>(),
+  { tatieSituation: 'tatieUUID' },
+)
 // 立ち絵画像のみ変換を行って表示する
 
 import type { outSettingType, infoSettingType, encodeProfileSendReType } from '@/type/data-type'
@@ -28,12 +32,12 @@ const img = ref<string | ArrayBuffer>()
 const data = ref<{ buffer: Uint8Array; path: string }>({ buffer: undefined, path: '' })
 const getKyaraImg = async (profile: encodeProfileSendReType) => {
   // 立ち絵があり、他の画像取得が動作していない場合のみ実施
-  if (profile.settingList.tatie.tatieUUID.val !== DEFAULT_KYARA_TATIE_UUID && runMakeImg) {
+  if (profile.settingList.tatie[props.tatieSituation].val !== DEFAULT_KYARA_TATIE_UUID && runMakeImg) {
     // 二重起動しないように値を変更
     runMakeImg.value = false
 
     // 立ち絵画像を変換して取得
-    data.value = await enterEncodeTatiePicFile(profile)
+    data.value = await enterEncodeTatiePicFile(profile, props.tatieSituation)
 
     // データが取得（nullではない）できれば表示する
     if (data.value.buffer !== null) {
@@ -81,7 +85,7 @@ const checkConf = ref<string>(JSON.stringify(profile.value.settingList.tatie, un
 const onEncodeTatie = setInterval(() => {
   // 比較のために設定内容をJSON形式に変換
   profile.value = createVoiceFileEncodeSetting(props.dateList[props.index], props.index, props.dateList, props.infoData)
-  const ans = JSON.stringify(profile.value.settingList.tatie, undefined, 2)
+  const ans = JSON.stringify([profile.value.settingList.tatie, props.tatieSituation], undefined, 2)
 
   // 比較して前回の内容と異なっていれば立ち絵画像の表示を更新する。
   if (checkConf.value !== ans) {
@@ -99,7 +103,7 @@ onUnmounted(() => {
 <template>
   <img
     v-if="
-      profile.settingList.tatie.tatieUUID.val !== DEFAULT_KYARA_TATIE_UUID &&
+      profile.settingList.tatie[tatieSituation].val !== DEFAULT_KYARA_TATIE_UUID &&
       typeof img === 'string' &&
       noTatieFile !== true
     "
@@ -109,7 +113,7 @@ onUnmounted(() => {
     title="クリックで変換画像を保存します。"
   />
   <div
-    v-else-if="profile.settingList.tatie.tatieUUID.val === DEFAULT_KYARA_TATIE_UUID"
+    v-else-if="profile.settingList.tatie[tatieSituation].val === DEFAULT_KYARA_TATIE_UUID"
     :class="MakeClassString('flex items-center justify-center bg-sky-100', imgClass)"
   >
     未選択です

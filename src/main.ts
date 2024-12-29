@@ -508,12 +508,15 @@ ipcMain.handle('enterEncodeVideoData', async (event: IpcMainEvent, dirPathName: 
 })
 
 // 画像エンコードのみを実施し、作成した画像ファイルとファイルパスを返す。
-ipcMain.on('loadEncodePicFileData', async (event: IpcMainEvent, outJsonData: string) => {
-  // 全体設定を読み込んで、コマンドのパス情報を取得する。
-  const globalSettingData: globalSettingExportType = JSON.parse(readJsonData(globalSettingFilePathGLB))
+ipcMain.on(
+  'loadEncodePicFileData',
+  async (event: IpcMainEvent, outState: { outJsonData: string; tatieSituation: string }[]) => {
+    // 全体設定を読み込んで、コマンドのパス情報を取得する。
+    const globalSettingData: globalSettingExportType = JSON.parse(readJsonData(globalSettingFilePathGLB))
 
-  event.returnValue = await enterEncodePicFileData(outJsonData, kyaraTatieDirPathGLB, globalSettingData.globalSetting)
-})
+    event.returnValue = await enterEncodePicFileData(outState, kyaraTatieDirPathGLB, globalSettingData.globalSetting)
+  },
+)
 
 // 画像エンコードで作成したファイルを保存する処理を実行
 ipcMain.handle(

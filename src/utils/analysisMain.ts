@@ -367,6 +367,7 @@ export const makeUUID = (): string => {
 // fileName が指定されていた場合は、画像ファイル名はそれにする。
 export const enterEncodeImageData = async (
   settingList: outSettingType,
+  tatieSituation: string,
   tempDirPath: string,
   convertPath: string,
   kyaraTatieDirPath: string,
@@ -384,7 +385,7 @@ export const enterEncodeImageData = async (
     convertPath,
     imgData,
     fileName || settingList.fileName,
-    settingList.tatie.tatieUUID.val,
+    settingList.tatie[tatieSituation === 'tatieUUID' ? 'tatieUUID' : 'waitTatieUUID'].val,
     kyaraTatieDirPath,
     outPicDir,
     tempDirPath,
@@ -409,6 +410,7 @@ export const enterEncodeVideoData = async (
   // 画像ファイルの作成を実行
   const imgFilePath = await enterEncodeImageData(
     outSettingData.settingList,
+    'tatieUUID',
     tempDirPath,
     globalSetting.exeFilePath.convert,
     kyaraTatieDirPath,
@@ -445,12 +447,12 @@ export const enterEncodeVideoData = async (
 
 // 画像エンコードのみを実施し、作成した画像ファイルとファイルパスを返す。
 export const enterEncodePicFileData = async (
-  outJsonData: string,
+  outState: { outJsonData: string; tatieSituation: string }[],
   kyaraTatieDirPath: string,
   globalSetting: globalSettingType,
 ): Promise<{ buffer: Uint8Array; path: string }> => {
   // JSONデータを変換
-  const outSettingData: encodeProfileSendReType = JSON.parse(outJsonData)
+  const outSettingData: encodeProfileSendReType = JSON.parse(outState[0].outJsonData)
 
   // 立ち絵の存在チェック
   const noTatieFile = !fs.existsSync(
@@ -467,6 +469,7 @@ export const enterEncodePicFileData = async (
     // 画像ファイルの作成を実行
     const imgFilePath = await enterEncodeImageData(
       outSettingData.settingList,
+      outState[0].tatieSituation,
       tempDirPath,
       globalSetting.exeFilePath.convert,
       kyaraTatieDirPath,
