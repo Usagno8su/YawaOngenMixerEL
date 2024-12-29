@@ -104,7 +104,7 @@ const createWindow = () => {
 
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    width: 960,
+    width: 1060,
     height: 885,
     resizable: false, // ウィンドウサイズ変更不可
     useContentSize: true,
