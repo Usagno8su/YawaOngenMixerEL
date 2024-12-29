@@ -248,7 +248,6 @@ watch(
           @click="setIsOpenTatieFile('waitTatieUUID')"
           :title="'待機立ち絵: ' + useTatieName()"
           :disabled="!dateList[selectKyara].tatie.waitTatieUUID.active"
-          v-if="props.settype !== 'seid'"
         >
           <DisplayTatiePicFile
             :selectTatieFile="
