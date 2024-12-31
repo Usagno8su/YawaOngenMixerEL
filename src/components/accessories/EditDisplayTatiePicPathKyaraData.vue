@@ -9,7 +9,7 @@ const props = defineProps<{
   titleName: string
   fileListTatie: fileListTatieType[]
 }>()
-import type { dataTextType, outSettingType, fileListTatieType } from 'src/type/data-type'
+import type { dataTextType, outSettingType, fileListTatieType, tatieSituationType } from 'src/type/data-type'
 import { SelectTatieIndexHigherUpData } from '@/utils/analysisData'
 import { ref, watch } from 'vue'
 import deleteDialogUUID from '@/components/accessories/deleteDialogUUID.vue'
@@ -22,7 +22,7 @@ import { MakeClassString } from '@/utils/analysisGeneral'
 const { yomAPI } = window
 
 const isOpenTatieFile = ref<boolean>(false)
-const editTatieType = ref<'tatieUUID' | 'waitTatieUUID'>('tatieUUID') // どの立ち絵を変更するか指定
+const editTatieType = ref<tatieSituationType>('tatieUUID') // どの立ち絵を変更するか指定
 
 const tatieFileRef = ref()
 
@@ -43,7 +43,7 @@ const viewFileListTatie = ref<fileListTatieType[]>(
 )
 
 // 選択画面の開閉を制御
-const setIsOpenTatieFile = (type?: 'tatieUUID' | 'waitTatieUUID'): void => {
+const setIsOpenTatieFile = (type?: tatieSituationType): void => {
   isOpenTatieFile.value = !isOpenTatieFile.value
   if (type !== undefined) {
     editTatieType.value = type

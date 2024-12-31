@@ -3,7 +3,7 @@ const props = withDefaults(
   defineProps<{
     dateList: outSettingType[]
     index: number
-    tatieSituation: 'tatieUUID' | 'waitTatieUUID'
+    tatieSituation: tatieSituationType
     infoData: infoSettingType
     imgClass?: string
   }>(),
@@ -11,7 +11,7 @@ const props = withDefaults(
 )
 // 立ち絵画像のみ変換を行って表示する
 
-import type { outSettingType, infoSettingType, encodeProfileSendReType } from '@/type/data-type'
+import type { outSettingType, infoSettingType, encodeProfileSendReType, tatieSituationType } from '@/type/data-type'
 import { ref, onUnmounted } from 'vue'
 import { enterEncodeTatiePicFile, enterSaveUint8ArrayFileData } from '@/utils/analysisFile'
 import { DEFAULT_KYARA_TATIE_UUID } from '@/data/data'

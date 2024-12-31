@@ -8,7 +8,7 @@ const props = defineProps<{
 }>()
 // 立ち絵画像の加工を行って表示します。
 
-import type { outSettingType, infoSettingType } from '@/type/data-type'
+import type { outSettingType, infoSettingType, tatieSituationType } from '@/type/data-type'
 import { SelectTatieIndexHigherUpData } from '@/utils/analysisData'
 import { watch, ref } from 'vue'
 import DisplayMoviePicFile from '@/components/accessories/DisplayMoviePicFile.vue'
@@ -16,7 +16,7 @@ import { DEFAULT_KYARA_TATIE_UUID } from '@/data/data'
 import { MakeClassString } from '@/utils/analysisGeneral'
 
 // 会話中・待機中のどちらの立ち絵を表示するか指定
-const tatieSituation = ref<'tatieUUID' | 'waitTatieUUID'>('tatieUUID')
+const tatieSituation = ref<tatieSituationType>('tatieUUID')
 
 //// どの設定データが採用されているか確認する。
 // 立ち絵画像のUUID
