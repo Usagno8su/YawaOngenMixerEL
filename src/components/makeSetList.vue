@@ -76,6 +76,13 @@ const seveProfile = (): void => {
         <button :class="actset('defo')" @click="setClick('defo')">デフォルト設定</button>
         <button :class="actset('kyara')" @click="setClick('kyara')">各キャラ設定</button>
         <button :class="actset('kyast')" @click="setClick('kyast')">スタイル付キャラ設定</button>
+        <button
+          :class="actset('tatieOrder')"
+          @click="setClick('tatieOrder')"
+          title="どの立ち絵を表示するかと、表示順を設定して前に表示したい立ち絵を決定します。"
+        >
+          立ち絵順序の設定
+        </button>
         <button :class="actset('seid')" @click="setClick('seid')">音声ファイル個別の設定</button>
       </div>
       <div>

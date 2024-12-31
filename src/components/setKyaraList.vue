@@ -319,7 +319,7 @@ watch(
         />
       </div>
     </div>
-    <div class="mx-1 mt-2 h-20" v-if="settype !== 'seid' && settype !== 'defo'">
+    <div class="mx-1 mt-2 h-20" v-if="settype !== 'seid' && settype !== 'defo' && settype !== 'tatieOrder'">
       <!-- キャラ設定の追加 seid か defo 以外で表示 -->
       <div class="mx-1 mt-3 flex justify-between">
         <div>

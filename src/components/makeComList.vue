@@ -8,6 +8,7 @@ const props = defineProps<{
 import setTatie from '@/components/setTatie.vue'
 import setSubtitle from '@/components/setSubtitle.vue'
 import setMainInfo from '@/components/setMainInfo.vue'
+import setTatieOrder from '@/components/setTatieOrder.vue'
 import setKyaraList from '@/components/setKyaraList.vue'
 import type {
   tatieSetting,
@@ -18,6 +19,7 @@ import type {
   inputProfileSendReType,
   infoSettingType,
   fileListTatieType,
+  tatieOrderListType,
 } from 'src/type/data-type'
 import {
   analysisFileName,
@@ -64,6 +66,24 @@ const inputProfileUUID = ref<string>(globalSetting.selectProfile)
 const inputProfileData = <inputProfileSendReType>loadProfile(inputProfileUUID.value)
 const dateList = ref<outSettingType[]>(inputProfileData.settingList)
 const infoData = ref<infoSettingType>(inputProfileData.infoSetting)
+const tatieOrderList = ref<tatieOrderListType[]>([
+  { uuid: 'sa1', dataType: 'kyara', name: '四国めたん', kyaraStyle: undefined, tatieSituation: 'waitTatieUUID' },
+  { uuid: 'sa2', dataType: 'kyara', name: 'ずんだもん', kyaraStyle: undefined, tatieSituation: 'waitTatieUUID' },
+  {
+    uuid: 'sa3',
+    dataType: 'kyast',
+    name: '四国めたん',
+    kyaraStyle: 'あまあま',
+    tatieSituation: 'tatieUUID',
+  },
+  {
+    uuid: 'sa4',
+    dataType: 'kyast',
+    name: '九州そら',
+    kyaraStyle: 'ささやき',
+    tatieSituation: 'waitTatieUUID',
+  },
+])
 
 // 立ち絵UUID情報の読み込み
 const fileListTatie = ref<fileListTatieType[]>(readFileListTatieData())
@@ -110,6 +130,10 @@ const subTextStringList = ref<{ [key: string]: { val: string; active: boolean } 
 
 // setKyaraListの関数を利用するためのRef
 const setKyaraListRef = ref(null)
+
+// 立ち絵の表示順をマウスで入れ替えるため、
+// 移動開始時の数値を保存する変数
+const dragStartIndex = ref<number>()
 
 // エンコードダイアログを閉じる
 const closeEncodeDialog = (): void => {
@@ -404,6 +428,23 @@ const searchKyaraEvent = (text: string) => {
   console.log('searchKyaraString: ' + searchKyaraString.value)
 }
 
+// 立ち絵の表示順をマウスで入れ替えるため、
+// 移動開始時の数値を保存する
+const TatieOrderDragStart = (index: number) => {
+  dragStartIndex.value = index
+}
+
+const TatieOrderDragMove = (index: number) => {
+  // もし、移動されていた場合は移動対象の配列要素を取り出して、
+  // indexで指定された場所に差し込む形で追加する。
+  // 処理が終わったら dragStartIndex.value と index の値を一致させて処理が無駄に実行されないようにする。
+  if (index !== dragStartIndex.value) {
+    const moveItem = tatieOrderList.value.splice(dragStartIndex.value, 1)[0]
+    tatieOrderList.value.splice(index, 0, moveItem)
+    dragStartIndex.value = index
+  }
+}
+
 // キャラ名やスタイル名で検索したときに、
 // 現在表示中のキャラ設定がリストに表示されなくなったか確認する。
 // 表示されなくなったら、表示されている項目に切り替える。
@@ -468,47 +509,23 @@ watch(
       }
     }
 
-    //// 設定タイプを切り替えたときに、どのキャラ設定を選択するか決める。
-    // 以前に開いた記録があるか確認し、あればそれに変更(立ち絵か字幕かの設定タイプ含めて)、なければ一番最初の要素を開く
-    //
-    // ただし、過去に開いていた項目が削除されている場合は、別のものを選択するか、未選択状態にする。
-    const afterSelect = beforeKyaraSelect.value.find(
-      (e) => dateList.value[e.selectedKyaraIndex]?.dataType === props.settype,
-    )
-    if (afterSelect === undefined) {
-      // 何も選択されていなかった場合の処理
-      // dateList.value[selectKyara.value] が、一瞬でも存在しない値を指すとエラーになるので、いったん別の変数に入れる
-      // const newSelextKyaraIndex = dateList.value.findIndex((e) => e.dataType === props.settype)
-      const ans = dateList.value.findIndex(
-        (e) =>
-          e.dataType === props.settype &&
-          FindAllString(searchKyaraString.value, [e.name, props.settype === 'kyast' && e.kyaraStyle]) === true,
+    // 立ち絵順序の設定のときは行わない
+    if (props.settype !== 'tatieOrder') {
+      //// 設定タイプを切り替えたときに、どのキャラ設定を選択するか決める。
+      // 以前に開いた記録があるか確認し、あればそれに変更(立ち絵か字幕かの設定タイプ含めて)、なければ一番最初の要素を開く
+      //
+      // ただし、過去に開いていた項目が削除されている場合は、別のものを選択するか、未選択状態にする。
+      const afterSelect = beforeKyaraSelect.value.find(
+        (e) => dateList.value[e.selectedKyaraIndex]?.dataType === props.settype,
       )
-      if (ans !== -1) {
-        setDataTypeClick(ans, dateList.value[ans])
-      } else {
-        setDataTypeClick(-1, dateList.value[0])
-      }
-      editData.value = 'tatie'
-    } else if (props.settype === 'defo') {
-      // デフォルト画面の場合
-      editData.value = afterSelect.selectedEditData
-      setDataTypeClick(afterSelect.selectedKyaraIndex, dateList.value[afterSelect.selectedKyaraIndex])
-    } else {
-      // なにか選択されていた場合でも、検索の内容を確認して操作する。
-      if (
-        afterSelect.selectedKyaraIndex === -1 ||
-        FindAllString(searchKyaraString.value, [
-          dateList.value[afterSelect.selectedKyaraIndex]?.name,
-          props.settype === 'kyast' && dateList.value[afterSelect.selectedKyaraIndex]?.kyaraStyle,
-        ]) === false
-      ) {
-        // 以前に開いたキャラが検索に一致しない場合は、一致するキャラを表示する。
-        // 検索して何もキャラが見つからない場合は、表示しない。
+      if (afterSelect === undefined) {
+        // 何も選択されていなかった場合の処理
+        // dateList.value[selectKyara.value] が、一瞬でも存在しない値を指すとエラーになるので、いったん別の変数に入れる
+        // const newSelextKyaraIndex = dateList.value.findIndex((e) => e.dataType === props.settype)
         const ans = dateList.value.findIndex(
-          (item) =>
-            item.dataType === props.settype &&
-            FindAllString(searchKyaraString.value, [item.name, props.settype === 'kyast' && item.kyaraStyle]) === true,
+          (e) =>
+            e.dataType === props.settype &&
+            FindAllString(searchKyaraString.value, [e.name, props.settype === 'kyast' && e.kyaraStyle]) === true,
         )
         if (ans !== -1) {
           setDataTypeClick(ans, dateList.value[ans])
@@ -516,10 +533,38 @@ watch(
           setDataTypeClick(-1, dateList.value[0])
         }
         editData.value = 'tatie'
-      } else {
-        // 検索に一致する場合それを表示する。
+      } else if (props.settype === 'defo') {
+        // デフォルト画面の場合
         editData.value = afterSelect.selectedEditData
         setDataTypeClick(afterSelect.selectedKyaraIndex, dateList.value[afterSelect.selectedKyaraIndex])
+      } else {
+        // なにか選択されていた場合でも、検索の内容を確認して操作する。
+        if (
+          afterSelect.selectedKyaraIndex === -1 ||
+          FindAllString(searchKyaraString.value, [
+            dateList.value[afterSelect.selectedKyaraIndex]?.name,
+            props.settype === 'kyast' && dateList.value[afterSelect.selectedKyaraIndex]?.kyaraStyle,
+          ]) === false
+        ) {
+          // 以前に開いたキャラが検索に一致しない場合は、一致するキャラを表示する。
+          // 検索して何もキャラが見つからない場合は、表示しない。
+          const ans = dateList.value.findIndex(
+            (item) =>
+              item.dataType === props.settype &&
+              FindAllString(searchKyaraString.value, [item.name, props.settype === 'kyast' && item.kyaraStyle]) ===
+                true,
+          )
+          if (ans !== -1) {
+            setDataTypeClick(ans, dateList.value[ans])
+          } else {
+            setDataTypeClick(-1, dateList.value[0])
+          }
+          editData.value = 'tatie'
+        } else {
+          // 検索に一致する場合それを表示する。
+          editData.value = afterSelect.selectedEditData
+          setDataTypeClick(afterSelect.selectedKyaraIndex, dateList.value[afterSelect.selectedKyaraIndex])
+        }
       }
     }
   },
@@ -610,7 +655,7 @@ watch(
       </div>
     </div>
     <div class="w-full">
-      <div class="flex h-9 justify-between">
+      <div class="flex h-9 justify-between" v-if="settype !== 'tatieOrder'">
         <div>
           <DisplayHigherUpKyaraSettingView
             v-if="settype !== 'defo'"
@@ -622,13 +667,35 @@ watch(
         <div>
           <!-- 基本設定はデフォルト設定でのみ表示 -->
           <button :class="actset('defo')" @click="setClick('defo')" v-if="settype === 'defo'">基本</button>
+          <button
+            :class="actset('tatieOrder')"
+            @click="setClick('tatieOrder')"
+            v-if="settype === 'seid'"
+            title="どの立ち絵を表示するかと、表示順を設定して前に表示したい立ち絵を決定します。"
+          >
+            順番
+          </button>
           <button :class="actset('tatie')" @click="setClick('tatie')">立ち絵</button>
           <button :class="actset('subtitle')" @click="setClick('subtitle')">字幕</button>
         </div>
       </div>
       <div class="h-[610px] rounded-md border-2 bg-gray-200 p-2">
-        <div class="my-2 flex h-7 justify-between border-b-[1px] border-gray-400">
-          <div class="mr-3 flex w-[30rem] items-center overflow-hidden truncate border-r-[1px] border-gray-400 pr-1">
+        <div class="flex items-center justify-between" v-if="settype === 'tatieOrder'">
+          <div title="個別の設定がOFFの場合はこちらの設定が優先されます">このプロファイルの立ち絵表示順番</div>
+        </div>
+        <div
+          class="flex items-center justify-between border-b border-gray-400"
+          v-if="settype === 'seid' && editData === 'tatieOrder'"
+        >
+          <div title="個々の音声ファイルで個別の設定を行いたい場合はこちらをONにします">
+            選択中の音声ファイルの立ち絵表示順番
+          </div>
+        </div>
+        <div
+          class="my-2 flex h-7 justify-between border-b-[1px] border-gray-400"
+          v-if="editData !== 'tatieOrder' && settype !== 'tatieOrder'"
+        >
+          <div class="mr-3 flex w-[37rem] items-center overflow-hidden truncate border-r-[1px] border-gray-400 pr-1">
             <DisplaySelectFileView
               :selectKyara="selectKyara"
               :dateList="dateList"
@@ -640,6 +707,18 @@ watch(
           </div>
         </div>
         <setMainInfo :infoData="infoData" v-if="editData === 'defo' && settype === 'defo'" />
+        <setTatieOrder
+          :selectKyara="selectKyara"
+          :dateList="dateList"
+          :settype="settype"
+          :higherUpList="higherUpList"
+          :fileListTatie="fileListTatie"
+          :inputProfileUUID="inputProfileUUID"
+          :tatieOrderList="tatieOrderList"
+          :TatieOrderDragStart="TatieOrderDragStart"
+          :TatieOrderDragMove="TatieOrderDragMove"
+          v-else-if="settype === 'tatieOrder' || (editData === 'tatieOrder' && dateList[selectKyara] !== undefined)"
+        />
         <setTatie
           :selectKyara="selectKyara"
           :dateList="dateList"
