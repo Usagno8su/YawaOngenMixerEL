@@ -98,10 +98,13 @@ export type subtitleSettingType =
   | 'subSideSpaceSize'
 
 // 情報タイプを指定
-export type dataTextType = 'defo' | 'kyara' | 'kyast' | 'seid'
+export type dataTextType = 'defo' | 'kyara' | 'kyast' | 'seid' | 'tatieOrder'
 
 // 「基本情報」「立ち絵」「字幕」のどれか
-export type selectedEditDataType = 'defo' | 'tatie' | 'subtitle'
+export type selectedEditDataType = 'defo' | 'tatie' | 'subtitle' | 'tatieOrder'
+
+// 立ち絵の会話中と待機中のUUIDが入った連想配列名
+export type tatieSituationType = 'tatieUUID' | 'waitTatieUUID'
 
 // 立ち絵の配置位置
 export type tatieSideType =
@@ -260,4 +263,13 @@ export type pathStatusType = {
   dirname: string // 親ディレクトリ名
   basename: string // ファイル名
   extname: string // 拡張子
+}
+
+// 立ち絵の表示順番を記録する配列の型
+export type tatieOrderListType = {
+  uuid: string
+  dataType: dataTextType
+  name: string
+  kyaraStyle: string
+  tatieSituation: tatieSituationType
 }
