@@ -434,6 +434,7 @@ const TatieOrderDragStart = (index: number) => {
   dragStartIndex.value = index
 }
 
+// 立ち絵の順番を入れ替える
 const TatieOrderDragMove = (index: number) => {
   // もし、移動されていた場合は移動対象の配列要素を取り出して、
   // indexで指定された場所に差し込む形で追加する。
@@ -442,6 +443,37 @@ const TatieOrderDragMove = (index: number) => {
     const moveItem = tatieOrderList.value.splice(dragStartIndex.value, 1)[0]
     tatieOrderList.value.splice(index, 0, moveItem)
     dragStartIndex.value = index
+  }
+}
+
+// 立ち絵順序の設定で、表示する立ち絵を追加する。
+// まだ追加されておらず、立ち絵が設定されているキャラ設定を調べて、それを追加する。
+const TatieOrderNew = () => {
+  const ans = dateList.value.find((e) => {
+    return (
+      tatieOrderList.value.findIndex(
+        (f) => e.dataType + e.name + e.kyaraStyle === f.dataType + f.name + f.kyaraStyle,
+      ) === -1 &&
+      (e.tatie.waitTatieUUID.active || e.tatie.tatieUUID.active)
+    )
+  })
+
+  if (ans !== undefined) {
+    TatieOrderAdd([ans])
+  }
+}
+
+// tatieOrderListに表示する立ち絵を追加する。
+// 配列で複数の立ち絵順序の設定をできる。
+const TatieOrderAdd = (outSettingTtems: outSettingType[]) => {
+  for (const item of outSettingTtems) {
+    tatieOrderList.value.push({
+      uuid: yomAPI.getUUID(),
+      dataType: item.dataType,
+      name: item.name,
+      kyaraStyle: item.dataType === 'kyast' ? item.kyaraStyle : undefined,
+      tatieSituation: item.tatie.waitTatieUUID.active ? 'waitTatieUUID' : 'tatieUUID',
+    })
   }
 }
 
@@ -717,6 +749,7 @@ watch(
           :tatieOrderList="tatieOrderList"
           :TatieOrderDragStart="TatieOrderDragStart"
           :TatieOrderDragMove="TatieOrderDragMove"
+          :TatieOrderNew="TatieOrderNew"
           v-else-if="settype === 'tatieOrder' || (editData === 'tatieOrder' && dateList[selectKyara] !== undefined)"
         />
         <setTatie
