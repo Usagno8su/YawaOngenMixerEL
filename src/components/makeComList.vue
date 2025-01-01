@@ -356,7 +356,8 @@ const entOpen = (): void => {
 const encodeAndDisplay = async (index: number): Promise<void> => {
   await enterEncodeVideoFile(
     voiceLoadDirPath.value,
-    createVoiceFileEncodeSetting(dateList.value[index], index, dateList.value, infoData.value),
+    createVoiceFileEncodeSetting(index, dateList.value),
+    infoData.value,
   )
   encodeAns.value = 'エンコード完了: ' + dateList.value[index].fileName
 }

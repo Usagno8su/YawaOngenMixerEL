@@ -56,8 +56,12 @@ contextBridge.exposeInMainWorld('yomAPI', {
   writeFileListKyaraData: (outJsonData: string): boolean => {
     return ipcRenderer.sendSync('saveFileListKyaraData', outJsonData)
   },
-  enterEncodeVideoData: async (dirPathName: string, outJsonData: string): Promise<string> => {
-    return await ipcRenderer.invoke('enterEncodeVideoData', dirPathName, outJsonData)
+  enterEncodeVideoData: async (
+    dirPathName: string,
+    outJsonData: string,
+    infoSettingJsonData: string,
+  ): Promise<string> => {
+    return await ipcRenderer.invoke('enterEncodeVideoData', dirPathName, outJsonData, infoSettingJsonData)
   },
   getGlobalSettingData: (): string => {
     return ipcRenderer.sendSync('loadGlobalSettingData')

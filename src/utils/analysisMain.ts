@@ -16,7 +16,6 @@ import {
   profileKyaraExportType,
   infoSettingType,
   fileListTatieExportType,
-  encodeProfileSendReType,
   globalSettingExportType,
   globalSettingType,
   kyaraProfileListExportType,
@@ -397,11 +396,13 @@ export const enterEncodeImageData = async (
 export const enterEncodeVideoData = async (
   voiceFileDirPath: string,
   outJsonData: string,
+  infoSettingJsonData: string,
   kyaraTatieDirPath: string,
   globalSetting: globalSettingType,
 ): Promise<string> => {
   // JSONデータを変換
-  const outSettingData: encodeProfileSendReType = JSON.parse(outJsonData)
+  const settingList: outSettingType = JSON.parse(outJsonData)
+  const infoSetting: infoSettingType = JSON.parse(infoSettingJsonData)
 
   // 一時ファイルのディレクトリを作成してpathを取得
   const tempDirPath = await createTempDir()
@@ -410,12 +411,12 @@ export const enterEncodeVideoData = async (
 
   // 画像ファイルの作成を実行
   const imgFilePath = await enterEncodeImageData(
-    outSettingData.settingList,
+    settingList,
     'tatieUUID',
     tempDirPath,
     globalSetting.exeFilePath.convert,
     kyaraTatieDirPath,
-    outSettingData.infoSetting.outPicDir,
+    infoSetting.outPicDir,
   )
 
   console.log('main への返送結果: ' + imgFilePath)
@@ -424,7 +425,7 @@ export const enterEncodeVideoData = async (
 
   // FFmpeg用のコマンド作成
   const moviData = await createComMovi(
-    outSettingData.settingList,
+    settingList,
     imgFilePath,
     voiceFileDirPath,
     tempDirPath,
@@ -438,8 +439,8 @@ export const enterEncodeVideoData = async (
   const moviFilePath = createMoviFile(
     globalSetting.exeFilePath.ffmpeg,
     moviData,
-    outSettingData.settingList,
-    outSettingData.infoSetting.outDir,
+    settingList,
+    infoSetting.outDir,
     tempDirPath,
   )
 
@@ -453,12 +454,10 @@ export const enterEncodePicFileData = async (
   globalSetting: globalSettingType,
 ): Promise<{ buffer: Uint8Array; path: string }> => {
   // JSONデータを変換
-  const outSettingData: encodeProfileSendReType = JSON.parse(outState[0].outJsonData)
+  const settingList: outSettingType = JSON.parse(outState[0].outJsonData)
 
   // 立ち絵の存在チェック
-  const noTatieFile = !fs.existsSync(
-    path.join(kyaraTatieDirPath, outSettingData.settingList.tatie.tatieUUID.val + '.png'),
-  )
+  const noTatieFile = !fs.existsSync(path.join(kyaraTatieDirPath, settingList.tatie.tatieUUID.val + '.png'))
 
   // 立ち絵が存在する場合はファイル変換を実行する。
   if (!noTatieFile) {
@@ -469,7 +468,7 @@ export const enterEncodePicFileData = async (
 
     // 画像ファイルの作成を実行
     const imgFilePath = await enterEncodeImageData(
-      outSettingData.settingList,
+      settingList,
       outState[0].tatieSituation,
       tempDirPath,
       globalSetting.exeFilePath.convert,

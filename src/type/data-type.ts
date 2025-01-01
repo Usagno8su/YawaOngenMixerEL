@@ -183,12 +183,6 @@ export type inputProfileSendReType = {
   settingList: outSettingType[]
 }
 
-// メイン側にエンコードするファイルの情報を送るType
-export type encodeProfileSendReType = {
-  infoSetting: infoSettingType
-  settingList: outSettingType
-}
-
 // 立ち絵のファイルUUIDとそのファイル名のリストを作るためのType
 export type fileListTatieType = {
   uuid: string

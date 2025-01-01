@@ -502,12 +502,21 @@ ipcMain.on(
 )
 
 // 動画のエンコードを行う
-ipcMain.handle('enterEncodeVideoData', async (event: IpcMainEvent, dirPathName: string, outJsonData: string) => {
-  // 全体設定を読み込んで、コマンドのパス情報を取得する。
-  const globalSettingData: globalSettingExportType = JSON.parse(readJsonData(globalSettingFilePathGLB))
+ipcMain.handle(
+  'enterEncodeVideoData',
+  async (event: IpcMainEvent, dirPathName: string, outJsonData: string, infoSettingJsonData: string) => {
+    // 全体設定を読み込んで、コマンドのパス情報を取得する。
+    const globalSettingData: globalSettingExportType = JSON.parse(readJsonData(globalSettingFilePathGLB))
 
-  return await enterEncodeVideoData(dirPathName, outJsonData, kyaraTatieDirPathGLB, globalSettingData.globalSetting)
-})
+    return await enterEncodeVideoData(
+      dirPathName,
+      outJsonData,
+      infoSettingJsonData,
+      kyaraTatieDirPathGLB,
+      globalSettingData.globalSetting,
+    )
+  },
+)
 
 // 画像エンコードのみを実施し、作成した画像ファイルとファイルパスを返す。
 ipcMain.on(

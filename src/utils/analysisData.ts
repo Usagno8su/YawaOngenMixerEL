@@ -8,8 +8,6 @@ import {
   fileListTatieType,
   tatieSetting,
   subtitleSetting,
-  infoSettingType,
-  encodeProfileSendReType,
   globalSettingExportType,
   globalSettingType,
   inputProfileSendReType,
@@ -289,12 +287,7 @@ export const createNewFileListTatie = (uuid: string, fileName?: string, kyaraNam
 }
 
 // 指定された音声ファイルについて、優先設定を取得・整理して変換用コマンドに渡す情報を作成する。
-export const createVoiceFileEncodeSetting = (
-  fileSetting: outSettingType,
-  index: number,
-  dateList: outSettingType[],
-  infoData: infoSettingType,
-): encodeProfileSendReType => {
+export const createVoiceFileEncodeSetting = (index: number, dateList: outSettingType[]): outSettingType => {
   // 結果を格納する連想配列を作成
   const outDataTatie = ref<tatieSetting>({
     tatieUUID: { val: '', active: false },
@@ -364,52 +357,49 @@ export const createVoiceFileEncodeSetting = (
   }
 
   // 結果を出力する
-  return {
-    infoSetting: infoData,
-    settingList: createNewDateList(
-      fileSetting.dataType,
-      fileSetting.uuid,
-      fileSetting.name,
-      fileSetting.kyaraStyle,
-      {
-        tatieUUID: outDataTatie.value.tatieUUID.val,
-        waitTatieUUID: outDataTatie.value.waitTatieUUID.val,
-        moviW: outDataTatie.value.moviW.val,
-        moviH: outDataTatie.value.moviH.val,
-        tatieConp: outDataTatie.value.tatieConp.val,
-        tatieSide: outDataTatie.value.tatieSide.val,
-        tatieHpx: outDataTatie.value.tatieHpx.val,
-        tatiePwPs: outDataTatie.value.tatiePwPs.val,
-        tatiePhPs: outDataTatie.value.tatiePhPs.val,
-        fps: outDataTatie.value.fps.val,
-      },
-      {
-        subText: outDataSubtitle.value.subText.val,
-        fontsPath: outDataSubtitle.value.fontsPath.val,
-        subAlignment: outDataSubtitle.value.subAlignment.val,
-        subAutoRt: outDataSubtitle.value.subAutoRt.val,
-        subTextBord: outDataSubtitle.value.subTextBord.val,
-        subBG: outDataSubtitle.value.subBG.val,
-        subSize: outDataSubtitle.value.subSize.val,
-        subTextSpaceSize: outDataSubtitle.value.subTextSpaceSize.val,
-        subColor: outDataSubtitle.value.subColor.val,
-        subOrdercr: outDataSubtitle.value.subOrdercr.val,
-        subBorderW: outDataSubtitle.value.subBorderW.val,
-        subBgcolor: outDataSubtitle.value.subBgcolor.val,
-        subBgTr: outDataSubtitle.value.subBgTr.val,
-        subTextUseVoiceFileName: outDataSubtitle.value.subTextUseVoiceFileName.val,
-        subChangeSta: outDataSubtitle.value.subChangeSta.val,
-        subSideSpaceSize: outDataSubtitle.value.subSideSpaceSize.val,
-        nameTagStringDis: outDataSubtitle.value.nameTagStringDis.val,
-        nameTagString: outDataSubtitle.value.nameTagString.val,
-        nameTagH: outDataSubtitle.value.nameTagH.val,
-        nameTagW: outDataSubtitle.value.nameTagW.val,
-      },
-      fileSetting.fileName,
-      fileSetting.fileExtension,
-      fileSetting.voiceID,
-    ),
-  }
+  return createNewDateList(
+    dateList[index].dataType,
+    dateList[index].uuid,
+    dateList[index].name,
+    dateList[index].kyaraStyle,
+    {
+      tatieUUID: outDataTatie.value.tatieUUID.val,
+      waitTatieUUID: outDataTatie.value.waitTatieUUID.val,
+      moviW: outDataTatie.value.moviW.val,
+      moviH: outDataTatie.value.moviH.val,
+      tatieConp: outDataTatie.value.tatieConp.val,
+      tatieSide: outDataTatie.value.tatieSide.val,
+      tatieHpx: outDataTatie.value.tatieHpx.val,
+      tatiePwPs: outDataTatie.value.tatiePwPs.val,
+      tatiePhPs: outDataTatie.value.tatiePhPs.val,
+      fps: outDataTatie.value.fps.val,
+    },
+    {
+      subText: outDataSubtitle.value.subText.val,
+      fontsPath: outDataSubtitle.value.fontsPath.val,
+      subAlignment: outDataSubtitle.value.subAlignment.val,
+      subAutoRt: outDataSubtitle.value.subAutoRt.val,
+      subTextBord: outDataSubtitle.value.subTextBord.val,
+      subBG: outDataSubtitle.value.subBG.val,
+      subSize: outDataSubtitle.value.subSize.val,
+      subTextSpaceSize: outDataSubtitle.value.subTextSpaceSize.val,
+      subColor: outDataSubtitle.value.subColor.val,
+      subOrdercr: outDataSubtitle.value.subOrdercr.val,
+      subBorderW: outDataSubtitle.value.subBorderW.val,
+      subBgcolor: outDataSubtitle.value.subBgcolor.val,
+      subBgTr: outDataSubtitle.value.subBgTr.val,
+      subTextUseVoiceFileName: outDataSubtitle.value.subTextUseVoiceFileName.val,
+      subChangeSta: outDataSubtitle.value.subChangeSta.val,
+      subSideSpaceSize: outDataSubtitle.value.subSideSpaceSize.val,
+      nameTagStringDis: outDataSubtitle.value.nameTagStringDis.val,
+      nameTagString: outDataSubtitle.value.nameTagString.val,
+      nameTagH: outDataSubtitle.value.nameTagH.val,
+      nameTagW: outDataSubtitle.value.nameTagW.val,
+    },
+    dateList[index].fileName,
+    dateList[index].fileExtension,
+    dateList[index].voiceID,
+  )
 }
 
 // 全体設定を読み込み
