@@ -477,6 +477,11 @@ const TatieOrderAdd = (outSettingTtems: outSettingType[]) => {
   }
 }
 
+// tatieOrderListに表示する立ち絵を削除する。
+const TatieOrderDel = (index: number) => {
+  tatieOrderList.value.splice(index, 1)
+}
+
 // キャラ名やスタイル名で検索したときに、
 // 現在表示中のキャラ設定がリストに表示されなくなったか確認する。
 // 表示されなくなったら、表示されている項目に切り替える。
@@ -750,6 +755,7 @@ watch(
           :TatieOrderDragStart="TatieOrderDragStart"
           :TatieOrderDragMove="TatieOrderDragMove"
           :TatieOrderNew="TatieOrderNew"
+          :TatieOrderDel="TatieOrderDel"
           v-else-if="settype === 'tatieOrder' || (editData === 'tatieOrder' && dateList[selectKyara] !== undefined)"
         />
         <setTatie
