@@ -235,6 +235,7 @@ export const initializationSetting = (): profileKyaraExportType => {
     softVer: softVersion.softVer,
     exportStatus: softVersion.exportStatus,
     infoSetting: outInfoData(),
+    tatieOrderList: [],
     settingList: outData.value,
   }
 }

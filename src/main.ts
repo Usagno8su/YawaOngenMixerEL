@@ -286,6 +286,7 @@ ipcMain.on('loadKyaraProfileData', async (event: IpcMainEvent, file: string) => 
       const inputData: profileKyaraExportType = JSON.parse(await loadKyaraProfileData(defoKyaraSettingFilePath))
       event.returnValue = {
         infoSetting: inputData.infoSetting,
+        tatieOrderList: inputData.tatieOrderList,
         settingList: inputData.settingList,
       }
     } else {
@@ -294,6 +295,7 @@ ipcMain.on('loadKyaraProfileData', async (event: IpcMainEvent, file: string) => 
   } catch (e) {
     event.returnValue = {
       infoSetting: createDefoInfoDateList(),
+      tatieOrderList: [],
       settingList: <outSettingType[]>[],
     }
   }

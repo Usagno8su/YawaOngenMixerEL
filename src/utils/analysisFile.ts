@@ -6,6 +6,7 @@ import {
   fileListTatieType,
   encodeProfileSendReType,
   profileVoiceFileExportType,
+  tatieOrderListType,
 } from '../type/data-type'
 import { ref } from 'vue'
 import { createNewDataID, createNewDateList } from './analysisData'
@@ -104,6 +105,7 @@ export const analysisFileName = (
 export const writeProfilleSettingData = (
   profilleName: string,
   infoSetting: infoSettingType,
+  tatieOrderList: tatieOrderListType[],
   settingList: outSettingType[],
 ): boolean => {
   console.log(profilleName)
@@ -116,6 +118,7 @@ export const writeProfilleSettingData = (
     softVer: softVerData.softVer,
     exportStatus: softVerData.exportStatus,
     infoSetting: infoSetting,
+    tatieOrderList: tatieOrderList,
     settingList: settingList,
   }
   const outJsonData = JSON.stringify(outPrData, undefined, 2)

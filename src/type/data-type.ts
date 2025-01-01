@@ -164,6 +164,7 @@ export type profileKyaraExportType = {
   softVer: [number, number, number] // バージョン番号を数値の配列にする
   exportStatus: number // 出力エラーがあると0ではなくなる（増える）
   infoSetting: infoSettingType
+  tatieOrderList: tatieOrderListType[]
   settingList: outSettingType[]
 }
 
@@ -178,6 +179,7 @@ export type profileVoiceFileExportType = {
 // JSONファイルから読み込んだデータをメインからレンダラー側へ送るためのType
 export type inputProfileSendReType = {
   infoSetting: infoSettingType
+  tatieOrderList: tatieOrderListType[]
   settingList: outSettingType[]
 }
 

@@ -66,24 +66,7 @@ const inputProfileUUID = ref<string>(globalSetting.selectProfile)
 const inputProfileData = <inputProfileSendReType>loadProfile(inputProfileUUID.value)
 const dateList = ref<outSettingType[]>(inputProfileData.settingList)
 const infoData = ref<infoSettingType>(inputProfileData.infoSetting)
-const tatieOrderList = ref<tatieOrderListType[]>([
-  { uuid: 'sa1', dataType: 'kyara', name: '四国めたん', kyaraStyle: undefined, tatieSituation: 'waitTatieUUID' },
-  { uuid: 'sa2', dataType: 'kyara', name: 'ずんだもん', kyaraStyle: undefined, tatieSituation: 'waitTatieUUID' },
-  {
-    uuid: 'sa3',
-    dataType: 'kyast',
-    name: '四国めたん',
-    kyaraStyle: 'あまあま',
-    tatieSituation: 'tatieUUID',
-  },
-  {
-    uuid: 'sa4',
-    dataType: 'kyast',
-    name: '九州そら',
-    kyaraStyle: 'ささやき',
-    tatieSituation: 'waitTatieUUID',
-  },
-])
+const tatieOrderList = ref<tatieOrderListType[]>(inputProfileData.tatieOrderList)
 
 // 立ち絵UUID情報の読み込み
 const fileListTatie = ref<fileListTatieType[]>(readFileListTatieData())
@@ -321,6 +304,7 @@ const createProfileData = async (copyUuid: boolean): Promise<string> => {
     const ans = writeProfilleSettingData(
       uuid,
       infoData.value,
+      tatieOrderList.value,
       dateList.value.filter((item) => item.dataType !== 'seid'),
     )
     return uuid
@@ -337,7 +321,7 @@ const writeSettingData = (): void => {
   const voiceDirData = dateList.value.filter((item) => item.dataType === 'seid') // 音声ファイルのあるディレクトリ
 
   // キャラ設定プロファイルの書き込み
-  const ans = writeProfilleSettingData(inputProfileUUID.value, infoData.value, settingListDate)
+  const ans = writeProfilleSettingData(inputProfileUUID.value, infoData.value, tatieOrderList.value, settingListDate)
 
   // 音声ファイルディレクトリを読み込んでいれば記録する
   let ans2 = true
@@ -415,6 +399,7 @@ const onChangeKyaraProfile = (uuid: string): void => {
   const profile = <inputProfileSendReType>loadProfile(uuid)
   dateList.value = profile.settingList
   infoData.value = profile.infoSetting
+  tatieOrderList.value = profile.tatieOrderList
   inputProfileUUID.value = uuid
 
   // 起動時に開くプロファイルを変更する。
