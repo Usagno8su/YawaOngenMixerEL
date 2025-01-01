@@ -605,7 +605,7 @@ watch(
 
 // 設定に編集があったときにはtrueを入れる
 watch(
-  () => dateList.value,
+  () => (dateList.value, infoData.value, tatieOrderList.value),
   () => {
     props.setChangeDataSettingSta(true)
   },

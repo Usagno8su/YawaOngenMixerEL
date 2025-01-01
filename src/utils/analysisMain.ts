@@ -650,18 +650,18 @@ export const loadGlobalSettingData = async (confPath: string): Promise<string> =
     }
   })
     .then((result: globalSettingV021Type) => {
-      console.log('useSubText を追加')
-      return {
-        ...result,
-        useSubText: true,
-      }
-    })
-    .then((result: globalSettingType) => {
       console.log('追加したデータを書き込む')
       // 追加したデータを書き込む
       const out = outSoftVersion()
       return JSON.stringify(
-        { exportStatus: out.exportStatus, softVar: out.softVer, globalSetting: result },
+        {
+          exportStatus: out.exportStatus,
+          softVar: out.softVer,
+          globalSetting: {
+            ...result,
+            useSubText: true,
+          },
+        },
         undefined,
         2,
       )
@@ -690,7 +690,7 @@ export const loadKyaraProfileData = async (confPath: string): Promise<string> =>
   // 古い設定ファイルだった場合、必要な項目を追加します。
 
   // var 0.2 以下の場合
-  // waitTatieUUID がないので追加する
+  // waitTatieUUID と tatieOrderList がないので追加する
   await new Promise((resolve, reject) => {
     if (inputJsonData.softVer[0] <= 0 && inputJsonData.softVer[1] <= 2) {
       console.log('var 0.2 以下の場合')
@@ -700,30 +700,6 @@ export const loadKyaraProfileData = async (confPath: string): Promise<string> =>
     }
   })
     .then(() => {
-      console.log('waitTatieUUID を追加')
-      const ans: outSettingType[] = inputJsonData.settingList.map((item) => {
-        return {
-          dataType: item.dataType,
-          uuid: item.uuid,
-          name: item.name,
-          kyaraStyle: item.kyaraStyle,
-          tatie: {
-            ...item.tatie,
-            waitTatieUUID: {
-              val: DEFAULT_KYARA_TATIE_UUID,
-              active: false,
-            },
-          },
-          subtitle: item.subtitle,
-          fileName: item.fileName,
-          fileExtension: item.fileExtension,
-          voiceID: item.voiceID,
-        }
-      })
-      return ans
-    })
-    .then((result: outSettingType[]) => {
-      console.log('追加したデータを書き込む')
       // 追加したデータを書き込む
       const out = outSoftVersion()
       return JSON.stringify(
@@ -731,7 +707,26 @@ export const loadKyaraProfileData = async (confPath: string): Promise<string> =>
           softVar: out.softVer,
           exportStatus: out.exportStatus,
           infoSetting: inputJsonData.infoSetting,
-          settingList: result,
+          tatieOrderList: [],
+          settingList: inputJsonData.settingList.map((item) => {
+            return {
+              dataType: item.dataType,
+              uuid: item.uuid,
+              name: item.name,
+              kyaraStyle: item.kyaraStyle,
+              tatie: {
+                ...item.tatie,
+                waitTatieUUID: {
+                  val: DEFAULT_KYARA_TATIE_UUID,
+                  active: false,
+                },
+              },
+              subtitle: item.subtitle,
+              fileName: item.fileName,
+              fileExtension: item.fileExtension,
+              voiceID: item.voiceID,
+            }
+          }),
         },
         undefined,
         2,
@@ -761,7 +756,7 @@ export const loadVoiceFileData = async (confPath: string): Promise<string> => {
   // 古い設定ファイルだった場合、必要な項目を追加します。
 
   // var 0.2 以下の場合
-  // waitTatieUUID がないので追加する
+  // waitTatieUUID と tatieOrderList がないので追加する
   await new Promise((resolve, reject) => {
     if (inputJsonData.softVer[0] <= 0 && inputJsonData.softVer[1] <= 2) {
       console.log('var 0.2 以下の場合')
@@ -771,37 +766,31 @@ export const loadVoiceFileData = async (confPath: string): Promise<string> => {
     }
   })
     .then(() => {
-      console.log('waitTatieUUID を追加')
-      const ans: outSettingType[] = inputJsonData.settingList.map((item) => {
-        return {
-          dataType: item.dataType,
-          uuid: item.uuid,
-          name: item.name,
-          kyaraStyle: item.kyaraStyle,
-          tatie: {
-            ...item.tatie,
-            waitTatieUUID: {
-              val: DEFAULT_KYARA_TATIE_UUID,
-              active: false,
-            },
-          },
-          subtitle: item.subtitle,
-          fileName: item.fileName,
-          fileExtension: item.fileExtension,
-          voiceID: item.voiceID,
-        }
-      })
-      return ans
-    })
-    .then((result: outSettingType[]) => {
-      console.log('追加したデータを書き込む')
       // 追加したデータを書き込む
       const out = outSoftVersion()
       return JSON.stringify(
         {
           softVar: out.softVer,
           exportStatus: out.exportStatus,
-          settingList: result,
+          settingList: inputJsonData.settingList.map((item) => {
+            return {
+              dataType: item.dataType,
+              uuid: item.uuid,
+              name: item.name,
+              kyaraStyle: item.kyaraStyle,
+              tatie: {
+                ...item.tatie,
+                waitTatieUUID: {
+                  val: DEFAULT_KYARA_TATIE_UUID,
+                  active: false,
+                },
+              },
+              subtitle: item.subtitle,
+              fileName: item.fileName,
+              fileExtension: item.fileExtension,
+              voiceID: item.voiceID,
+            }
+          }),
         },
         undefined,
         2,
