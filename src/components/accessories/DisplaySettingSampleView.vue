@@ -1,14 +1,22 @@
 <script setup lang="ts">
 const props = defineProps<{
   dateList: outSettingType[]
+  settype: dataTextType
   higherUpList: [number, number]
   selectKyara: number
   infoData: infoSettingType
+  tatieOrderList: tatieOrderListType[]
   onSampleView: boolean // 立ち絵の加工と表示を行うか選択
 }>()
 // 立ち絵画像の加工を行って表示します。
 
-import type { outSettingType, infoSettingType, tatieSituationType } from '@/type/data-type'
+import type {
+  outSettingType,
+  infoSettingType,
+  tatieSituationType,
+  tatieOrderListType,
+  dataTextType,
+} from '@/type/data-type'
 import { SelectTatieIndexHigherUpData } from '@/utils/analysisData'
 import { watch, ref } from 'vue'
 import DisplayMoviePicFile from '@/components/accessories/DisplayMoviePicFile.vue'
@@ -21,7 +29,7 @@ const tatieSituation = ref<tatieSituationType>('tatieUUID')
 //// どの設定データが採用されているか確認する。
 // 立ち絵画像のUUID
 const selectTatiePicFile = (): string => {
-  if (props.onSampleView) {
+  if (props.dateList[props.selectKyara] !== undefined) {
     if (props.dateList[props.selectKyara].tatie[tatieSituation.value].active) {
       return props.dateList[props.selectKyara].tatie[tatieSituation.value].val
     } else {
@@ -49,7 +57,7 @@ watch(
 // 表示している設定が変更されたら立ち絵の画像も変更
 // キャラが選択されているか確認して、実行する。
 watch(
-  () => props.onSampleView && props.dateList[props.selectKyara].tatie[tatieSituation.value],
+  () => props.onSampleView && props.dateList[props.selectKyara]?.tatie[tatieSituation.value],
   () => {
     setTatiePicFile.value = selectTatiePicFile()
   },
@@ -87,12 +95,14 @@ watch(
     </div>
     <div
       class="h-36 w-full border-[1px] border-gray-400"
-      v-if="onSampleView && setTatiePicFile !== DEFAULT_KYARA_TATIE_UUID"
+      v-if="onSampleView || setTatiePicFile !== DEFAULT_KYARA_TATIE_UUID"
     >
       <DisplayMoviePicFile
         :dateList="dateList"
-        :index="selectKyara"
+        :settype="settype"
+        :selectKyara="selectKyara"
         :infoData="infoData"
+        :tatieOrderList="tatieOrderList"
         :tatieSituation="tatieSituation"
         imgClass="w-full h-full"
       />

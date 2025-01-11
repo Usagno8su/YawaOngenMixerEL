@@ -628,10 +628,12 @@ watch(
     <div class="mx-1">
       <DisplaySettingSampleView
         :dateList="dateList"
+        :settype="settype"
         :higherUpList="higherUpList"
         :selectKyara="selectKyara"
         :infoData="infoData"
-        :onSampleView="dateList[selectKyara] !== undefined"
+        :tatieOrderList="tatieOrderList"
+        :onSampleView="dateList[selectKyara] !== undefined || settype === 'tatieOrder'"
       />
       <setKyaraList
         :dateList="dateList"

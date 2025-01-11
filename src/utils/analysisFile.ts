@@ -6,9 +6,10 @@ import {
   fileListTatieType,
   profileVoiceFileExportType,
   tatieOrderListType,
+  dataTextType,
 } from '../type/data-type'
 import { ref } from 'vue'
-import { createNewDataID, createNewDateList } from './analysisData'
+import { createNewDataID, createNewDateList, createVoiceFileEncodeSetting } from './analysisData'
 import { createDefoFileListTatie, NowTimeData } from './analysisGeneral'
 import { DEFAULT_KYARA_TATIE_UUID } from '../data/data'
 const { yomAPI } = window
@@ -205,16 +206,42 @@ export const enterEncodeVideoFile = async (
 
 // 指定された立ち絵ファイルの変換を行う。
 export const enterEncodeTatiePicFile = async (
-  encodeSetting: outSettingType,
   tatieSituation: string,
+  dateList: outSettingType[],
+  settype: dataTextType,
+  tatieOrderList: tatieOrderListType[],
+  selectKyara?: number,
 ): Promise<{ buffer: Uint8Array; path: string }> => {
-  // JSONファイルへの変換
-  const outJsonData = JSON.stringify(encodeSetting, undefined, 2)
+  const selectSetting = selectKyara !== undefined ? createVoiceFileEncodeSetting(selectKyara, dateList) : undefined
 
   // 変換の実施
-  return yomAPI.getEncodePicFileData([
-    { outJsonData: JSON.stringify(encodeSetting, undefined, 2), tatieSituation: tatieSituation },
-  ])
+  if (settype === 'tatieOrder' || settype === 'seid') {
+    const encodeList = tatieOrderList.map((e) => {
+      // dateListに一致するものを探す。
+
+      const ans = dateList.findIndex((f) => e.dataType + e.name + e.kyaraStyle === f.dataType + f.name + f.kyaraStyle)
+      // ただ、会話中のキャラ(selectSetting)含まれている場合は、tatieSituationで指定されている状態の画像を選択させる。
+      if (ans !== -1) {
+        return {
+          outJsonData: JSON.stringify(createVoiceFileEncodeSetting(ans, dateList), undefined, 2),
+          tatieSituation:
+            e.dataType + e.name + e.kyaraStyle ===
+            selectSetting?.dataType + selectSetting?.name + selectSetting?.kyaraStyle
+              ? tatieSituation
+              : e.tatieSituation,
+        }
+      }
+    })
+
+    console.log('encodeList: ' + encodeList.length)
+
+    return yomAPI.getEncodePicFileData(encodeList)
+  } else {
+    console.log('encodeList ではない: selectSetting: ' + selectSetting.name)
+    return yomAPI.getEncodePicFileData([
+      { outJsonData: JSON.stringify(selectSetting, undefined, 2), tatieSituation: tatieSituation },
+    ])
+  }
 }
 
 // 変換された立ち絵ファイルを保存する。

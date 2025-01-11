@@ -29,7 +29,7 @@ import {
 import { DEFAULT_KYARA_PROFILE_NAME, DEFAULT_KYARA_TATIE_UUID } from '../data/data'
 import { createNewDateList } from './analysisData'
 import { createComImg } from './comExec/comIMG'
-import { createImgFile, createMoviFile, enterEncodeSmallTatie } from './comExec/comEnter'
+import { createImgFile, createMoviFile, enterEncodeSmallTatie, imgCompositeFile } from './comExec/comEnter'
 import { createComMovi } from './comExec/comMOVI'
 import { app, dialog } from 'electron'
 import path, { resolve } from 'path'
@@ -453,35 +453,90 @@ export const enterEncodePicFileData = async (
   kyaraTatieDirPath: string,
   globalSetting: globalSettingType,
 ): Promise<{ buffer: Uint8Array; path: string }> => {
-  // JSONデータを変換
-  const settingList: outSettingType = JSON.parse(outState[0].outJsonData)
+  // 一時ファイルのディレクトリを作成してpathを取得
+  const tempDirPath = await createTempDir()
 
-  // 立ち絵の存在チェック
-  const noTatieFile = !fs.existsSync(path.join(kyaraTatieDirPath, settingList.tatie.tatieUUID.val + '.png'))
+  console.log('長さ; ' + outState.length)
+  if (outState[0].outJsonData === undefined) {
+    // 立ち絵がない場合はnullのデータを返す。
+    return {
+      buffer: null,
+      path: 'NoFile',
+    }
+  }
 
-  // 立ち絵が存在する場合はファイル変換を実行する。
-  if (!noTatieFile) {
-    // 一時ファイルのディレクトリを作成してpathを取得
-    const tempDirPath = await createTempDir()
+  const imgList: string[] = []
+  let kazu = 0
+  for (const item of outState) {
+    const setting: outSettingType = JSON.parse(item.outJsonData)
+    console.log('変換: ' + setting.name + ', ' + kazu)
+    if (fs.existsSync(path.join(kyaraTatieDirPath, setting.tatie.tatieUUID.val + '.png'))) {
+      //// 画像ファイルの作成
 
-    //// 画像ファイルの作成
+      // 画像ファイルの作成を実行
+      imgList.push(
+        await enterEncodeImageData(
+          setting,
+          item.tatieSituation,
+          tempDirPath,
+          globalSetting.exeFilePath.convert,
+          kyaraTatieDirPath,
+          tempDirPath,
+          'tb_' + kazu,
+        ),
+      )
+      kazu += 1
+    }
+  }
 
-    // 画像ファイルの作成を実行
-    const imgFilePath = await enterEncodeImageData(
-      settingList,
-      outState[0].tatieSituation,
-      tempDirPath,
-      globalSetting.exeFilePath.convert,
-      kyaraTatieDirPath,
-      tempDirPath,
-      'tenpMoveSizePic',
-    )
+  // const imgList = await Promise.all(
+  //   outState.map(async (e, i) => {
+  //     // console.log('e.outJsonData: ' + e.outJsonData)
+  //     const setting: outSettingType = JSON.parse(e.outJsonData)
+  //     console.log('変換: ' + setting.name + ', ' + i)
+  //     if (fs.existsSync(path.join(kyaraTatieDirPath, setting.tatie.tatieUUID.val + '.png'))) {
+  //       //// 画像ファイルの作成
 
+  //       // 画像ファイルの作成を実行
+  //       return await enterEncodeImageData(
+  //         setting,
+  //         e.tatieSituation,
+  //         tempDirPath,
+  //         globalSetting.exeFilePath.convert,
+  //         kyaraTatieDirPath,
+  //         tempDirPath,
+  //         'tb_' + i,
+  //       )
+  //     }
+  //   }),
+  // )
+
+  console.log('imgList: ' + imgList[0] + ' ' + imgList[1] + ' ' + imgList[2])
+  console.log('imgList:ここまで ')
+
+  // 立ち絵が一つだけの場合はそのまま返す。
+  if (imgList.length === 1) {
     // 作成したファイルを返す
-    const buffer = await fs.promises.readFile(imgFilePath)
+    console.log('ひとつだけ')
+    const buffer = await fs.promises.readFile(imgList[0])
     return {
       buffer: new Uint8Array(buffer),
-      path: imgFilePath,
+      path: imgList[0],
+    }
+  } else if (imgList.length > 1) {
+    console.log('ふくすう')
+    // 2つ以上の場合は合成する。
+    const ansPath = await imgCompositeFile(
+      globalSetting.exeFilePath.convert,
+      imgList,
+      tempDirPath,
+      'tenpCompositeMoveSizePic',
+    )
+    // 作成したファイルを返す
+    const buffer = await fs.promises.readFile(ansPath)
+    return {
+      buffer: new Uint8Array(buffer),
+      path: ansPath,
     }
   } else {
     // 立ち絵がない場合はnullのデータを返す。
