@@ -25,24 +25,6 @@ import { MakeClassString } from '@/utils/analysisGeneral'
 // 会話中・待機中のどちらの立ち絵を表示するか指定
 const tatieSituation = ref<tatieSituationType>('tatieUUID')
 
-//// どの設定データが採用されているか確認する。
-// 立ち絵画像のUUID
-const selectTatiePicFile = (): string => {
-  if (props.dateList[props.selectKyara] !== undefined) {
-    if (props.dateList[props.selectKyara].tatie[tatieSituation.value].active) {
-      return props.dateList[props.selectKyara].tatie[tatieSituation.value].val
-    } else {
-      return props.dateList[SelectTatieIndexHigherUpData(props.higherUpList, props.dateList, tatieSituation.value)]
-        .tatie[tatieSituation.value].val
-    }
-  } else {
-    return DEFAULT_KYARA_TATIE_UUID
-  }
-}
-
-// 設定によって立ち絵画像のUUIDを変更する
-const setTatiePicFile = ref<string>(selectTatiePicFile())
-
 ////  コンポーネント表示時に、立ち絵画像の表示をも行う
 // 表示するプロファイル情報
 const profile = ref<outSettingType>(createVoiceFileEncodeSetting(props.selectKyara, props.dateList))
@@ -64,26 +46,6 @@ const onEncodeTatie = setInterval(() => {
     checkConf.value = ans
   }
 }, 2000)
-
-// 選択しているキャラ設定が変更されたら変更する
-watch(
-  () => {
-    props.selectKyara, tatieSituation.value
-  },
-  () => {
-    setTatiePicFile.value = selectTatiePicFile()
-  },
-)
-
-// 表示している設定が変更されたら立ち絵の画像も変更
-// キャラが選択されているか確認して、実行する。
-watch(
-  () => setTatiePicFile.value && props.dateList[props.selectKyara]?.tatie[tatieSituation.value],
-  () => {
-    setTatiePicFile.value = selectTatiePicFile()
-  },
-  { deep: true },
-)
 
 // コンポーネントが表示されなくなったらsetIntervalを停止
 onUnmounted(() => {
@@ -119,7 +81,7 @@ onUnmounted(() => {
         待機中
       </button>
     </div>
-    <div class="h-36 w-full border-[1px] border-gray-400" v-if="setTatiePicFile !== DEFAULT_KYARA_TATIE_UUID">
+    <div class="h-36 w-full border-[1px] border-gray-400">
       <DisplayMoviePicFile
         :dateList="dateList"
         :settype="settype"
@@ -131,6 +93,5 @@ onUnmounted(() => {
         imgClass="w-full h-full"
       />
     </div>
-    <div v-else class="flex h-36 w-full items-center justify-center border-[1px] border-gray-400 p-1">未選択です</div>
   </div>
 </template>

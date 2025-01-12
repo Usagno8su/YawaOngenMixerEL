@@ -132,6 +132,12 @@ watch(
     @click="() => saveImg()"
     title="クリックで変換画像を保存します。"
   />
+  <div
+    v-else-if="profile?.tatie[tatieSituation].val === DEFAULT_KYARA_TATIE_UUID"
+    :class="MakeClassString('flex items-center justify-center bg-sky-100', imgClass)"
+  >
+    未選択です
+  </div>
   <div v-else-if="noTatieFile" :class="MakeClassString('flex items-center justify-center bg-sky-100', imgClass)">
     立ち絵ファイルが<br />見つかりませんでした
   </div>
