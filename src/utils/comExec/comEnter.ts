@@ -240,6 +240,9 @@ export const imgCompositeFile = async (
   outDir: string,
   outFileName: string,
 ): Promise<string> => {
+  // 配列を逆順にする
+  imgList.reverse()
+
   console.log('でーた: ' + imgList[0] + ', ' + imgList[1] + ', ' + imgList[2])
   // imgListの一番目だけ取り出す。
   const compImage = imgList.splice(0, 1)
