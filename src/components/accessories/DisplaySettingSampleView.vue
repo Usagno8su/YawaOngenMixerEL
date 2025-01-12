@@ -32,17 +32,20 @@ const checkConf = ref<string>(JSON.stringify([profile.value?.tatie, tatieSituati
 
 // 指定時間ごとに確認し、立ち絵の設定が変わったら表示を変更する
 const onEncodeTatie = setInterval(() => {
-  // 比較のために設定内容をJSON形式に変換
-  const ans = JSON.stringify(
-    [createVoiceFileEncodeSetting(props.selectKyara, props.dateList)?.tatie, tatieSituation],
-    undefined,
-    2,
-  )
+  // キャラが未選択でなければ実行
+  if (props.selectKyara !== -1) {
+    // 比較のために設定内容をJSON形式に変換
+    const ans = JSON.stringify(
+      [createVoiceFileEncodeSetting(props.selectKyara, props.dateList)?.tatie, tatieSituation],
+      undefined,
+      2,
+    )
 
-  // 比較して前回の内容と異なっていれば立ち絵画像の表示を更新する。
-  if (checkConf.value !== ans) {
-    profile.value = createVoiceFileEncodeSetting(props.selectKyara, props.dateList)
-    checkConf.value = ans
+    // 比較して前回の内容と異なっていれば立ち絵画像の表示を更新する。
+    if (checkConf.value !== ans) {
+      profile.value = createVoiceFileEncodeSetting(props.selectKyara, props.dateList)
+      checkConf.value = ans
+    }
   }
 }, 2000)
 

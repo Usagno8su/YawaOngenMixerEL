@@ -66,9 +66,24 @@ const ChangeKyaraImg = () => {
 }
 
 const getKyaraImg = async (index?: number) => {
-  const indexProfile = index !== undefined ? createVoiceFileEncodeSetting(index, props.dateList) : undefined
+  // indexが存在する値を示しているか確認します。
+  const ChkIndex = (): outSettingType | undefined => {
+    if (index === -1 || index === undefined || props.dateList[index] === undefined) {
+      return undefined
+    } else {
+      return createVoiceFileEncodeSetting(index, props.dateList)
+    }
+  }
+
+  // プロファイルを確認
+  const indexProfile = ChkIndex()
+
   // 立ち絵があり、他の画像取得が動作していない場合のみ実施
-  if (indexProfile?.tatie[props.tatieSituation].val !== DEFAULT_KYARA_TATIE_UUID && runMakeImg) {
+  if (
+    indexProfile !== undefined &&
+    indexProfile?.tatie[props.tatieSituation].val !== DEFAULT_KYARA_TATIE_UUID &&
+    runMakeImg
+  ) {
     // 二重起動しないように値を変更
     runMakeImg.value = false
 
