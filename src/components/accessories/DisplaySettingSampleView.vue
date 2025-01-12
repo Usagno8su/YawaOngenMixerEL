@@ -16,10 +16,9 @@ import type {
   tatieOrderListType,
   dataTextType,
 } from '@/type/data-type'
-import { SelectTatieIndexHigherUpData, createVoiceFileEncodeSetting } from '@/utils/analysisData'
-import { watch, onUnmounted, ref } from 'vue'
+import { createVoiceFileEncodeSetting } from '@/utils/analysisData'
+import { onUnmounted, ref } from 'vue'
 import DisplayMoviePicFile from '@/components/accessories/DisplayMoviePicFile.vue'
-import { DEFAULT_KYARA_TATIE_UUID } from '@/data/data'
 import { MakeClassString } from '@/utils/analysisGeneral'
 
 // 会話中・待機中のどちらの立ち絵を表示するか指定
