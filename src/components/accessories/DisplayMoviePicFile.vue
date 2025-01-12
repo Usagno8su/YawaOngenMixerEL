@@ -125,7 +125,9 @@ watch(
 <template>
   <img
     v-if="
-      profile?.tatie[tatieSituation].val !== DEFAULT_KYARA_TATIE_UUID && typeof img === 'string' && noTatieFile !== true
+      (settype === 'tatieOrder' || profile?.tatie[tatieSituation].val !== DEFAULT_KYARA_TATIE_UUID) &&
+      typeof img === 'string' &&
+      noTatieFile !== true
     "
     :src="img"
     :class="imgClass"
