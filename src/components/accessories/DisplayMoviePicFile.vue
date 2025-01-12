@@ -6,6 +6,7 @@ const props = withDefaults(
     selectKyara: number
     tatieSituation: tatieSituationType
     infoData: infoSettingType
+    profile: outSettingType
     tatieOrderList: tatieOrderListType[]
     imgClass?: string
   }>(),
@@ -20,7 +21,7 @@ import type {
   tatieOrderListType,
   dataTextType,
 } from '@/type/data-type'
-import { ref, onUnmounted, watch } from 'vue'
+import { ref, watch } from 'vue'
 import { enterEncodeTatiePicFile, enterSaveUint8ArrayFileData } from '@/utils/analysisFile'
 import { DEFAULT_KYARA_TATIE_UUID } from '@/data/data'
 import { createVoiceFileEncodeSetting } from '@/utils/analysisData'
@@ -106,49 +107,19 @@ const saveImg = async () => {
   }
 }
 
-// コンポーネント表示時に、立ち絵画像の表示をも行う
-const profile = ref<outSettingType>()
-const checkConf = ref<string>()
-if (props.settype === 'tatieOrder') {
-  getKyaraImg()
-} else {
-  profile.value = createVoiceFileEncodeSetting(props.selectKyara, props.dateList)
-  getKyaraImg(props.selectKyara)
-  checkConf.value = JSON.stringify([profile.value.tatie, props.tatieSituation], undefined, 2)
-}
-
-// 指定時間ごとに確認し、立ち絵の設定が変わったら表示を変更する
-const onEncodeTatie = setInterval(() => {
-  // 比較のために設定内容をJSON形式に変換
-  if (props.settype !== 'tatieOrder') {
-    profile.value = createVoiceFileEncodeSetting(props.selectKyara, props.dateList)
-  }
-  const ans = JSON.stringify([profile.value?.tatie, props.tatieSituation], undefined, 2)
-
-  // 比較して前回の内容と異なっていれば立ち絵画像の表示を更新する。
-  if (checkConf.value !== ans) {
+watch(
+  () => {
+    props.profile, props.settype, props.tatieSituation
+  },
+  () => {
     if (props.settype === 'tatieOrder') {
       getKyaraImg()
     } else {
       getKyaraImg(props.selectKyara)
     }
-    checkConf.value = ans
-  }
-}, 2000)
-
-watch(
-  () => props.settype,
-  () => {
-    if (props.settype === 'tatieOrder') {
-      getKyaraImg()
-    }
   },
+  { deep: true },
 )
-
-// コンポーネントが表示されなくなったらsetIntervalを停止
-onUnmounted(() => {
-  clearInterval(onEncodeTatie)
-})
 </script>
 
 <template>
@@ -161,12 +132,6 @@ onUnmounted(() => {
     @click="() => saveImg()"
     title="クリックで変換画像を保存します。"
   />
-  <div
-    v-else-if="profile?.tatie[tatieSituation].val === DEFAULT_KYARA_TATIE_UUID"
-    :class="MakeClassString('flex items-center justify-center bg-sky-100', imgClass)"
-  >
-    未選択です
-  </div>
   <div v-else-if="noTatieFile" :class="MakeClassString('flex items-center justify-center bg-sky-100', imgClass)">
     立ち絵ファイルが<br />見つかりませんでした
   </div>
