@@ -6,7 +6,6 @@ const props = defineProps<{
   selectKyara: number
   infoData: infoSettingType
   tatieOrderList: tatieOrderListType[]
-  onSampleView: boolean // 立ち絵の加工と表示を行うか選択
 }>()
 // 立ち絵画像の加工を行って表示します。
 
@@ -57,7 +56,7 @@ watch(
 // 表示している設定が変更されたら立ち絵の画像も変更
 // キャラが選択されているか確認して、実行する。
 watch(
-  () => props.onSampleView && props.dateList[props.selectKyara]?.tatie[tatieSituation.value],
+  () => setTatiePicFile.value && props.dateList[props.selectKyara]?.tatie[tatieSituation.value],
   () => {
     setTatiePicFile.value = selectTatiePicFile()
   },
@@ -95,7 +94,7 @@ watch(
     </div>
     <div
       class="h-36 w-full border-[1px] border-gray-400"
-      v-if="onSampleView || setTatiePicFile !== DEFAULT_KYARA_TATIE_UUID"
+      v-if="setTatiePicFile !== DEFAULT_KYARA_TATIE_UUID"
     >
       <DisplayMoviePicFile
         :dateList="dateList"

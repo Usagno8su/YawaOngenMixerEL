@@ -633,7 +633,6 @@ watch(
         :selectKyara="selectKyara"
         :infoData="infoData"
         :tatieOrderList="tatieOrderList"
-        :onSampleView="dateList[selectKyara] !== undefined || settype === 'tatieOrder'"
       />
       <setKyaraList
         :dateList="dateList"
