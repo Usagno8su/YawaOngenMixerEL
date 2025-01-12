@@ -109,6 +109,7 @@ const getKyaraImg = async (index?: number) => {
       props.settype,
       props.tatieOrderList,
     )
+    ChangeKyaraImg()
   }
 }
 
@@ -124,7 +125,7 @@ const saveImg = async () => {
 
 watch(
   () => {
-    props.profile, props.settype, props.tatieSituation
+    props.profile, props.settype, props.tatieSituation, props.tatieOrderList
   },
   () => {
     if (props.settype === 'tatieOrder') {
