@@ -216,22 +216,37 @@ export const enterEncodeTatiePicFile = async (
 
   // 変換の実施
   if (settype === 'tatieOrder' || settype === 'seid') {
+    // seid のときに、selectKyaraのキャラがencodeListに入っているか確認する数値
+    let chkSelectKyara = -1
+
     const encodeList = tatieOrderList.map((e) => {
-      // dateListに一致するものを探す。
+      // dateListに一致するものを探し、立ち絵の設定をencodeListに入れる。
 
       const ans = dateList.findIndex((f) => e.dataType + e.name + e.kyaraStyle === f.dataType + f.name + f.kyaraStyle)
       // ただ、会話中のキャラ(selectSetting)含まれている場合は、tatieSituationで指定されている状態の画像を選択させる。
       if (ans !== -1) {
-        return {
-          outJsonData: JSON.stringify(createVoiceFileEncodeSetting(ans, dateList), undefined, 2),
-          tatieSituation:
-            e.dataType + e.name + e.kyaraStyle ===
-            selectSetting?.dataType + selectSetting?.name + selectSetting?.kyaraStyle
-              ? tatieSituation
-              : e.tatieSituation,
+        if (
+          e.name + (e.dataType === 'kyast' ? e.kyaraStyle : '') ===
+          selectSetting?.name + (e.dataType === 'kyast' ? selectSetting?.kyaraStyle : '')
+        ) {
+          chkSelectKyara = 1
+          return {
+            outJsonData: JSON.stringify(createVoiceFileEncodeSetting(ans, dateList), undefined, 2),
+            tatieSituation: tatieSituation,
+          }
+        } else {
+          return {
+            outJsonData: JSON.stringify(createVoiceFileEncodeSetting(ans, dateList), undefined, 2),
+            tatieSituation: e.tatieSituation,
+          }
         }
       }
     })
+
+    // seid のときに、encodeListにselectSettingのキャラがない場合は追加する
+    if (settype === 'seid' && chkSelectKyara !== 1) {
+      encodeList.unshift({ outJsonData: JSON.stringify(selectSetting, undefined, 2), tatieSituation: tatieSituation })
+    }
 
     console.log('encodeList: ' + encodeList.length)
 
