@@ -489,28 +489,6 @@ export const enterEncodePicFileData = async (
     }
   }
 
-  // const imgList = await Promise.all(
-  //   outState.map(async (e, i) => {
-  //     // console.log('e.outJsonData: ' + e.outJsonData)
-  //     const setting: outSettingType = JSON.parse(e.outJsonData)
-  //     console.log('変換: ' + setting.name + ', ' + i)
-  //     if (fs.existsSync(path.join(kyaraTatieDirPath, setting.tatie.tatieUUID.val + '.png'))) {
-  //       //// 画像ファイルの作成
-
-  //       // 画像ファイルの作成を実行
-  //       return await enterEncodeImageData(
-  //         setting,
-  //         e.tatieSituation,
-  //         tempDirPath,
-  //         globalSetting.exeFilePath.convert,
-  //         kyaraTatieDirPath,
-  //         tempDirPath,
-  //         'tb_' + i,
-  //       )
-  //     }
-  //   }),
-  // )
-
   console.log('imgList: ' + imgList[0] + ' ' + imgList[1] + ' ' + imgList[2])
   console.log('imgList:ここまで ')
 
