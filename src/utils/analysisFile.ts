@@ -7,6 +7,7 @@ import {
   profileVoiceFileExportType,
   tatieOrderListType,
   dataTextType,
+  tatieSituationType,
 } from '../type/data-type'
 import { ref } from 'vue'
 import { createNewDataID, createNewDateList, createVoiceFileEncodeSetting } from './analysisData'
@@ -190,17 +191,18 @@ export const writeFileListKyaraData = (settingList: fileListTatieType[]): boolea
 // 指定された音声ファイルの変換を行う。
 export const enterEncodeVideoFile = async (
   voiceFileDirPath: string,
-  encodeSetting: outSettingType,
+  selectKyara: number,
   infoSetting: infoSettingType,
+  tatieSituation: tatieSituationType,
+  dateList: outSettingType[],
+  settype: dataTextType,
+  tatieOrderList: tatieOrderListType[],
 ): Promise<string> => {
-  // JSONファイルへの変換
-  const outJsonData = JSON.stringify(encodeSetting, undefined, 2)
-
   // 変換の実施
   return yomAPI.enterEncodeVideoData(
     voiceFileDirPath,
-    JSON.stringify(encodeSetting, undefined, 2),
-    [{ outJsonData: JSON.stringify(encodeSetting, undefined, 2), tatieSituation: 'tatieUUID' }],
+    JSON.stringify(dateList[selectKyara], undefined, 2),
+    makeTatiePicEncodeList(tatieSituation, dateList, settype, tatieOrderList, selectKyara),
     JSON.stringify(infoSetting, undefined, 2),
   )
 }

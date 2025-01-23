@@ -33,7 +33,6 @@ import {
   createNewDataID,
   createNewDateList,
   SelectHigherUpIndexList,
-  createVoiceFileEncodeSetting,
   getGlobalSetting,
   loadProfile,
   writeGlobalSetting,
@@ -356,8 +355,12 @@ const entOpen = (): void => {
 const encodeAndDisplay = async (index: number): Promise<void> => {
   await enterEncodeVideoFile(
     voiceLoadDirPath.value,
-    createVoiceFileEncodeSetting(index, dateList.value),
+    index,
     infoData.value,
+    'tatieUUID',
+    dateList.value,
+    'seid',
+    tatieOrderList.value,
   )
   encodeAns.value = 'エンコード完了: ' + dateList.value[index].fileName
 }
