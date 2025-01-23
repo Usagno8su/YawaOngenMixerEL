@@ -24,7 +24,12 @@ export interface WGyomAPI {
   getKyraPicFileData: (fileName: string, sizeHeight?: number) => Uint8Array
   opneKyaraPicFileDir: (defoDir?: string) => { uuid: string; name: string; extname: string }[]
   getFileListKyaraData: () => string
-  enterEncodeVideoData: (dirPathName: string, outJsonData: string, infoSettingJsonData: string) => string
+  enterEncodeVideoData: (
+    dirPathName: string,
+    outJsonData: string,
+    outTatieState: { outJsonData: string; tatieSituation: string }[],
+    infoSettingJsonData: string,
+  ) => string
   getGlobalSettingData: () => string
   writeGlobalSettingData: (outJsonData: string) => boolean
   openGlobalSetting: (listener: () => void) => void

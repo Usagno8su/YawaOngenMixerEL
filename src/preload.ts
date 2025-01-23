@@ -59,9 +59,16 @@ contextBridge.exposeInMainWorld('yomAPI', {
   enterEncodeVideoData: async (
     dirPathName: string,
     outJsonData: string,
+    outTatieState: { outJsonData: string; tatieSituation: string }[],
     infoSettingJsonData: string,
   ): Promise<string> => {
-    return await ipcRenderer.invoke('enterEncodeVideoData', dirPathName, outJsonData, infoSettingJsonData)
+    return await ipcRenderer.invoke(
+      'enterEncodeVideoData',
+      dirPathName,
+      outJsonData,
+      outTatieState,
+      infoSettingJsonData,
+    )
   },
   getGlobalSettingData: (): string => {
     return ipcRenderer.sendSync('loadGlobalSettingData')

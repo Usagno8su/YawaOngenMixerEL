@@ -200,6 +200,7 @@ export const enterEncodeVideoFile = async (
   return yomAPI.enterEncodeVideoData(
     voiceFileDirPath,
     JSON.stringify(encodeSetting, undefined, 2),
+    [{ outJsonData: JSON.stringify(encodeSetting, undefined, 2), tatieSituation: 'tatieUUID' }],
     JSON.stringify(infoSetting, undefined, 2),
   )
 }

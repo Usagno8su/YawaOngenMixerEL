@@ -396,6 +396,7 @@ export const enterEncodeImageData = async (
 export const enterEncodeVideoData = async (
   voiceFileDirPath: string,
   outJsonData: string,
+  outTatieState: { outJsonData: string; tatieSituation: string }[],
   infoSettingJsonData: string,
   kyaraTatieDirPath: string,
   globalSetting: globalSettingType,
@@ -410,14 +411,7 @@ export const enterEncodeVideoData = async (
   //// 画像ファイルの作成
 
   // 画像ファイルの作成を実行
-  const imgFilePath = await enterEncodeImageData(
-    settingList,
-    'tatieUUID',
-    tempDirPath,
-    globalSetting.exeFilePath.convert,
-    kyaraTatieDirPath,
-    infoSetting.outPicDir,
-  )
+  const imgFilePath = await enterEncodePicFileData(outTatieState, kyaraTatieDirPath, globalSetting)
 
   console.log('main への返送結果: ' + imgFilePath)
 
@@ -426,7 +420,7 @@ export const enterEncodeVideoData = async (
   // FFmpeg用のコマンド作成
   const moviData = await createComMovi(
     settingList,
-    imgFilePath,
+    imgFilePath.path,
     voiceFileDirPath,
     tempDirPath,
     globalSetting.exeFilePath.ffmpeg,

@@ -504,13 +504,20 @@ ipcMain.on(
 // 動画のエンコードを行う
 ipcMain.handle(
   'enterEncodeVideoData',
-  async (event: IpcMainEvent, dirPathName: string, outJsonData: string, infoSettingJsonData: string) => {
+  async (
+    event: IpcMainEvent,
+    dirPathName: string,
+    outJsonData: string,
+    outTatieState: { outJsonData: string; tatieSituation: string }[],
+    infoSettingJsonData: string,
+  ) => {
     // 全体設定を読み込んで、コマンドのパス情報を取得する。
     const globalSettingData: globalSettingExportType = JSON.parse(readJsonData(globalSettingFilePathGLB))
 
     return await enterEncodeVideoData(
       dirPathName,
       outJsonData,
+      outTatieState,
       infoSettingJsonData,
       kyaraTatieDirPathGLB,
       globalSettingData.globalSetting,
