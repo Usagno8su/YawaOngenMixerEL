@@ -213,9 +213,26 @@ export const enterEncodeTatiePicFile = async (
   tatieOrderList: tatieOrderListType[],
   selectKyara?: number,
 ): Promise<{ buffer: Uint8Array; path: string }> => {
+  return yomAPI.getEncodePicFileData(
+    makeTatiePicEncodeList(tatieSituation, dateList, settype, tatieOrderList, selectKyara),
+  )
+}
+
+// 立ち絵の変換を行う際に、mainに送付するデータを作成する。
+// 複数の立ち絵を表示させる場合にはその内容をまとめて出力する。
+export const makeTatiePicEncodeList = (
+  tatieSituation: string,
+  dateList: outSettingType[],
+  settype: dataTextType,
+  tatieOrderList: tatieOrderListType[],
+  selectKyara?: number,
+): {
+  outJsonData: string
+  tatieSituation: string
+}[] => {
   const selectSetting = selectKyara !== undefined ? createVoiceFileEncodeSetting(selectKyara, dateList) : undefined
 
-  // 変換の実施
+  // データ作成の実施
   if (settype === 'tatieOrder' || settype === 'seid') {
     // seid のときに、selectKyaraのキャラがencodeListに入っているか確認する数値
     let chkSelectKyara = -1
@@ -251,12 +268,10 @@ export const enterEncodeTatiePicFile = async (
 
     console.log('encodeList: ' + encodeList.length)
 
-    return yomAPI.getEncodePicFileData(encodeList)
+    return encodeList
   } else {
     console.log('encodeList ではない: selectSetting: ' + selectSetting.name)
-    return yomAPI.getEncodePicFileData([
-      { outJsonData: JSON.stringify(selectSetting, undefined, 2), tatieSituation: tatieSituation },
-    ])
+    return [{ outJsonData: JSON.stringify(selectSetting, undefined, 2), tatieSituation: tatieSituation }]
   }
 }
 
