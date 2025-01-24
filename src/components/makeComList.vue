@@ -479,6 +479,15 @@ const TatieOrderDel = (index: number) => {
   refEnterEncodeTatie.value?.enterEncodeTatie()
 }
 
+// tatieOrderListのtatieSituation設定を変更する。
+const TatieOrderChangeSituation = (index: number) => {
+  if (tatieOrderList.value[index].tatieSituation === 'tatieUUID') {
+    tatieOrderList.value[index].tatieSituation = 'waitTatieUUID'
+  } else {
+    tatieOrderList.value[index].tatieSituation = 'tatieUUID'
+  }
+  // 立ち絵の変換サンプルを更新
+  refEnterEncodeTatie.value?.enterEncodeTatie()
 }
 
 // キャラ名やスタイル名で検索したときに、
@@ -757,6 +766,7 @@ watch(
           :TatieOrderDragMove="TatieOrderDragMove"
           :TatieOrderNew="TatieOrderNew"
           :TatieOrderDel="TatieOrderDel"
+          :TatieOrderChangeSituation="TatieOrderChangeSituation"
           v-else-if="settype === 'tatieOrder' || (editData === 'tatieOrder' && dateList[selectKyara] !== undefined)"
         />
         <setTatie

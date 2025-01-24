@@ -11,6 +11,7 @@ const props = defineProps<{
   TatieOrderDragMove: (index: number) => void
   TatieOrderNew: () => void
   TatieOrderDel: (index: number) => void
+  TatieOrderChangeSituation: (index: number) => void
 }>()
 // 複数の立ち絵の表示順番を設定します。
 
@@ -44,7 +45,7 @@ const AskDelete = (index: number): void => {
       >
         <div class="flex truncate">
           <div class="my-1 ml-2 rounded-3xl border border-black px-2">{{ index }}</div>
-          <div
+          <button
             :class="
               MakeClassString(
                 'my-1 ml-1 flex items-center rounded-3xl border border-black px-2',
@@ -57,11 +58,15 @@ const AskDelete = (index: number): void => {
             <div class="max-w-40 truncate" v-if="item.dataType === 'kyast'">
               {{ '（' + item.kyaraStyle + '）' }}
             </div>
-          </div>
+          </button>
           <MaterialIcons classString="w-5" icon="ArrowForward400024" />
-          <div class="my-1 ml-1 rounded-3xl border border-black px-2">
+          <button
+            class="my-1 ml-1 rounded-3xl border border-black px-2"
+            @click="() => TatieOrderChangeSituation(index)"
+            title="クリックで設定変更します"
+          >
             {{ item.tatieSituation === 'waitTatieUUID' ? '待機中' : '会話中' }}
-          </div>
+          </button>
         </div>
         <button @click="() => AskDelete(index)" title="リストから削除" class="h-9 w-9 p-1">
           <MaterialIcons icon="Delete" />
