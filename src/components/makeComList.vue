@@ -117,6 +117,8 @@ const setKyaraListRef = ref(null)
 // 移動開始時の数値を保存する変数
 const dragStartIndex = ref<number>()
 
+const refEnterEncodeTatie = ref<InstanceType<typeof DisplaySettingSampleView> | null>(null)
+
 // エンコードダイアログを閉じる
 const closeEncodeDialog = (): void => {
   isEncodeOpen.value = false
@@ -432,6 +434,8 @@ const TatieOrderDragMove = (index: number) => {
     const moveItem = tatieOrderList.value.splice(dragStartIndex.value, 1)[0]
     tatieOrderList.value.splice(index, 0, moveItem)
     dragStartIndex.value = index
+    // 立ち絵の変換サンプルを更新
+    refEnterEncodeTatie.value?.enterEncodeTatie()
   }
 }
 
@@ -450,6 +454,8 @@ const TatieOrderNew = () => {
   if (ans !== undefined) {
     TatieOrderAdd([ans])
   }
+  // 立ち絵の変換サンプルを更新
+  refEnterEncodeTatie.value?.enterEncodeTatie()
 }
 
 // tatieOrderListに表示する立ち絵を追加する。
@@ -469,6 +475,10 @@ const TatieOrderAdd = (outSettingTtems: outSettingType[]) => {
 // tatieOrderListに表示する立ち絵を削除する。
 const TatieOrderDel = (index: number) => {
   tatieOrderList.value.splice(index, 1)
+  // 立ち絵の変換サンプルを更新
+  refEnterEncodeTatie.value?.enterEncodeTatie()
+}
+
 }
 
 // キャラ名やスタイル名で検索したときに、
@@ -636,6 +646,7 @@ watch(
         :selectKyara="selectKyara"
         :infoData="infoData"
         :tatieOrderList="tatieOrderList"
+        ref="refEnterEncodeTatie"
       />
       <setKyaraList
         :dateList="dateList"
