@@ -30,6 +30,15 @@ const profile = ref<outSettingType>(createVoiceFileEncodeSetting(props.selectKya
 // 設定変更の比較チェックのため、内容を文字列に変換して保存する変数
 const checkConf = ref<string>(JSON.stringify([profile.value?.tatie, tatieSituation], undefined, 2))
 
+// 立ち絵の表示を更新
+const enterEncodeTatie = () => {
+  profile.value = createVoiceFileEncodeSetting(props.selectKyara, props.dateList)
+  checkConf.value = JSON.stringify([profile.value?.tatie, tatieSituation], undefined, 2)
+}
+
+// enterEncodeTatie を親コンポーネントから呼び出せるようにします
+defineExpose({ enterEncodeTatie })
+
 // 指定時間ごとに確認し、立ち絵の設定が変わったら表示を変更する
 const onEncodeTatie = setInterval(() => {
   // キャラが未選択でなければ実行
@@ -43,8 +52,7 @@ const onEncodeTatie = setInterval(() => {
 
     // 比較して前回の内容と異なっていれば立ち絵画像の表示を更新する。
     if (checkConf.value !== ans) {
-      profile.value = createVoiceFileEncodeSetting(props.selectKyara, props.dateList)
-      checkConf.value = ans
+      enterEncodeTatie()
     }
   }
 }, 2000)
