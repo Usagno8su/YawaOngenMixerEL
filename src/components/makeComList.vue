@@ -441,6 +441,7 @@ const TatieOrderDragMove = (index: number) => {
 
 // 立ち絵順序の設定で、表示する立ち絵を追加する。
 // まだ追加されておらず、立ち絵が設定されているキャラ設定を調べて、それを追加する。
+// ない場合はデフォルトの項目を追加する。
 const TatieOrderNew = () => {
   const ans = dateList.value.find((e) => {
     return (
@@ -453,9 +454,12 @@ const TatieOrderNew = () => {
 
   if (ans !== undefined) {
     TatieOrderAdd([ans])
+
+    // 立ち絵の変換サンプルを更新
+    refEnterEncodeTatie.value?.enterEncodeTatie()
+  } else {
+    TatieOrderAdd([dateList.value[0]])
   }
-  // 立ち絵の変換サンプルを更新
-  refEnterEncodeTatie.value?.enterEncodeTatie()
 }
 
 // tatieOrderListに表示する立ち絵を追加する。
