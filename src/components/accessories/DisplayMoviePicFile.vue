@@ -97,7 +97,9 @@ const getKyaraImg = async (index?: number) => {
       index,
     )
     ChangeKyaraImg()
-  } else if (props.settype === 'tatieOrder') {
+  } else if (props.settype === 'tatieOrder' && props.tatieOrderList.length !== 0) {
+    // 立ち絵順序の設定の項目を表示しており、tatieOrderListに設定があれば実行
+
     // 二重起動しないように値を変更
     runMakeImg.value = false
 
