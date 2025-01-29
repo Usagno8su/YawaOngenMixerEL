@@ -476,6 +476,24 @@ const TatieOrderAdd = (outSettingTtems: outSettingType[]) => {
   }
 }
 
+// tatieOrderListに表示する立ち絵を、選択されたキャラに変更する。
+const TatieOrderChange = (uuid: string, outSetting: outSettingType) => {
+  const changeItemindex = tatieOrderList.value.findIndex((e) => e.uuid === uuid)
+
+  // 値が見つかったら変更
+  if (changeItemindex !== -1) {
+    tatieOrderList.value[changeItemindex] = {
+      uuid: uuid,
+      dataType: outSetting.dataType,
+      name: outSetting.name,
+      kyaraStyle: outSetting.dataType === 'kyast' ? outSetting.kyaraStyle : undefined,
+      tatieSituation: outSetting.tatie.waitTatieUUID.active ? 'waitTatieUUID' : 'tatieUUID',
+    }
+  }
+  // 立ち絵の変換サンプルを更新
+  refEnterEncodeTatie.value?.enterEncodeTatie()
+}
+
 // tatieOrderListに表示する立ち絵を削除する。
 const TatieOrderDel = (index: number) => {
   tatieOrderList.value.splice(index, 1)
