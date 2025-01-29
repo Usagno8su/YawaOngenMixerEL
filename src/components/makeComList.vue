@@ -787,6 +787,7 @@ watch(
           :TatieOrderDragStart="TatieOrderDragStart"
           :TatieOrderDragMove="TatieOrderDragMove"
           :TatieOrderNew="TatieOrderNew"
+          :TatieOrderChange="TatieOrderChange"
           :TatieOrderDel="TatieOrderDel"
           :TatieOrderChangeSituation="TatieOrderChangeSituation"
           v-else-if="settype === 'tatieOrder' || (editData === 'tatieOrder' && dateList[selectKyara] !== undefined)"

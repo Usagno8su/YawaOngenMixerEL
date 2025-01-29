@@ -10,6 +10,7 @@ const props = defineProps<{
   TatieOrderDragStart: (index: number) => void
   TatieOrderDragMove: (index: number) => void
   TatieOrderNew: () => void
+  TatieOrderChange: (uuid: string, outSetting: outSettingType) => void
   TatieOrderDel: (index: number) => void
   TatieOrderChangeSituation: (index: number) => void
 }>()
@@ -20,15 +21,31 @@ import MaterialIcons from '@/components/accessories/icons/MaterialIcons.vue'
 import { typeColor } from '@/data/data'
 import { MakeClassString } from '@/utils/analysisGeneral'
 import deleteDialog from '@/components/accessories/deleteDialog.vue'
+import SelectDisplayTatieOrderKyara from '@/components/accessories/SelectDisplayTatieOrderKyara.vue'
 import { ref } from 'vue'
 
 const isDeleteDialogOpen = ref<boolean>(false)
 
 const isDeleteIndex = ref<number>()
 
+// キャラ設定の選択を行う画面を表示させるための変数
+const isSelectDisplayTatieOrderKyaraOpen = ref<boolean>(false)
+const selectTatieOrderListUUID = ref<string>()
+const selectDataType = ref<dataTextType>('defo')
+const selectKyaraName = ref<string>()
+const selectKyaraStyle = ref<string>()
+
 const AskDelete = (index: number): void => {
   isDeleteIndex.value = index
   isDeleteDialogOpen.value = true
+}
+
+// キャラ設定の選択を行う画面を表示する
+const OpenSelectDisplayTatieOrderKyara = (uuid: string, name: string, style?: string): void => {
+  selectTatieOrderListUUID.value = uuid
+  selectKyaraName.value = name
+  selectKyaraStyle.value = style
+  isSelectDisplayTatieOrderKyaraOpen.value = true
 }
 </script>
 
@@ -53,6 +70,7 @@ const AskDelete = (index: number): void => {
               )
             "
             :title="item.name + (item.dataType === 'kyast' ? '（' + item.kyaraStyle + '）' : '')"
+            @click="() => OpenSelectDisplayTatieOrderKyara(item.uuid, item.name, item.kyaraStyle)"
           >
             <div class="max-w-52 truncate">{{ item.name }}</div>
             <div class="max-w-40 truncate" v-if="item.dataType === 'kyast'">
@@ -82,6 +100,16 @@ const AskDelete = (index: number): void => {
         <MaterialIcons icon="AddCircle" />
       </button>
     </div>
+    <SelectDisplayTatieOrderKyara
+      :clickClose="() => (isSelectDisplayTatieOrderKyaraOpen = false)"
+      :TatieOrderChange="TatieOrderChange"
+      :dateList="dateList"
+      :selectTatieOrderListUUID="selectTatieOrderListUUID"
+      :selectDataType="selectDataType"
+      :selectKyaraName="selectKyaraName"
+      :selectKyaraStyle="selectKyaraStyle"
+      v-if="isSelectDisplayTatieOrderKyaraOpen"
+    />
     <deleteDialog
       :deleteTitle="'リストから削除'"
       :clickClose="() => (isDeleteDialogOpen = false)"
