@@ -90,6 +90,7 @@ export const analysisFileName = (
               fileName,
               fileExtension,
               voiceID,
+              [],
               yomAPI.getPlatformData(),
             ),
           )

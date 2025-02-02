@@ -13,6 +13,7 @@ import {
   inputProfileSendReType,
   kyaraProfileListExportType,
   kyaraProfileListType,
+  tatieOrderListType,
 } from '../type/data-type'
 import { NowTimeData } from './analysisGeneral'
 import {
@@ -189,6 +190,7 @@ export const createNewDateList = (
   fileName?: string,
   fileExtension?: string,
   voiceID?: string,
+  fileTatieOrderList?: tatieOrderListType[],
   platform?: NodeJS.Platform,
 ): outSettingType => {
   return {
@@ -257,6 +259,7 @@ export const createNewDateList = (
     fileName: fileName !== undefined ? fileName : '',
     fileExtension: fileExtension !== undefined ? fileExtension : '',
     voiceID: voiceID !== undefined ? voiceID : '',
+    fileTatieOrderList: { val: fileTatieOrderList ?? [], active: fileTatieOrderList !== undefined ? true : false },
   }
 }
 
@@ -272,6 +275,7 @@ export const CreateCopyDateList = (kyraData: outSettingType, dataType: dataTextT
     fileName: '',
     fileExtension: '',
     voiceID: '',
+    fileTatieOrderList: { val: [], active: false },
   }
 }
 

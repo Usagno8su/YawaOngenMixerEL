@@ -65,6 +65,11 @@ export type statusSubAlignment = {
   active: boolean
 }
 
+export type statusTatieOrderList = {
+  val: tatieOrderListType[]
+  active: boolean
+}
+
 // 立ち絵の項目のタイプ
 export type tatieSettingType =
   | 'tatieUUID'
@@ -141,6 +146,7 @@ export type outSettingType = {
   fileName: string // ファイル名（拡張子なし）(seidの音声ファイル用)
   fileExtension: string // ファイル拡張子     (seidの音声ファイル用)
   voiceID: string // ID                       (seidの音声ファイル用)
+  fileTatieOrderList: statusTatieOrderList // 複数立ち絵の表示順番を記録          (seidの音声ファイル用)
 }
 
 // 各情報タイプで選択していたキャラのID情報を記録

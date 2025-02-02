@@ -25,6 +25,7 @@ import {
   globalSettingExportV021Type,
   globalSettingV021Type,
   profileVoiceFileExportType,
+  tatieOrderListType,
 } from '../type/data-type'
 import { DEFAULT_KYARA_PROFILE_NAME, DEFAULT_KYARA_TATIE_UUID } from '../data/data'
 import { createNewDateList } from './analysisData'
@@ -213,6 +214,7 @@ export const initializationSetting = (): profileKyaraExportType => {
         '',
         '',
         '',
+        [],
         process.platform,
       ),
     )
@@ -221,7 +223,7 @@ export const initializationSetting = (): profileKyaraExportType => {
     if (e.kyaraStyle !== undefined) {
       e.kyaraStyle.map((ekyaraStyle) =>
         outData.value.push(
-          createNewDateList('kyast', makeUUID(), e.kyaraName, ekyaraStyle, {}, {}, '', '', '', process.platform),
+          createNewDateList('kyast', makeUUID(), e.kyaraName, ekyaraStyle, {}, {}, '', '', '', [], process.platform),
         ),
       )
     }
@@ -728,6 +730,7 @@ export const loadKyaraProfileData = async (confPath: string): Promise<string> =>
     .then(() => {
       // 追加したデータを書き込む
       const out = outSoftVersion()
+      const tatieOrder: tatieOrderListType[] = []
       return JSON.stringify(
         {
           softVar: out.softVer,
@@ -751,6 +754,7 @@ export const loadKyaraProfileData = async (confPath: string): Promise<string> =>
               fileName: item.fileName,
               fileExtension: item.fileExtension,
               voiceID: item.voiceID,
+              fileTatieOrderList: { val: tatieOrder, active: false },
             }
           }),
         },
@@ -794,6 +798,7 @@ export const loadVoiceFileData = async (confPath: string): Promise<string> => {
     .then(() => {
       // 追加したデータを書き込む
       const out = outSoftVersion()
+      const tatieOrder: tatieOrderListType[] = []
       return JSON.stringify(
         {
           softVar: out.softVer,
@@ -815,6 +820,7 @@ export const loadVoiceFileData = async (confPath: string): Promise<string> => {
               fileName: item.fileName,
               fileExtension: item.fileExtension,
               voiceID: item.voiceID,
+              fileTatieOrderList: { val: tatieOrder, active: false },
             }
           }),
         },
