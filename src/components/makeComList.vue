@@ -126,6 +126,13 @@ const closeEncodeDialog = (): void => {
   encodeAns.value = ''
 }
 
+// どちらのtatieOrderListを使用するか判断する変数
+// true ならfileTatieOrderList、falesならプロファイルのtatieOrderListとなる
+const isFileTatieOrderSetting = ref<boolean>(false)
+
+// 使用するtatieOrderListを選択
+const editTatieOrderList = ref<tatieOrderListType[]>(tatieOrderList.value)
+
 // 選択中のボタンの場合は背景色を変更する
 const actset = (editSet: selectedEditDataType): string => {
   return (
@@ -420,6 +427,18 @@ const searchKyaraEvent = (text: string) => {
   console.log('searchKyaraString: ' + searchKyaraString.value)
 }
 
+// seidキャラ設定のfileTatieOrderListを子コンポーネントに渡すか判断する
+// true ならfileTatieOrderList、falesならプロファイルのtatieOrderListとなる
+const selectFileTatieOrderSetting = (): void => {
+  if (props.settype === 'seid' && dateList.value[selectKyara.value]?.fileTatieOrderList.active) {
+    isFileTatieOrderSetting.value = true
+    editTatieOrderList.value = dateList.value[selectKyara.value]?.fileTatieOrderList.val
+  } else {
+    isFileTatieOrderSetting.value = false
+    editTatieOrderList.value = tatieOrderList.value
+  }
+}
+
 // 立ち絵の表示順をマウスで入れ替えるため、
 // 移動開始時の数値を保存する
 const TatieOrderDragStart = (index: number) => {
@@ -635,6 +654,9 @@ watch(
         }
       }
     }
+
+    // プロファイル全体か個別かどちらのtatieOrderListを利用するか決める
+    selectFileTatieOrderSetting()
   },
 )
 
@@ -646,6 +668,15 @@ watch(
     if (dateList.value[selectKyara.value] !== undefined) {
       higherUpList.value = SelectHigherUpIndexList(props.settype, dateList.value, selectKyara.value)
     }
+  },
+)
+
+// seidのfileTatieOrderList.activeが変更されたときに、どのtatieOrderListを利用するか決める
+watch(
+  () => dateList.value[selectKyara.value]?.fileTatieOrderList.active,
+  () => {
+    // プロファイル全体か個別かどちらのtatieOrderListを利用するか決める
+    selectFileTatieOrderSetting()
   },
 )
 
