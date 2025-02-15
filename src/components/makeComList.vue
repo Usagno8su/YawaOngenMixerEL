@@ -451,8 +451,8 @@ const TatieOrderDragMove = (index: number) => {
   // indexで指定された場所に差し込む形で追加する。
   // 処理が終わったら dragStartIndex.value と index の値を一致させて処理が無駄に実行されないようにする。
   if (index !== dragStartIndex.value) {
-    const moveItem = tatieOrderList.value.splice(dragStartIndex.value, 1)[0]
-    tatieOrderList.value.splice(index, 0, moveItem)
+    const moveItem = editTatieOrderList.value.splice(dragStartIndex.value, 1)[0]
+    editTatieOrderList.value.splice(index, 0, moveItem)
     dragStartIndex.value = index
     // 立ち絵の変換サンプルを更新
     refEnterEncodeTatie.value?.enterEncodeTatie()
@@ -465,7 +465,7 @@ const TatieOrderDragMove = (index: number) => {
 const TatieOrderNew = () => {
   const ans = dateList.value.find((e) => {
     return (
-      tatieOrderList.value.findIndex(
+      editTatieOrderList.value.findIndex(
         (f) => e.dataType + e.name + e.kyaraStyle === f.dataType + f.name + f.kyaraStyle,
       ) === -1 &&
       (e.tatie.waitTatieUUID.active || e.tatie.tatieUUID.active)
@@ -482,11 +482,11 @@ const TatieOrderNew = () => {
   }
 }
 
-// tatieOrderListに表示する立ち絵を追加する。
+// editTatieOrderListに表示する立ち絵を追加する。
 // 配列で複数の立ち絵順序の設定をできる。
 const TatieOrderAdd = (outSettingTtems: outSettingType[]) => {
   for (const item of outSettingTtems) {
-    tatieOrderList.value.push({
+    editTatieOrderList.value.push({
       uuid: yomAPI.getUUID(),
       dataType: item.dataType,
       name: item.name,
@@ -496,7 +496,7 @@ const TatieOrderAdd = (outSettingTtems: outSettingType[]) => {
   }
 }
 
-// tatieOrderListに表示する立ち絵を、選択されたキャラに変更する。
+// editTatieOrderListに表示する立ち絵を、選択されたキャラに変更する。
 const TatieOrderChange = (uuid: string, outSetting: outSettingType) => {
   const changeItemindex = tatieOrderList.value.findIndex((e) => e.uuid === uuid)
 
@@ -514,19 +514,19 @@ const TatieOrderChange = (uuid: string, outSetting: outSettingType) => {
   refEnterEncodeTatie.value?.enterEncodeTatie()
 }
 
-// tatieOrderListに表示する立ち絵を削除する。
+// editTatieOrderListに表示する立ち絵を削除する。
 const TatieOrderDel = (index: number) => {
-  tatieOrderList.value.splice(index, 1)
+  editTatieOrderList.value.splice(index, 1)
   // 立ち絵の変換サンプルを更新
   refEnterEncodeTatie.value?.enterEncodeTatie()
 }
 
-// tatieOrderListのtatieSituation設定を変更する。
+// editTatieOrderListのtatieSituation設定を変更する。
 const TatieOrderChangeSituation = (index: number) => {
-  if (tatieOrderList.value[index].tatieSituation === 'tatieUUID') {
-    tatieOrderList.value[index].tatieSituation = 'waitTatieUUID'
+  if (editTatieOrderList.value[index].tatieSituation === 'tatieUUID') {
+    editTatieOrderList.value[index].tatieSituation = 'waitTatieUUID'
   } else {
-    tatieOrderList.value[index].tatieSituation = 'tatieUUID'
+    editTatieOrderList.value[index].tatieSituation = 'tatieUUID'
   }
   // 立ち絵の変換サンプルを更新
   refEnterEncodeTatie.value?.enterEncodeTatie()
@@ -682,7 +682,7 @@ watch(
 
 // 設定に編集があったときにはtrueを入れる
 watch(
-  () => [dateList.value, infoData.value, tatieOrderList.value],
+  () => [dateList.value, infoData.value, editTatieOrderList.value],
   () => {
     props.setChangeDataSettingSta(true)
   },
