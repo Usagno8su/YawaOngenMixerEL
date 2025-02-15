@@ -8,6 +8,7 @@ const props = withDefaults(
     infoData: infoSettingType
     profile: outSettingType
     tatieOrderList: tatieOrderListType[]
+    isFileTatieOrderSetting: boolean
     imgClass?: string
   }>(),
   { tatieSituation: 'tatieUUID' },
@@ -97,8 +98,8 @@ const getKyaraImg = async (index?: number) => {
       index,
     )
     ChangeKyaraImg()
-  } else if (props.settype === 'tatieOrder' && props.tatieOrderList.length !== 0) {
-    // 立ち絵順序の設定の項目を表示しており、tatieOrderListに設定があれば実行
+  } else if ((props.settype === 'tatieOrder' || props.settype === 'seid') && props.tatieOrderList.length !== 0) {
+    // 立ち絵順序の設定の項目か音声ファイル個別の設定を表示しており、tatieOrderListに設定があれば実行
 
     // 二重起動しないように値を変更
     runMakeImg.value = false
@@ -112,6 +113,9 @@ const getKyaraImg = async (index?: number) => {
       props.tatieOrderList,
     )
     ChangeKyaraImg()
+  } else {
+    // 立ち絵が存在しない
+    noTatieFile.value = true
   }
 }
 
@@ -125,16 +129,22 @@ const saveImg = async () => {
   }
 }
 
+// 立ち絵サムネイルの変更処理を実行
+const EnterGetKyaraImg = () => {
+  if (props.settype === 'tatieOrder') {
+    getKyaraImg()
+  } else {
+    getKyaraImg(props.selectKyara)
+  }
+}
+
+// enterEncodeTatie を親コンポーネントから呼び出せるようにします
+defineExpose({ EnterGetKyaraImg })
+
 watch(
+  () => [props.profile, props.settype, props.tatieSituation, props.tatieOrderList, props.selectKyara],
   () => {
-    props.profile, props.settype, props.tatieSituation, props.tatieOrderList
-  },
-  () => {
-    if (props.settype === 'tatieOrder') {
-      getKyaraImg()
-    } else {
-      getKyaraImg(props.selectKyara)
-    }
+    EnterGetKyaraImg()
   },
   { deep: true },
 )
@@ -143,7 +153,9 @@ watch(
 <template>
   <img
     v-if="
-      (settype === 'tatieOrder' || profile?.tatie[tatieSituation].val !== DEFAULT_KYARA_TATIE_UUID) &&
+      (settype === 'tatieOrder' ||
+        settype === 'seid' ||
+        profile?.tatie[tatieSituation].val !== DEFAULT_KYARA_TATIE_UUID) &&
       typeof img === 'string' &&
       noTatieFile !== true
     "

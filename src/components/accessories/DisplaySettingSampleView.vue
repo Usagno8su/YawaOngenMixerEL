@@ -6,6 +6,7 @@ const props = defineProps<{
   selectKyara: number
   infoData: infoSettingType
   tatieOrderList: tatieOrderListType[]
+  isFileTatieOrderSetting: boolean
 }>()
 // 立ち絵画像の加工を行って表示します。
 
@@ -24,16 +25,21 @@ import { MakeClassString } from '@/utils/analysisGeneral'
 // 会話中・待機中のどちらの立ち絵を表示するか指定
 const tatieSituation = ref<tatieSituationType>('tatieUUID')
 
+const refDisplayMoviePicFile = ref<InstanceType<typeof DisplayMoviePicFile> | null>(null)
+
 ////  コンポーネント表示時に、立ち絵画像の表示をも行う
 // 表示するプロファイル情報
 const profile = ref<outSettingType>(createVoiceFileEncodeSetting(props.selectKyara, props.dateList))
 // 設定変更の比較チェックのため、内容を文字列に変換して保存する変数
-const checkConf = ref<string>(JSON.stringify([profile.value?.tatie, tatieSituation], undefined, 2))
+const checkConf = ref<string>(
+  JSON.stringify([profile.value?.tatie, tatieSituation, props.tatieOrderList], undefined, 2),
+)
 
 // 立ち絵の表示を更新
 const enterEncodeTatie = () => {
   profile.value = createVoiceFileEncodeSetting(props.selectKyara, props.dateList)
-  checkConf.value = JSON.stringify([profile.value?.tatie, tatieSituation], undefined, 2)
+  refDisplayMoviePicFile.value.EnterGetKyaraImg()
+  checkConf.value = JSON.stringify([profile.value?.tatie, tatieSituation, props.tatieOrderList], undefined, 2)
 }
 
 // enterEncodeTatie を親コンポーネントから呼び出せるようにします
@@ -45,7 +51,7 @@ const onEncodeTatie = setInterval(() => {
   if (props.selectKyara !== -1) {
     // 比較のために設定内容をJSON形式に変換
     const ans = JSON.stringify(
-      [createVoiceFileEncodeSetting(props.selectKyara, props.dateList)?.tatie, tatieSituation],
+      [createVoiceFileEncodeSetting(props.selectKyara, props.dateList)?.tatie, tatieSituation, props.tatieOrderList],
       undefined,
       2,
     )
@@ -103,7 +109,9 @@ onUnmounted(() => {
         :profile="profile"
         :tatieOrderList="tatieOrderList"
         :tatieSituation="tatieSituation"
+        :isFileTatieOrderSetting="isFileTatieOrderSetting"
         imgClass="w-full h-full"
+        ref="refDisplayMoviePicFile"
       />
     </div>
   </div>
