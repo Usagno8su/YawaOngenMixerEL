@@ -708,7 +708,8 @@ watch(
         :higherUpList="higherUpList"
         :selectKyara="selectKyara"
         :infoData="infoData"
-        :tatieOrderList="tatieOrderList"
+        :tatieOrderList="editTatieOrderList"
+        :isFileTatieOrderSetting="isFileTatieOrderSetting"
         ref="refEnterEncodeTatie"
       />
       <setKyaraList
@@ -815,7 +816,8 @@ watch(
           :higherUpList="higherUpList"
           :fileListTatie="fileListTatie"
           :inputProfileUUID="inputProfileUUID"
-          :tatieOrderList="tatieOrderList"
+          :tatieOrderList="editTatieOrderList"
+          :isFileTatieOrderSetting="isFileTatieOrderSetting"
           :TatieOrderDragStart="TatieOrderDragStart"
           :TatieOrderDragMove="TatieOrderDragMove"
           :TatieOrderNew="TatieOrderNew"
