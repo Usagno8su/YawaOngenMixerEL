@@ -453,35 +453,31 @@ export const enterEncodePicFileData = async (
   const tempDirPath = await createTempDir()
 
   console.log('長さ; ' + outState.length)
-  if (outState[0].outJsonData === undefined) {
-    // 立ち絵がない場合はnullのデータを返す。
-    return {
-      buffer: null,
-      path: 'NoFile',
-    }
-  }
 
   const imgList: string[] = []
   let kazu = 0
   for (const item of outState) {
-    const setting: outSettingType = JSON.parse(item.outJsonData)
-    console.log('変換: ' + setting.name + ', ' + kazu)
-    if (fs.existsSync(path.join(kyaraTatieDirPath, setting.tatie.tatieUUID.val + '.png'))) {
-      //// 画像ファイルの作成
+    // outJsonDataの中身があるか確認して処理を実行する。
+    if (item.outJsonData !== undefined) {
+      const setting: outSettingType = JSON.parse(item.outJsonData)
+      console.log('変換: ' + setting.name + ', ' + kazu)
+      if (fs.existsSync(path.join(kyaraTatieDirPath, setting.tatie.tatieUUID.val + '.png'))) {
+        //// 画像ファイルの作成
 
-      // 画像ファイルの作成を実行
-      imgList.push(
-        await enterEncodeImageData(
-          setting,
-          item.tatieSituation,
-          tempDirPath,
-          globalSetting.exeFilePath.convert,
-          kyaraTatieDirPath,
-          tempDirPath,
-          'tb_' + kazu,
-        ),
-      )
-      kazu += 1
+        // 画像ファイルの作成を実行
+        imgList.push(
+          await enterEncodeImageData(
+            setting,
+            item.tatieSituation,
+            tempDirPath,
+            globalSetting.exeFilePath.convert,
+            kyaraTatieDirPath,
+            tempDirPath,
+            'tb_' + kazu,
+          ),
+        )
+        kazu += 1
+      }
     }
   }
 
