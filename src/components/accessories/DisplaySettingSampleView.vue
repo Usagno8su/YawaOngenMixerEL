@@ -65,7 +65,7 @@ onUnmounted(() => {
 
 <template>
   <div class="flex items-start">
-    <div class="flex w-6 flex-col text-center text-sm">
+    <div class="flex w-6 flex-col text-center text-sm" v-if="settype !== 'tatieOrder'">
       <button
         :class="
           MakeClassString(
@@ -90,6 +90,9 @@ onUnmounted(() => {
       >
         待機中
       </button>
+    </div>
+    <div class="flex w-6 flex-col text-center text-sm" v-else>
+      <div class="rounded-l-lg border-[1px] border-gray-300 bg-sky-400">待機中</div>
     </div>
     <div class="h-36 w-full border-[1px] border-gray-400">
       <DisplayMoviePicFile
