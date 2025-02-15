@@ -7,6 +7,7 @@ const props = defineProps<{
   fileListTatie: fileListTatieType[]
   inputProfileUUID: string
   tatieOrderList: tatieOrderListType[]
+  isFileTatieOrderSetting: boolean
   TatieOrderDragStart: (index: number) => void
   TatieOrderDragMove: (index: number) => void
   TatieOrderNew: () => void
@@ -51,7 +52,7 @@ const OpenSelectDisplayTatieOrderKyara = (uuid: string, name: string, style?: st
 
 <template>
   <div class="h-full w-full">
-    <div class="flex h-full w-full flex-col items-center overflow-y-scroll border border-gray-500 px-2 py-1">
+    <div class="relative flex h-full w-full flex-col items-center overflow-y-scroll border border-gray-500 px-2 py-1">
       <div
         class="mt-1 flex w-[580px] justify-between rounded-xl border border-black"
         v-for="(item, index) in tatieOrderList"
@@ -90,12 +91,34 @@ const OpenSelectDisplayTatieOrderKyara = (uuid: string, name: string, style?: st
           <MaterialIcons icon="Delete" />
         </button>
       </div>
+      <!-- 表示のみの場合は上にかぶせて操作できないようにする -->
+      <div
+        class="absolute h-full w-full bg-gray-600 bg-opacity-40"
+        v-if="!(props.settype === 'tatieOrder' || isFileTatieOrderSetting)"
+      ></div>
     </div>
     <div class="mt-1 flex justify-end px-2">
       <button
+        @click="
+          () => (dateList[selectKyara].fileTatieOrderList.active = !dateList[selectKyara].fileTatieOrderList.active)
+        "
+        :title="
+          dateList[selectKyara].fileTatieOrderList.active
+            ? '個別の立ち絵配置設定を無効化'
+            : '個別の立ち絵配置設定を有効化'
+        "
+        class="mr-2 h-9 w-9 rounded-md border border-black"
+        v-if="settype === 'seid'"
+      >
+        <MaterialIcons
+          :classString="dateList[selectKyara].fileTatieOrderList.active === false ? 'opacity-50' : ''"
+          :icon="dateList[selectKyara].fileTatieOrderList.active ? 'RadioButtonChecked' : 'RadioButtonUnchecked'"
+        />
+      </button>
+      <button
         @click="() => TatieOrderNew()"
-        title="立ち絵が設定されているキャラ設定の追加（立ち絵が設定されていないと追加できません）"
-        class="h-9 w-9"
+        title="立ち絵が設定されているキャラ設定の追加（立ち絵が設定されているものが優先的に追加されます）"
+        class="h-9 w-9 rounded-md border border-black"
       >
         <MaterialIcons icon="AddCircle" />
       </button>
