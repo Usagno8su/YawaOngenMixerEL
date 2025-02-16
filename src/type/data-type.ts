@@ -271,6 +271,7 @@ export type pathStatusType = {
 export type tatieOrderListType = {
   uuid: string
   dataType: dataTextType
+  settingUUID: string
   name: string
   kyaraStyle: string
   tatieSituation: tatieSituationType

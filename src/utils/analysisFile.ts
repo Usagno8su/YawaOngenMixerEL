@@ -243,7 +243,7 @@ export const makeTatiePicEncodeList = (
     const encodeList = tatieOrderList.map((e) => {
       // dateListに一致するものを探し、立ち絵の設定をencodeListに入れる。
 
-      const ans = dateList.findIndex((f) => e.dataType + e.name + e.kyaraStyle === f.dataType + f.name + f.kyaraStyle)
+      const ans = dateList.findIndex((f) => e.dataType + e.settingUUID === f.dataType + f.uuid)
       // ただ、会話中のキャラ(selectSetting)含まれている場合は、tatieSituationで指定されている状態の画像を選択させる。
       if (ans !== -1) {
         if (

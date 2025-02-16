@@ -465,9 +465,7 @@ const TatieOrderDragMove = (index: number) => {
 const TatieOrderNew = () => {
   const ans = dateList.value.find((e) => {
     return (
-      editTatieOrderList.value.findIndex(
-        (f) => e.dataType + e.name + e.kyaraStyle === f.dataType + f.name + f.kyaraStyle,
-      ) === -1 &&
+      editTatieOrderList.value.findIndex((f) => e.dataType + e.uuid === f.dataType + f.settingUUID) === -1 &&
       (e.tatie.waitTatieUUID.active || e.tatie.tatieUUID.active)
     )
   })
@@ -489,6 +487,7 @@ const TatieOrderAdd = (outSettingTtems: outSettingType[]) => {
     editTatieOrderList.value.push({
       uuid: yomAPI.getUUID(),
       dataType: item.dataType,
+      settingUUID: item.uuid,
       name: item.name,
       kyaraStyle: item.dataType === 'kyast' ? item.kyaraStyle : undefined,
       tatieSituation: item.tatie.waitTatieUUID.active ? 'waitTatieUUID' : 'tatieUUID',
@@ -505,6 +504,7 @@ const TatieOrderChange = (uuid: string, outSetting: outSettingType) => {
     editTatieOrderList.value[changeItemindex] = {
       uuid: uuid,
       dataType: outSetting.dataType,
+      settingUUID: outSetting.uuid,
       name: outSetting.name,
       kyaraStyle: outSetting.dataType === 'kyast' ? outSetting.kyaraStyle : undefined,
       tatieSituation: outSetting.tatie.waitTatieUUID.active ? 'waitTatieUUID' : 'tatieUUID',
