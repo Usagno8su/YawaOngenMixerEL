@@ -498,11 +498,11 @@ const TatieOrderAdd = (outSettingTtems: outSettingType[]) => {
 
 // editTatieOrderListに表示する立ち絵を、選択されたキャラに変更する。
 const TatieOrderChange = (uuid: string, outSetting: outSettingType) => {
-  const changeItemindex = tatieOrderList.value.findIndex((e) => e.uuid === uuid)
+  const changeItemindex = editTatieOrderList.value.findIndex((e) => e.uuid === uuid)
 
   // 値が見つかったら変更
   if (changeItemindex !== -1) {
-    tatieOrderList.value[changeItemindex] = {
+    editTatieOrderList.value[changeItemindex] = {
       uuid: uuid,
       dataType: outSetting.dataType,
       name: outSetting.name,
