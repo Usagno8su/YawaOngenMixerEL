@@ -732,7 +732,7 @@ export const loadKyaraProfileData = async (confPath: string): Promise<string> =>
           softVar: out.softVer,
           exportStatus: out.exportStatus,
           infoSetting: inputJsonData.infoSetting,
-          tatieOrderList: [],
+          tatieOrderList: tatieOrder,
           settingList: inputJsonData.settingList.map((item) => {
             return {
               dataType: item.dataType,
