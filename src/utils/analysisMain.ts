@@ -458,7 +458,7 @@ export const enterEncodePicFileData = async (
   let kazu = 0
   for (const item of outState) {
     // outJsonDataの中身があるか確認して処理を実行する。
-    if (item.outJsonData !== undefined) {
+    if (item?.outJsonData !== undefined) {
       const setting: outSettingType = JSON.parse(item.outJsonData)
       console.log('変換: ' + setting.name + ', ' + kazu)
       if (fs.existsSync(path.join(kyaraTatieDirPath, setting.tatie.tatieUUID.val + '.png'))) {
