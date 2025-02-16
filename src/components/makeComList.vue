@@ -818,6 +818,8 @@ watch(
           :inputProfileUUID="inputProfileUUID"
           :tatieOrderList="editTatieOrderList"
           :isFileTatieOrderSetting="isFileTatieOrderSetting"
+          :subTextStringList="subTextStringList"
+          :useSubText="globalSetting.useSubText"
           :TatieOrderDragStart="TatieOrderDragStart"
           :TatieOrderDragMove="TatieOrderDragMove"
           :TatieOrderNew="TatieOrderNew"

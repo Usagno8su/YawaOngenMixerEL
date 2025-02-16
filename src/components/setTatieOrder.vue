@@ -8,6 +8,8 @@ const props = defineProps<{
   inputProfileUUID: string
   tatieOrderList: tatieOrderListType[]
   isFileTatieOrderSetting: boolean
+  subTextStringList: { [key: string]: { val: string; active: boolean } }
+  useSubText: boolean
   TatieOrderDragStart: (index: number) => void
   TatieOrderDragMove: (index: number) => void
   TatieOrderNew: () => void
@@ -131,6 +133,9 @@ const OpenSelectDisplayTatieOrderKyara = (uuid: string, name: string, style?: st
       :selectDataType="selectDataType"
       :selectKyaraName="selectKyaraName"
       :selectKyaraStyle="selectKyaraStyle"
+      :subTextStringList="subTextStringList"
+      :useSubText="useSubText"
+      :settype="settype"
       v-if="isSelectDisplayTatieOrderKyaraOpen"
     />
     <deleteDialog

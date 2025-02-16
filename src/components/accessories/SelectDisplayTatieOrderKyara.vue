@@ -2,10 +2,13 @@
 const props = defineProps<{
   clickClose: () => void
   TatieOrderChange: (uuid: string, outSetting: outSettingType) => void
+  settype: dataTextType
   dateList: outSettingType[]
   selectTatieOrderListUUID: string
   selectDataType: dataTextType
   selectKyaraName: string
+  subTextStringList: { [key: string]: { val: string; active: boolean } }
+  useSubText: boolean
   selectKyaraStyle?: string
 }>()
 // 複数の立ち絵の表示順番を設定する画面で、キャラ設定の選択を行う画面
@@ -25,6 +28,7 @@ const refSearchString = ref<{ searchString: string }>({ searchString: undefined 
 const kyaraProfileList = props.dateList
   .filter((e) => e.dataType === 'defo' || e.dataType === 'kyara')
   .concat(props.dateList.filter((e) => e.dataType === 'kyast'))
+  .concat(props.settype === 'seid' ? props.dateList.filter((e) => e.dataType === 'seid') : [])
 
 // キャラの変更と選択画面のcloseを行う
 const KyaraChange = (outSetting: outSettingType): void => {
@@ -49,13 +53,31 @@ const KyaraChange = (outSetting: outSettingType): void => {
                 typeColor[item.dataType].bg,
               )
             "
-            :title="item.name + (item.dataType === 'kyast' ? '（' + item.kyaraStyle + '）' : '')"
+            :title="
+              item.name +
+              (item.dataType === 'kyast'
+                ? '（' + item.kyaraStyle + '）'
+                : item.dataType === 'seid'
+                  ? '：' +
+                    (subTextStringList[item.uuid].active
+                      ? subTextStringList[item.uuid].val
+                      : item.fileName + '.' + item.fileExtension)
+                  : '')
+            "
             v-if="FindAllString(refSearchString.searchString, [item.kyaraStyle, item.name])"
             @click="() => KyaraChange(item)"
           >
             <div class="max-w-60 truncate">{{ item.name }}</div>
             <div class="max-w-48 truncate" v-if="item.dataType === 'kyast'">
               {{ '（' + item.kyaraStyle + '）' }}
+            </div>
+            <div class="max-w-48 truncate" v-else-if="item.dataType === 'seid' && subTextStringList[item.uuid].active">
+              {{
+                '：' +
+                (subTextStringList[item.uuid].active
+                  ? subTextStringList[item.uuid].val
+                  : item.fileName + '.' + item.fileExtension)
+              }}
             </div>
           </button>
         </div>
