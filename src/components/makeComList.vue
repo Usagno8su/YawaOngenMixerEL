@@ -532,6 +532,12 @@ const checkIntoTatieOrderList = (uuid: string): boolean => {
   }
 }
 
+// プロファイルの立ち絵順序の設定を、指定したファイルの個別ファイルの立ち絵順序にコピーする
+const CopyTatieOrderListToFileList = (index: number): void => {
+  dateList.value[index].fileTatieOrderList.val = JSON.parse(JSON.stringify(tatieOrderList.value))
+  editTatieOrderList.value = dateList.value[index].fileTatieOrderList.val
+}
+
 // editTatieOrderListのtatieSituation設定を変更する。
 const TatieOrderChangeSituation = (index: number) => {
   if (editTatieOrderList.value[index].tatieSituation === 'tatieUUID') {
@@ -838,6 +844,7 @@ watch(
           :TatieOrderChange="TatieOrderChange"
           :TatieOrderDel="TatieOrderDel"
           :TatieOrderChangeSituation="TatieOrderChangeSituation"
+          :CopyTatieOrderListToFileList="(index: number) => CopyTatieOrderListToFileList(index)"
           v-else-if="settype === 'tatieOrder' || (editData === 'tatieOrder' && dateList[selectKyara] !== undefined)"
         />
         <setTatie

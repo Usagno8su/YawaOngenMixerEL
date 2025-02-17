@@ -16,6 +16,7 @@ const props = defineProps<{
   TatieOrderChange: (uuid: string, outSetting: outSettingType) => void
   TatieOrderDel: (index: number) => void
   TatieOrderChangeSituation: (index: number) => void
+  CopyTatieOrderListToFileList: (index: number) => void
 }>()
 // 複数の立ち絵の表示順番を設定します。
 
@@ -99,31 +100,46 @@ const OpenSelectDisplayTatieOrderKyara = (uuid: string, name: string, style?: st
         v-if="!(props.settype === 'tatieOrder' || isFileTatieOrderSetting)"
       ></div>
     </div>
-    <div class="mt-1 flex justify-end px-2">
-      <button
-        @click="
-          () => (dateList[selectKyara].fileTatieOrderList.active = !dateList[selectKyara].fileTatieOrderList.active)
-        "
-        :title="
-          dateList[selectKyara].fileTatieOrderList.active
-            ? '個別の立ち絵配置設定を無効化'
-            : '個別の立ち絵配置設定を有効化'
-        "
-        class="mr-2 h-9 w-9 rounded-md border border-black"
-        v-if="settype === 'seid'"
-      >
-        <MaterialIcons
-          :classString="dateList[selectKyara].fileTatieOrderList.active === false ? 'opacity-50' : ''"
-          :icon="dateList[selectKyara].fileTatieOrderList.active ? 'RadioButtonChecked' : 'RadioButtonUnchecked'"
-        />
-      </button>
-      <button
-        @click="() => TatieOrderNew()"
-        title="立ち絵が設定されているキャラ設定の追加（立ち絵が設定されているものが優先的に追加されます）"
-        class="h-9 w-9 rounded-md border border-black"
-      >
-        <MaterialIcons icon="AddCircle" />
-      </button>
+    <div class="mt-1 flex justify-between px-2">
+      <div>
+        <button
+          @click="
+            () => (dateList[selectKyara].fileTatieOrderList.active = !dateList[selectKyara].fileTatieOrderList.active)
+          "
+          :title="
+            dateList[selectKyara].fileTatieOrderList.active
+              ? '個別の立ち絵配置設定を無効化'
+              : '個別の立ち絵配置設定を有効化'
+          "
+          class="h-9 w-9 rounded-md border border-black"
+          v-if="settype === 'seid'"
+        >
+          <MaterialIcons
+            :icon="dateList[selectKyara].fileTatieOrderList.active ? 'RadioButtonChecked' : 'RadioButtonUnchecked'"
+          />
+        </button>
+      </div>
+      <div>
+        <button
+          @click="CopyTatieOrderListToFileList(selectKyara)"
+          title="プロファイルの立ち絵配置をコピーします"
+          class="mr-2 h-9 w-9 rounded-md border border-black"
+          v-if="settype === 'seid'"
+          :disabled="dateList[selectKyara].fileTatieOrderList.active === false"
+        >
+          <MaterialIcons
+            :classString="dateList[selectKyara].fileTatieOrderList.active === false ? 'opacity-50' : ''"
+            icon="PhotoLibrary"
+          />
+        </button>
+        <button
+          @click="() => TatieOrderNew()"
+          title="立ち絵が設定されているキャラ設定の追加（立ち絵が設定されているものが優先的に追加されます）"
+          class="h-9 w-9 rounded-md border border-black"
+        >
+          <MaterialIcons icon="AddCircle" />
+        </button>
+      </div>
     </div>
     <SelectDisplayTatieOrderKyara
       :clickClose="() => (isSelectDisplayTatieOrderKyaraOpen = false)"
