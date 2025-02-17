@@ -521,6 +521,17 @@ const TatieOrderDel = (index: number) => {
   refEnterEncodeTatie.value?.enterEncodeTatie()
 }
 
+// プロファイルの立ち絵順序の設定に選択中のキャラ設定がある場合は、trueを返して削除を行わないようにする。
+const checkIntoTatieOrderList = (uuid: string): boolean => {
+  const ans = tatieOrderList.value.findIndex((e) => e.settingUUID === uuid)
+
+  if (ans !== -1) {
+    return true
+  } else {
+    return false
+  }
+}
+
 // editTatieOrderListのtatieSituation設定を変更する。
 const TatieOrderChangeSituation = (index: number) => {
   if (editTatieOrderList.value[index].tatieSituation === 'tatieUUID') {
@@ -727,6 +738,7 @@ watch(
         :createProfileData="createProfileData"
         :subTextStringList="subTextStringList"
         :useSubText="globalSetting.useSubText"
+        :checkIntoTatieOrderList="(uuid: string) => checkIntoTatieOrderList(uuid)"
         :searchKyaraEvent="searchKyaraEvent"
         :CopyKyaraSetting="CopyKyaraSetting"
         ref="setKyaraListRef"

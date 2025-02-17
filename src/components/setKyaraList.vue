@@ -13,6 +13,7 @@ const props = defineProps<{
   createProfileData: (copyUuid: boolean) => Promise<string>
   subTextStringList: { [key: string]: { val: string; active: boolean } }
   useSubText: boolean
+  checkIntoTatieOrderList: (uuid: string) => boolean
   searchKyaraEvent: (text: string) => void
   CopyKyaraSetting: (dataType: dataTextType, uuid: string) => void
 }>()
@@ -200,8 +201,10 @@ yomAPI.EntEditName(() => {
 
 // ショートカットキーで削除のコマンドがあった場合は削除ダイアログを開く
 yomAPI.EntAskDelete(() => {
-  isMenuOpen.value = false
-  props.askDeleteKyara(props.selectKyara)
+  if (props.checkIntoTatieOrderList(props.dateList[props.selectKyara].uuid) === false) {
+    isMenuOpen.value = false
+    props.askDeleteKyara(props.selectKyara)
+  }
 })
 
 // props.settype, props.selectKyaraが変更されたときの処理
@@ -279,6 +282,7 @@ watch(
                 :CopyKyaraSetting="(settype: dataTextType) => CopyKyaraSetting(settype, item.uuid)"
                 :editDataClik="() => editDataClik(item.uuid, item.name, item.kyaraStyle)"
                 :askDeleteKyara="() => askDeleteKyara(index)"
+                :checkIntoTatieOrderList="() => checkIntoTatieOrderList(item.uuid)"
               />
             </div>
           </div>

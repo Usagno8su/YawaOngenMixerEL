@@ -4,9 +4,11 @@ const props = defineProps<{
   CopyKyaraSetting: (settype: dataTextType) => void
   editDataClik: () => void
   askDeleteKyara: () => void
+  checkIntoTatieOrderList: () => boolean
 }>()
 // キャラ設定のコピーや削除の選択を行う右クリックメニュー
 import { dataTextType } from '@/type/data-type'
+import { MakeClassString } from '@/utils/analysisGeneral'
 </script>
 
 <template>
@@ -43,7 +45,16 @@ import { dataTextType } from '@/type/data-type'
     </button>
     <button
       @click="askDeleteKyara()"
-      class="flex justify-between bg-blue-100 px-2 py-1 text-gray-700 hover:bg-blue-600 hover:text-gray-200"
+      :class="
+        MakeClassString(
+          'flex justify-between px-2 py-1',
+          checkIntoTatieOrderList()
+            ? 'bg-gray-200 text-gray-500'
+            : 'bg-blue-100 text-gray-700 hover:bg-blue-600 hover:text-gray-200',
+        )
+      "
+      :title="checkIntoTatieOrderList() ? 'プロファイルの「立ち絵順序の設定」に入っている場合は削除できません。' : ''"
+      :disabled="checkIntoTatieOrderList()"
     >
       <div>削除</div>
       <div>Ctrl+D</div>
