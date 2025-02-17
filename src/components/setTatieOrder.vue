@@ -54,7 +54,7 @@ const OpenSelectDisplayTatieOrderKyara = (uuid: string, name: string, style?: st
 
 <template>
   <div class="h-full w-full">
-    <div class="relative flex h-full w-full flex-col items-center overflow-y-scroll border border-gray-500 px-2 py-1">
+    <div class="relative flex h-5/6 w-full flex-col items-center overflow-y-scroll border border-gray-500 px-2 py-1">
       <div
         class="mt-1 flex w-[580px] justify-between rounded-xl border border-black"
         v-for="(item, index) in tatieOrderList"
