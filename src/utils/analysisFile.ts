@@ -4,10 +4,13 @@ import {
   profileKyaraExportType,
   fileListTatieExportType,
   fileListTatieType,
-  encodeProfileSendReType,
+  profileVoiceFileExportType,
+  tatieOrderListType,
+  dataTextType,
+  tatieSituationType,
 } from '../type/data-type'
 import { ref } from 'vue'
-import { createNewDataID, createNewDateList } from './analysisData'
+import { createNewDataID, createNewDateList, createVoiceFileEncodeSetting } from './analysisData'
 import { createDefoFileListTatie, NowTimeData } from './analysisGeneral'
 import { DEFAULT_KYARA_TATIE_UUID } from '../data/data'
 const { yomAPI } = window
@@ -27,11 +30,7 @@ export const analysisFileName = (
   const [lists, dir] = yomAPI.opneVoiceFileDir(defoSelectDir)
 
   // ディレクトリに個別設定データの設定ファイルがある場合は取得する
-  const inputData = ref<{
-    softVer: [number, number, number]
-    exportStatus: number
-    settingList: outSettingType[]
-  }>(null)
+  const inputData = ref<profileVoiceFileExportType>(null)
   if (dir !== null) {
     try {
       inputData.value = JSON.parse(yomAPI.getVoiceFileDirData(dir))
@@ -91,6 +90,7 @@ export const analysisFileName = (
               fileName,
               fileExtension,
               voiceID,
+              [],
               yomAPI.getPlatformData(),
             ),
           )
@@ -107,6 +107,7 @@ export const analysisFileName = (
 export const writeProfilleSettingData = (
   profilleName: string,
   infoSetting: infoSettingType,
+  tatieOrderList: tatieOrderListType[],
   settingList: outSettingType[],
 ): boolean => {
   console.log(profilleName)
@@ -119,6 +120,7 @@ export const writeProfilleSettingData = (
     softVer: softVerData.softVer,
     exportStatus: softVerData.exportStatus,
     infoSetting: infoSetting,
+    tatieOrderList: tatieOrderList,
     settingList: settingList,
   }
   const outJsonData = JSON.stringify(outPrData, undefined, 2)
@@ -134,7 +136,7 @@ export const writeVoiceFileSettingData = (voiceFileDirPath: string, settingList:
   const softVerData = yomAPI.getSoftVersionData()
 
   // 送付するデータを作成して、JSON形式に変換する
-  const outPrData = {
+  const outPrData: profileVoiceFileExportType = {
     softVer: softVerData.softVer,
     exportStatus: softVerData.exportStatus,
     settingList: settingList,
@@ -190,24 +192,90 @@ export const writeFileListKyaraData = (settingList: fileListTatieType[]): boolea
 // 指定された音声ファイルの変換を行う。
 export const enterEncodeVideoFile = async (
   voiceFileDirPath: string,
-  encodeSetting: encodeProfileSendReType,
+  selectKyara: number,
+  infoSetting: infoSettingType,
+  tatieSituation: tatieSituationType,
+  dateList: outSettingType[],
+  settype: dataTextType,
+  tatieOrderList: tatieOrderListType[],
 ): Promise<string> => {
-  // JSONファイルへの変換
-  const outJsonData = JSON.stringify(encodeSetting, undefined, 2)
-
   // 変換の実施
-  return yomAPI.enterEncodeVideoData(voiceFileDirPath, outJsonData)
+  return yomAPI.enterEncodeVideoData(
+    voiceFileDirPath,
+    JSON.stringify(dateList[selectKyara], undefined, 2),
+    makeTatiePicEncodeList(tatieSituation, dateList, settype, tatieOrderList, selectKyara),
+    JSON.stringify(infoSetting, undefined, 2),
+  )
 }
 
 // 指定された立ち絵ファイルの変換を行う。
 export const enterEncodeTatiePicFile = async (
-  encodeSetting: encodeProfileSendReType,
+  tatieSituation: string,
+  dateList: outSettingType[],
+  settype: dataTextType,
+  tatieOrderList: tatieOrderListType[],
+  selectKyara?: number,
 ): Promise<{ buffer: Uint8Array; path: string }> => {
-  // JSONファイルへの変換
-  const outJsonData = JSON.stringify(encodeSetting, undefined, 2)
+  return yomAPI.getEncodePicFileData(
+    makeTatiePicEncodeList(tatieSituation, dateList, settype, tatieOrderList, selectKyara),
+  )
+}
 
-  // 変換の実施
-  return yomAPI.getEncodePicFileData(outJsonData)
+// 立ち絵の変換を行う際に、mainに送付するデータを作成する。
+// 複数の立ち絵を表示させる場合にはその内容をまとめて出力する。
+export const makeTatiePicEncodeList = (
+  tatieSituation: string,
+  dateList: outSettingType[],
+  settype: dataTextType,
+  tatieOrderList: tatieOrderListType[],
+  selectKyara?: number,
+): {
+  outJsonData: string
+  tatieSituation: string
+}[] => {
+  const selectSetting = selectKyara !== undefined ? createVoiceFileEncodeSetting(selectKyara, dateList) : undefined
+
+  // データ作成の実施
+  if (settype === 'tatieOrder' || settype === 'seid') {
+    // seid のときに、selectKyaraのキャラがencodeListに入っているか確認する数値
+    let chkSelectKyara = -1
+
+    const encodeList = tatieOrderList.map((e) => {
+      // dateListに一致するものを探し、立ち絵の設定をencodeListに入れる。
+
+      const ans = dateList.findIndex((f) => e.dataType + e.settingUUID === f.dataType + f.uuid)
+      // ただ、会話中のキャラ(selectSetting)含まれている場合は、tatieSituationで指定されている状態の画像を選択させる。
+      if (ans !== -1) {
+        if (
+          e.name + (e.dataType === 'kyast' ? e.kyaraStyle : '') ===
+          selectSetting?.name + (e.dataType === 'kyast' ? selectSetting?.kyaraStyle : '')
+        ) {
+          chkSelectKyara = 1
+          return {
+            outJsonData: JSON.stringify(createVoiceFileEncodeSetting(ans, dateList), undefined, 2),
+            tatieSituation: tatieSituation,
+          }
+        } else {
+          return {
+            outJsonData: JSON.stringify(createVoiceFileEncodeSetting(ans, dateList), undefined, 2),
+            tatieSituation: e.tatieSituation,
+          }
+        }
+      }
+    })
+
+    // seid のときに、encodeListにselectSettingのキャラがない場合は追加する
+    if (settype === 'seid' && chkSelectKyara !== 1) {
+      encodeList.unshift({ outJsonData: JSON.stringify(selectSetting, undefined, 2), tatieSituation: tatieSituation })
+    }
+
+    console.log('encodeList: ' + encodeList.length)
+
+    return encodeList
+  } else {
+    console.log('encodeList ではない: selectSetting: ' + selectSetting.name)
+    return [{ outJsonData: JSON.stringify(selectSetting, undefined, 2), tatieSituation: tatieSituation }]
+  }
 }
 
 // 変換された立ち絵ファイルを保存する。

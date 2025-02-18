@@ -56,8 +56,19 @@ contextBridge.exposeInMainWorld('yomAPI', {
   writeFileListKyaraData: (outJsonData: string): boolean => {
     return ipcRenderer.sendSync('saveFileListKyaraData', outJsonData)
   },
-  enterEncodeVideoData: async (dirPathName: string, outJsonData: string): Promise<string> => {
-    return await ipcRenderer.invoke('enterEncodeVideoData', dirPathName, outJsonData)
+  enterEncodeVideoData: async (
+    dirPathName: string,
+    outJsonData: string,
+    outTatieState: { outJsonData: string; tatieSituation: string }[],
+    infoSettingJsonData: string,
+  ): Promise<string> => {
+    return await ipcRenderer.invoke(
+      'enterEncodeVideoData',
+      dirPathName,
+      outJsonData,
+      outTatieState,
+      infoSettingJsonData,
+    )
   },
   getGlobalSettingData: (): string => {
     return ipcRenderer.sendSync('loadGlobalSettingData')
@@ -72,8 +83,10 @@ contextBridge.exposeInMainWorld('yomAPI', {
   writeJsonFileData: (fileType: string, outJsonData: string, fileName?: string): boolean => {
     return ipcRenderer.sendSync('saveJsonString', fileType, outJsonData, fileName)
   },
-  getEncodePicFileData: (outJsonData: string): { buffer: Uint8Array; path: string } => {
-    return ipcRenderer.sendSync('loadEncodePicFileData', outJsonData)
+  getEncodePicFileData: (
+    outState: { outJsonData: string; tatieSituation: string }[],
+  ): { buffer: Uint8Array; path: string } => {
+    return ipcRenderer.sendSync('loadEncodePicFileData', outState)
   },
   writeUint8ArrayFileData: async (
     fileData: Uint8Array,

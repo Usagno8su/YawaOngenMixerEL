@@ -60,11 +60,17 @@ export const typeColor: { [key: string]: { bg: string; hoverBG: string; hoverTex
     hoverBG: 'bg-orange-500',
     hoverText: 'text-gray-200',
   },
+  tatieOrder: {
+    bg: 'bg-indigo-300',
+    hoverBG: 'bg-indigo-500',
+    hoverText: 'text-gray-100',
+  },
 }
 
 // 立ち絵の項目リスト
 export const tatieSettingList = [
   'tatiePath',
+  'waitTatiePath',
   'moviW',
   'moviH',
   'tatieConp',

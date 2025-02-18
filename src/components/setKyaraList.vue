@@ -13,6 +13,7 @@ const props = defineProps<{
   createProfileData: (copyUuid: boolean) => Promise<string>
   subTextStringList: { [key: string]: { val: string; active: boolean } }
   useSubText: boolean
+  checkIntoTatieOrderList: (uuid: string) => boolean
   searchKyaraEvent: (text: string) => void
   CopyKyaraSetting: (dataType: dataTextType, uuid: string) => void
 }>()
@@ -200,8 +201,10 @@ yomAPI.EntEditName(() => {
 
 // ショートカットキーで削除のコマンドがあった場合は削除ダイアログを開く
 yomAPI.EntAskDelete(() => {
-  isMenuOpen.value = false
-  props.askDeleteKyara(props.selectKyara)
+  if (props.checkIntoTatieOrderList(props.dateList[props.selectKyara].uuid) === false) {
+    isMenuOpen.value = false
+    props.askDeleteKyara(props.selectKyara)
+  }
 })
 
 // props.settype, props.selectKyaraが変更されたときの処理
@@ -218,15 +221,17 @@ watch(
   () => {
     // 表示後に現在選択中のキャラ項目を表示するようにスクロールする
     nextTick(() => {
-      const selectDiv = props.dateList.findIndex((e) => e.uuid === props.dateList[props.selectKyara].uuid)
-      kyaraRefs.value[selectDiv].scrollIntoView(false)
+      const selectDiv = props.dateList.findIndex((e) => e.uuid === props.dateList[props.selectKyara]?.uuid)
+      if (selectDiv !== -1) {
+        kyaraRefs.value[selectDiv].scrollIntoView(false)
+      }
     })
   },
 )
 </script>
 
 <template>
-  <div class="overflow-none mt-2 h-[550px] w-72 border border-gray-700">
+  <div class="overflow-none mt-2 h-[550px] w-80 border border-gray-700">
     <div class="border-gray-600d max-h-full overflow-y-scroll border border-b-4" ref="selectAreaRef">
       <SearchInputUnit
         v-show="settype === 'kyara' || settype === 'kyast'"
@@ -277,6 +282,7 @@ watch(
                 :CopyKyaraSetting="(settype: dataTextType) => CopyKyaraSetting(settype, item.uuid)"
                 :editDataClik="() => editDataClik(item.uuid, item.name, item.kyaraStyle)"
                 :askDeleteKyara="() => askDeleteKyara(index)"
+                :checkIntoTatieOrderList="() => checkIntoTatieOrderList(item.uuid)"
               />
             </div>
           </div>
@@ -317,7 +323,7 @@ watch(
         />
       </div>
     </div>
-    <div class="mx-1 mt-2 h-20" v-if="settype !== 'seid' && settype !== 'defo'">
+    <div class="mx-1 mt-2 h-20" v-if="settype !== 'seid' && settype !== 'defo' && settype !== 'tatieOrder'">
       <!-- キャラ設定の追加 seid か defo 以外で表示 -->
       <div class="mx-1 mt-3 flex justify-between">
         <div>

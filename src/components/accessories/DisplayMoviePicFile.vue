@@ -1,14 +1,28 @@
 <script setup lang="ts">
-const props = defineProps<{
-  dateList: outSettingType[]
-  index: number
-  infoData: infoSettingType
-  imgClass?: string
-}>()
+const props = withDefaults(
+  defineProps<{
+    dateList: outSettingType[]
+    settype: dataTextType
+    selectKyara: number
+    tatieSituation: tatieSituationType
+    infoData: infoSettingType
+    profile: outSettingType
+    tatieOrderList: tatieOrderListType[]
+    isFileTatieOrderSetting: boolean
+    imgClass?: string
+  }>(),
+  { tatieSituation: 'tatieUUID' },
+)
 // 立ち絵画像のみ変換を行って表示する
 
-import type { outSettingType, infoSettingType, encodeProfileSendReType } from '@/type/data-type'
-import { ref, onUnmounted } from 'vue'
+import type {
+  outSettingType,
+  infoSettingType,
+  tatieSituationType,
+  tatieOrderListType,
+  dataTextType,
+} from '@/type/data-type'
+import { ref, watch } from 'vue'
 import { enterEncodeTatiePicFile, enterSaveUint8ArrayFileData } from '@/utils/analysisFile'
 import { DEFAULT_KYARA_TATIE_UUID } from '@/data/data'
 import { createVoiceFileEncodeSetting } from '@/utils/analysisData'
@@ -26,37 +40,82 @@ const noTatieFile = ref<boolean>(false)
 // 変換した立ち絵画像を取得
 const img = ref<string | ArrayBuffer>()
 const data = ref<{ buffer: Uint8Array; path: string }>({ buffer: undefined, path: '' })
-const getKyaraImg = async (profile: encodeProfileSendReType) => {
+
+const ChangeKyaraImg = () => {
+  // データが取得（nullではない）できれば表示する
+  if (data.value.buffer !== null) {
+    let bobData = new Blob([data.value.buffer], { type: 'image/png' })
+    // ファイreaderを作成
+    let reader = new FileReader()
+
+    // 読み込み完了時の処理を設定
+    reader.onload = () => {
+      img.value = reader.result
+
+      // 立ち絵が存在するのでfalesにする
+      noTatieFile.value = false
+
+      // 終わったので戻す
+      runMakeImg.value = true
+    }
+
+    reader.readAsDataURL(bobData)
+  } else {
+    // 立ち絵が存在しない
+    noTatieFile.value = true
+  }
+}
+
+const getKyaraImg = async (index?: number) => {
+  // indexが存在する値を示しているか確認します。
+  const ChkIndex = (): outSettingType | undefined => {
+    if (index === -1 || index === undefined || props.dateList[index] === undefined) {
+      return undefined
+    } else {
+      return createVoiceFileEncodeSetting(index, props.dateList)
+    }
+  }
+
+  // プロファイルを確認
+  const indexProfile = ChkIndex()
+
   // 立ち絵があり、他の画像取得が動作していない場合のみ実施
-  if (profile.settingList.tatie.tatieUUID.val !== DEFAULT_KYARA_TATIE_UUID && runMakeImg) {
+  if (
+    indexProfile !== undefined &&
+    indexProfile?.tatie[props.tatieSituation].val !== DEFAULT_KYARA_TATIE_UUID &&
+    runMakeImg
+  ) {
     // 二重起動しないように値を変更
     runMakeImg.value = false
 
+    console.log('uuuuuuuuaaaaaaaaaaa1 index: ' + index)
     // 立ち絵画像を変換して取得
-    data.value = await enterEncodeTatiePicFile(profile)
+    data.value = await enterEncodeTatiePicFile(
+      props.tatieSituation,
+      props.dateList,
+      props.settype,
+      props.tatieOrderList,
+      index,
+    )
+    ChangeKyaraImg()
+  } else if ((props.settype === 'tatieOrder' || props.settype === 'seid') && props.tatieOrderList.length !== 0) {
+    // 立ち絵順序の設定の項目か音声ファイル個別の設定を表示しており、tatieOrderListに設定があれば実行
 
-    // データが取得（nullではない）できれば表示する
-    if (data.value.buffer !== null) {
-      let bobData = new Blob([data.value.buffer], { type: 'image/png' })
-      // ファイreaderを作成
-      let reader = new FileReader()
+    // 二重起動しないように値を変更
+    runMakeImg.value = false
 
-      // 読み込み完了時の処理を設定
-      reader.onload = () => {
-        img.value = reader.result
-
-        // 立ち絵が存在するのでfalesにする
-        noTatieFile.value = false
-
-        // 終わったので戻す
-        runMakeImg.value = true
-      }
-
-      reader.readAsDataURL(bobData)
-    } else {
-      // 立ち絵が存在しない
-      noTatieFile.value = true
-    }
+    console.log('uuuuuuuuaaaaaaaaaaa 2: index: ' + index)
+    // 立ち絵画像を変換して取得
+    data.value = await enterEncodeTatiePicFile(
+      props.tatieSituation,
+      props.dateList,
+      props.settype,
+      props.tatieOrderList,
+    )
+    ChangeKyaraImg()
+  } else {
+    // 立ち絵が存在しない
+    noTatieFile.value = true
   }
 }
 
@@ -70,36 +129,33 @@ const saveImg = async () => {
   }
 }
 
-// コンポーネント表示時に、立ち絵画像の表示をも行う
-const profile = ref<encodeProfileSendReType>(
-  createVoiceFileEncodeSetting(props.dateList[props.index], props.index, props.dateList, props.infoData),
-)
-getKyaraImg(profile.value)
-const checkConf = ref<string>(JSON.stringify(profile.value.settingList.tatie, undefined, 2))
-
-// 指定時間ごとに確認し、立ち絵の設定が変わったら表示を変更する
-const onEncodeTatie = setInterval(() => {
-  // 比較のために設定内容をJSON形式に変換
-  profile.value = createVoiceFileEncodeSetting(props.dateList[props.index], props.index, props.dateList, props.infoData)
-  const ans = JSON.stringify(profile.value.settingList.tatie, undefined, 2)
-
-  // 比較して前回の内容と異なっていれば立ち絵画像の表示を更新する。
-  if (checkConf.value !== ans) {
-    getKyaraImg(profile.value)
-    checkConf.value = ans
+// 立ち絵サムネイルの変更処理を実行
+const EnterGetKyaraImg = () => {
+  if (props.settype === 'tatieOrder') {
+    getKyaraImg()
+  } else {
+    getKyaraImg(props.selectKyara)
   }
-}, 2000)
+}
 
-// コンポーネントが表示されなくなったらsetIntervalを停止
-onUnmounted(() => {
-  clearInterval(onEncodeTatie)
-})
+// enterEncodeTatie を親コンポーネントから呼び出せるようにします
+defineExpose({ EnterGetKyaraImg })
+
+watch(
+  () => [props.profile, props.settype, props.tatieSituation, props.tatieOrderList, props.selectKyara],
+  () => {
+    EnterGetKyaraImg()
+  },
+  { deep: true },
+)
 </script>
 
 <template>
   <img
     v-if="
-      profile.settingList.tatie.tatieUUID.val !== DEFAULT_KYARA_TATIE_UUID &&
+      (settype === 'tatieOrder' ||
+        settype === 'seid' ||
+        profile?.tatie[tatieSituation].val !== DEFAULT_KYARA_TATIE_UUID) &&
       typeof img === 'string' &&
       noTatieFile !== true
     "
@@ -109,7 +165,7 @@ onUnmounted(() => {
     title="クリックで変換画像を保存します。"
   />
   <div
-    v-else-if="profile.settingList.tatie.tatieUUID.val === DEFAULT_KYARA_TATIE_UUID"
+    v-else-if="profile?.tatie[tatieSituation].val === DEFAULT_KYARA_TATIE_UUID"
     :class="MakeClassString('flex items-center justify-center bg-sky-100', imgClass)"
   >
     未選択です

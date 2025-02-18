@@ -1,6 +1,7 @@
 // 立ち絵関連の設定
 export type tatieSetting = {
   tatieUUID: statusString // 立ち絵のUUID
+  waitTatieUUID: statusString // 待機中の立ち絵のUUID
   moviW: statusNumber // 画面の横
   moviH: statusNumber // 画面の縦
   tatieConp: statusBoolean // 立ち絵の加工をするか
@@ -64,9 +65,15 @@ export type statusSubAlignment = {
   active: boolean
 }
 
+export type statusTatieOrderList = {
+  val: tatieOrderListType[]
+  active: boolean
+}
+
 // 立ち絵の項目のタイプ
 export type tatieSettingType =
   | 'tatieUUID'
+  | 'waitTatieUUID'
   | 'moviW'
   | 'moviH'
   | 'tatieConp'
@@ -96,10 +103,13 @@ export type subtitleSettingType =
   | 'subSideSpaceSize'
 
 // 情報タイプを指定
-export type dataTextType = 'defo' | 'kyara' | 'kyast' | 'seid'
+export type dataTextType = 'defo' | 'kyara' | 'kyast' | 'seid' | 'tatieOrder'
 
 // 「基本情報」「立ち絵」「字幕」のどれか
-export type selectedEditDataType = 'defo' | 'tatie' | 'subtitle'
+export type selectedEditDataType = 'defo' | 'tatie' | 'subtitle' | 'tatieOrder'
+
+// 立ち絵の会話中と待機中のUUIDが入った連想配列名
+export type tatieSituationType = 'tatieUUID' | 'waitTatieUUID'
 
 // 立ち絵の配置位置
 export type tatieSideType =
@@ -136,6 +146,7 @@ export type outSettingType = {
   fileName: string // ファイル名（拡張子なし）(seidの音声ファイル用)
   fileExtension: string // ファイル拡張子     (seidの音声ファイル用)
   voiceID: string // ID                       (seidの音声ファイル用)
+  fileTatieOrderList: statusTatieOrderList // 複数立ち絵の表示順番を記録          (seidの音声ファイル用)
 }
 
 // 各情報タイプで選択していたキャラのID情報を記録
@@ -159,19 +170,23 @@ export type profileKyaraExportType = {
   softVer: [number, number, number] // バージョン番号を数値の配列にする
   exportStatus: number // 出力エラーがあると0ではなくなる（増える）
   infoSetting: infoSettingType
+  tatieOrderList: tatieOrderListType[]
+  settingList: outSettingType[]
+}
+
+// 音声ファイルの個別設定データをJSONファルに出力するために、
+// 出力時のソフトのバージョンと出力エラーの有無を記録するType
+export type profileVoiceFileExportType = {
+  softVer: [number, number, number] // バージョン番号を数値の配列にする
+  exportStatus: number // 出力エラーがあると0ではなくなる（増える）
   settingList: outSettingType[]
 }
 
 // JSONファイルから読み込んだデータをメインからレンダラー側へ送るためのType
 export type inputProfileSendReType = {
   infoSetting: infoSettingType
+  tatieOrderList: tatieOrderListType[]
   settingList: outSettingType[]
-}
-
-// メイン側にエンコードするファイルの情報を送るType
-export type encodeProfileSendReType = {
-  infoSetting: infoSettingType
-  settingList: outSettingType
 }
 
 // 立ち絵のファイルUUIDとそのファイル名のリストを作るためのType
@@ -250,4 +265,14 @@ export type pathStatusType = {
   dirname: string // 親ディレクトリ名
   basename: string // ファイル名
   extname: string // 拡張子
+}
+
+// 立ち絵の表示順番を記録する配列の型
+export type tatieOrderListType = {
+  uuid: string
+  dataType: dataTextType
+  settingUUID: string
+  name: string
+  kyaraStyle: string
+  tatieSituation: tatieSituationType
 }

@@ -9,7 +9,7 @@ const props = defineProps<{
   titleName: string
   fileListTatie: fileListTatieType[]
 }>()
-import type { dataTextType, outSettingType, fileListTatieType } from 'src/type/data-type'
+import type { dataTextType, outSettingType, fileListTatieType, tatieSituationType } from 'src/type/data-type'
 import { SelectTatieIndexHigherUpData } from '@/utils/analysisData'
 import { ref, watch } from 'vue'
 import deleteDialogUUID from '@/components/accessories/deleteDialogUUID.vue'
@@ -18,9 +18,11 @@ import SelectDisplayHigherUpStatus from '@/components/accessories/SelectDisplayH
 import SelectDisplayTatieFile from '@/components/accessories/SelectDisplayTatieFile.vue'
 import { DEFAULT_KYARA_TATIE_UUID } from '@/data/data'
 import DisplayTatiePicFile from '@/components/accessories/DisplayTatiePicFile.vue'
+import { MakeClassString } from '@/utils/analysisGeneral'
 const { yomAPI } = window
 
 const isOpenTatieFile = ref<boolean>(false)
+const editTatieType = ref<tatieSituationType>('tatieUUID') // どの立ち絵を変更するか指定
 
 const tatieFileRef = ref()
 
@@ -41,8 +43,11 @@ const viewFileListTatie = ref<fileListTatieType[]>(
 )
 
 // 選択画面の開閉を制御
-const setIsOpenTatieFile = (): void => {
+const setIsOpenTatieFile = (type?: tatieSituationType): void => {
   isOpenTatieFile.value = !isOpenTatieFile.value
+  if (type !== undefined) {
+    editTatieType.value = type
+  }
 }
 
 // どの上位設定を使うか決定する
@@ -56,9 +61,9 @@ const clickEdit = (newFileName: string, index?: number) => {
   console.log('clickEdit変更処理: ' + newFileName)
   console.log('clickEdit変更処理実行: ' + newFileName)
   if (index !== undefined) {
-    props.dateList[index].tatie.tatieUUID.val = newFileName
+    props.dateList[index].tatie[editTatieType.value].val = newFileName
   } else {
-    props.dateList[props.selectKyara].tatie.tatieUUID.val = newFileName
+    props.dateList[props.selectKyara].tatie[editTatieType.value].val = newFileName
   }
 }
 
@@ -181,14 +186,6 @@ const FindFileListKyaraName = (): string | undefined => {
   }
 }
 
-// 状態によってボタンのTailwindを変更
-const actset = (): string => {
-  const setAns = props.dateList[props.selectKyara].tatie.tatieUUID.active
-    ? 'hover:bg-blue-600 hover:text-gray-200'
-    : 'text-gray-600'
-  return 'h-full truncate border border-gray-800 bg-blue-300 px-1' + ' ' + setAns
-}
-
 watch(
   () => props.higherUpList,
   () => {
@@ -199,15 +196,20 @@ watch(
 
 <template>
   <div class="flex border-b-[1px] border-gray-400 py-2">
-    <div class="mr-2 flex w-full justify-between">
-      <!-- 
+    <!-- 
           ここの設定を使用する場合に入力できる。
           上位設定を使用する場合は表示のみ。
          -->
-      <div class="w-2/3">
+    <div class="flex">
+      <div class="ml-2 flex">
         <button
-          :class="actset()"
-          @click="setIsOpenTatieFile"
+          :class="
+            MakeClassString(
+              'ml-2 h-full truncate border border-gray-800 bg-blue-300 px-1',
+              dateList[selectKyara].tatie.tatieUUID.active ? 'hover:bg-blue-600 hover:text-gray-200' : 'text-gray-600',
+            )
+          "
+          @click="setIsOpenTatieFile('tatieUUID')"
           :title="'立ち絵: ' + useTatieName()"
           :disabled="!dateList[selectKyara].tatie.tatieUUID.active"
         >
@@ -221,33 +223,68 @@ watch(
             personOffClass="h-12 w-12"
           />
         </button>
-        <div class="relative" v-if="isOpenTatieFile">
-          <SelectDisplayTatieFile
-            :clickClose="setIsOpenTatieFile"
-            :selectTatieFile="dateList[selectKyara].tatie.tatieUUID.val"
-            :clickEdit="clickEdit"
-            :fileListTatie="fileListTatie"
-            :defoTatie="defoTatie"
-            :editKyaraPicFile="editKyaraPicFile"
-            :deleteKyaraPicFile="askDeleteKyaraPic"
-            :importKyaraPicFile="importKyaraPicFile"
-            :viewFileListTatie="viewFileListTatie"
-            :selectKyaraName="FindFileListKyaraName()"
-            ref="tatieFileRef"
+        <SelectDisplayHigherUpStatus
+          class="flex h-full items-center"
+          :settype="props.settype"
+          :actStatus="dateList[selectKyara].tatie[tatieSetting].active"
+          :higherUpType="dateList[higherUpEditKyara].dataType"
+          :onClick="
+            () =>
+              (props.dateList[props.selectKyara].tatie[props.tatieSetting].active =
+                !props.dateList[props.selectKyara].tatie[props.tatieSetting].active)
+          "
+        />
+      </div>
+      <div class="ml-5 flex">
+        <button
+          :class="
+            MakeClassString(
+              'ml-2 h-full truncate border border-gray-800 bg-blue-300 px-1',
+              dateList[selectKyara].tatie.waitTatieUUID.active
+                ? 'hover:bg-blue-600 hover:text-gray-200'
+                : 'text-gray-600',
+            )
+          "
+          @click="setIsOpenTatieFile('waitTatieUUID')"
+          :title="'待機立ち絵: ' + useTatieName()"
+          :disabled="!dateList[selectKyara].tatie.waitTatieUUID.active"
+        >
+          <DisplayTatiePicFile
+            :selectTatieFile="
+              dateList[selectKyara].tatie.waitTatieUUID.active
+                ? dateList[selectKyara].tatie.waitTatieUUID.val
+                : dateList[higherUpEditKyara].tatie.waitTatieUUID.val
+            "
+            imgClass="h-16"
+            personOffClass="h-12 w-12"
           />
-        </div>
+        </button>
+        <SelectDisplayHigherUpStatus
+          class="flex h-full items-center"
+          :settype="props.settype"
+          :actStatus="dateList[selectKyara].tatie.waitTatieUUID.active"
+          :higherUpType="dateList[higherUpEditKyara].dataType"
+          :onClick="
+            () =>
+              (props.dateList[props.selectKyara].tatie.waitTatieUUID.active =
+                !props.dateList[props.selectKyara].tatie.waitTatieUUID.active)
+          "
+        />
       </div>
     </div>
-    <div class="flex flex-col justify-center">
-      <SelectDisplayHigherUpStatus
-        :settype="props.settype"
-        :actStatus="dateList[selectKyara].tatie[tatieSetting].active"
-        :higherUpType="dateList[higherUpEditKyara].dataType"
-        :onClick="
-          () =>
-            (props.dateList[props.selectKyara].tatie[props.tatieSetting].active =
-              !props.dateList[props.selectKyara].tatie[props.tatieSetting].active)
-        "
+    <div class="relative" v-if="isOpenTatieFile">
+      <SelectDisplayTatieFile
+        :clickClose="setIsOpenTatieFile"
+        :selectTatieFile="dateList[selectKyara].tatie[editTatieType].val"
+        :clickEdit="clickEdit"
+        :fileListTatie="fileListTatie"
+        :defoTatie="defoTatie"
+        :editKyaraPicFile="editKyaraPicFile"
+        :deleteKyaraPicFile="askDeleteKyaraPic"
+        :importKyaraPicFile="importKyaraPicFile"
+        :viewFileListTatie="viewFileListTatie"
+        :selectKyaraName="FindFileListKyaraName()"
+        ref="tatieFileRef"
       />
     </div>
   </div>

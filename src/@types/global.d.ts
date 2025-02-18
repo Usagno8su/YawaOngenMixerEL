@@ -24,13 +24,21 @@ export interface WGyomAPI {
   getKyraPicFileData: (fileName: string, sizeHeight?: number) => Uint8Array
   opneKyaraPicFileDir: (defoDir?: string) => { uuid: string; name: string; extname: string }[]
   getFileListKyaraData: () => string
-  enterEncodeVideoData: (dirPathName: string, outJsonData: string) => string
+  enterEncodeVideoData: (
+    dirPathName: string,
+    outJsonData: string,
+    outTatieState: { outJsonData: string; tatieSituation: string }[],
+    infoSettingJsonData: string,
+  ) => string
   getGlobalSettingData: () => string
   writeGlobalSettingData: (outJsonData: string) => boolean
   openGlobalSetting: (listener: () => void) => void
   getJsonFileData: (fileType: string, fileName?: string) => string
   writeJsonFileData: (fileType: string, outJsonData: string, fileName?: string) => boolean
-  getEncodePicFileData: (outJsonData: string) => { buffer: Uint8Array; path: string }
+  getEncodePicFileData: (outState: { outJsonData: string; tatieSituation: string }[]) => {
+    buffer: Uint8Array
+    path: string
+  }
   writeUint8ArrayFileData: (
     fileData: Uint8Array,
     fileName: string,

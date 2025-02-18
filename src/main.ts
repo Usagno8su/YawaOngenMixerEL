@@ -23,6 +23,8 @@ import {
   loadSubTextString,
   loadSubTextStringList,
   loadGlobalSettingData,
+  loadKyaraProfileData,
+  loadVoiceFileData,
 } from './utils/analysisMain'
 import { createDefoInfoDateList } from './utils/analysisGeneral'
 import { outSettingType, profileKyaraExportType, globalSettingExportType } from './type/data-type'
@@ -102,7 +104,7 @@ const createWindow = () => {
 
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    width: 960,
+    width: 1060,
     height: 885,
     resizable: false, // ウィンドウサイズ変更不可
     useContentSize: true,
@@ -281,9 +283,10 @@ ipcMain.on('loadKyaraProfileData', async (event: IpcMainEvent, file: string) => 
   // 取得に失敗した場合はデフォルトデータを作成する
   try {
     if (fs.existsSync(defoKyaraSettingFilePath + '.json')) {
-      const inputData: profileKyaraExportType = JSON.parse(readJsonData(defoKyaraSettingFilePath))
+      const inputData: profileKyaraExportType = JSON.parse(await loadKyaraProfileData(defoKyaraSettingFilePath))
       event.returnValue = {
         infoSetting: inputData.infoSetting,
+        tatieOrderList: inputData.tatieOrderList,
         settingList: inputData.settingList,
       }
     } else {
@@ -292,6 +295,7 @@ ipcMain.on('loadKyaraProfileData', async (event: IpcMainEvent, file: string) => 
   } catch (e) {
     event.returnValue = {
       infoSetting: createDefoInfoDateList(),
+      tatieOrderList: [],
       settingList: <outSettingType[]>[],
     }
   }
@@ -316,7 +320,7 @@ ipcMain.on('saveKyaraProfileData', async (event: IpcMainEvent, fileName: string,
 
 // 音声ファイルの個別設定データの読み込みを行う
 ipcMain.on('loadVoiceFileData', async (event: IpcMainEvent, dirPathName: string) => {
-  event.returnValue = readJsonData(path.join(dirPathName, 'yomVoiceSetting'))
+  event.returnValue = await loadVoiceFileData(path.join(dirPathName, 'yomVoiceSetting'))
 })
 
 // 音声ファイルの個別設定データの書き込みを行う
@@ -498,20 +502,39 @@ ipcMain.on(
 )
 
 // 動画のエンコードを行う
-ipcMain.handle('enterEncodeVideoData', async (event: IpcMainEvent, dirPathName: string, outJsonData: string) => {
-  // 全体設定を読み込んで、コマンドのパス情報を取得する。
-  const globalSettingData: globalSettingExportType = JSON.parse(readJsonData(globalSettingFilePathGLB))
+ipcMain.handle(
+  'enterEncodeVideoData',
+  async (
+    event: IpcMainEvent,
+    dirPathName: string,
+    outJsonData: string,
+    outTatieState: { outJsonData: string; tatieSituation: string }[],
+    infoSettingJsonData: string,
+  ) => {
+    // 全体設定を読み込んで、コマンドのパス情報を取得する。
+    const globalSettingData: globalSettingExportType = JSON.parse(readJsonData(globalSettingFilePathGLB))
 
-  return await enterEncodeVideoData(dirPathName, outJsonData, kyaraTatieDirPathGLB, globalSettingData.globalSetting)
-})
+    return await enterEncodeVideoData(
+      dirPathName,
+      outJsonData,
+      outTatieState,
+      infoSettingJsonData,
+      kyaraTatieDirPathGLB,
+      globalSettingData.globalSetting,
+    )
+  },
+)
 
 // 画像エンコードのみを実施し、作成した画像ファイルとファイルパスを返す。
-ipcMain.on('loadEncodePicFileData', async (event: IpcMainEvent, outJsonData: string) => {
-  // 全体設定を読み込んで、コマンドのパス情報を取得する。
-  const globalSettingData: globalSettingExportType = JSON.parse(readJsonData(globalSettingFilePathGLB))
+ipcMain.on(
+  'loadEncodePicFileData',
+  async (event: IpcMainEvent, outState: { outJsonData: string; tatieSituation: string }[]) => {
+    // 全体設定を読み込んで、コマンドのパス情報を取得する。
+    const globalSettingData: globalSettingExportType = JSON.parse(readJsonData(globalSettingFilePathGLB))
 
-  event.returnValue = await enterEncodePicFileData(outJsonData, kyaraTatieDirPathGLB, globalSettingData.globalSetting)
-})
+    event.returnValue = await enterEncodePicFileData(outState, kyaraTatieDirPathGLB, globalSettingData.globalSetting)
+  },
+)
 
 // 画像エンコードで作成したファイルを保存する処理を実行
 ipcMain.handle(

@@ -231,3 +231,32 @@ export const enterEncodeSmallTatie = async (
 
   return tempTatiePic.stdout
 }
+
+// 作成済みの立ち絵画像を配列に入っている順番で合成して、その絶対パス（拡張子入り）を返す。
+// imgListのファイルパスは絶対パス（拡張子入り）にする。
+export const imgCompositeFile = async (
+  convertPath: string,
+  imgList: string[],
+  outDir: string,
+  outFileName: string,
+): Promise<string> => {
+  // 配列を逆順にする
+  imgList.reverse()
+
+  console.log('でーた: ' + imgList[0] + ', ' + imgList[1] + ', ' + imgList[2])
+  // imgListの一番目だけ取り出す。
+  const compImage = imgList.splice(0, 1)
+
+  console.log('でーたcompImage: ' + compImage[0])
+  // 順番よく合成する。合成したらcompImageの名前を変える
+  imgList.map((e) => {
+    console.log('でーたconcat: ' + e)
+    compImage.push(e, '-composite')
+  })
+
+  console.log('実行: ' + compImage[0] + ', ' + compImage[1] + ', ' + compImage[2] + ', ' + compImage[3])
+
+  await execFile(convertPath, compImage.concat([path.join(outDir, outFileName + '.png')]))
+
+  return path.join(outDir, outFileName + '.png')
+}

@@ -16,7 +16,6 @@ import {
   profileKyaraExportType,
   infoSettingType,
   fileListTatieExportType,
-  encodeProfileSendReType,
   globalSettingExportType,
   globalSettingType,
   kyaraProfileListExportType,
@@ -25,11 +24,13 @@ import {
   globalSettingExportTempType,
   globalSettingExportV021Type,
   globalSettingV021Type,
+  profileVoiceFileExportType,
+  tatieOrderListType,
 } from '../type/data-type'
-import { DEFAULT_KYARA_PROFILE_NAME } from '../data/data'
+import { DEFAULT_KYARA_PROFILE_NAME, DEFAULT_KYARA_TATIE_UUID } from '../data/data'
 import { createNewDateList } from './analysisData'
 import { createComImg } from './comExec/comIMG'
-import { createImgFile, createMoviFile, enterEncodeSmallTatie } from './comExec/comEnter'
+import { createImgFile, createMoviFile, enterEncodeSmallTatie, imgCompositeFile } from './comExec/comEnter'
 import { createComMovi } from './comExec/comMOVI'
 import { app, dialog } from 'electron'
 import path, { resolve } from 'path'
@@ -213,6 +214,7 @@ export const initializationSetting = (): profileKyaraExportType => {
         '',
         '',
         '',
+        [],
         process.platform,
       ),
     )
@@ -221,7 +223,7 @@ export const initializationSetting = (): profileKyaraExportType => {
     if (e.kyaraStyle !== undefined) {
       e.kyaraStyle.map((ekyaraStyle) =>
         outData.value.push(
-          createNewDateList('kyast', makeUUID(), e.kyaraName, ekyaraStyle, {}, {}, '', '', '', process.platform),
+          createNewDateList('kyast', makeUUID(), e.kyaraName, ekyaraStyle, {}, {}, '', '', '', [], process.platform),
         ),
       )
     }
@@ -234,6 +236,7 @@ export const initializationSetting = (): profileKyaraExportType => {
     softVer: softVersion.softVer,
     exportStatus: softVersion.exportStatus,
     infoSetting: outInfoData(),
+    tatieOrderList: [],
     settingList: outData.value,
   }
 }
@@ -366,6 +369,7 @@ export const makeUUID = (): string => {
 // fileName が指定されていた場合は、画像ファイル名はそれにする。
 export const enterEncodeImageData = async (
   settingList: outSettingType,
+  tatieSituation: string,
   tempDirPath: string,
   convertPath: string,
   kyaraTatieDirPath: string,
@@ -383,7 +387,7 @@ export const enterEncodeImageData = async (
     convertPath,
     imgData,
     fileName || settingList.fileName,
-    settingList.tatie.tatieUUID.val,
+    settingList.tatie[tatieSituation === 'tatieUUID' ? 'tatieUUID' : 'waitTatieUUID'].val,
     kyaraTatieDirPath,
     outPicDir,
     tempDirPath,
@@ -394,11 +398,14 @@ export const enterEncodeImageData = async (
 export const enterEncodeVideoData = async (
   voiceFileDirPath: string,
   outJsonData: string,
+  outTatieState: { outJsonData: string; tatieSituation: string }[],
+  infoSettingJsonData: string,
   kyaraTatieDirPath: string,
   globalSetting: globalSettingType,
 ): Promise<string> => {
   // JSONデータを変換
-  const outSettingData: encodeProfileSendReType = JSON.parse(outJsonData)
+  const settingList: outSettingType = JSON.parse(outJsonData)
+  const infoSetting: infoSettingType = JSON.parse(infoSettingJsonData)
 
   // 一時ファイルのディレクトリを作成してpathを取得
   const tempDirPath = await createTempDir()
@@ -406,13 +413,7 @@ export const enterEncodeVideoData = async (
   //// 画像ファイルの作成
 
   // 画像ファイルの作成を実行
-  const imgFilePath = await enterEncodeImageData(
-    outSettingData.settingList,
-    tempDirPath,
-    globalSetting.exeFilePath.convert,
-    kyaraTatieDirPath,
-    outSettingData.infoSetting.outPicDir,
-  )
+  const imgFilePath = await enterEncodePicFileData(outTatieState, kyaraTatieDirPath, globalSetting)
 
   console.log('main への返送結果: ' + imgFilePath)
 
@@ -420,8 +421,8 @@ export const enterEncodeVideoData = async (
 
   // FFmpeg用のコマンド作成
   const moviData = await createComMovi(
-    outSettingData.settingList,
-    imgFilePath,
+    settingList,
+    imgFilePath.path,
     voiceFileDirPath,
     tempDirPath,
     globalSetting.exeFilePath.ffmpeg,
@@ -434,8 +435,8 @@ export const enterEncodeVideoData = async (
   const moviFilePath = createMoviFile(
     globalSetting.exeFilePath.ffmpeg,
     moviData,
-    outSettingData.settingList,
-    outSettingData.infoSetting.outDir,
+    settingList,
+    infoSetting.outDir,
     tempDirPath,
   )
 
@@ -444,40 +445,68 @@ export const enterEncodeVideoData = async (
 
 // 画像エンコードのみを実施し、作成した画像ファイルとファイルパスを返す。
 export const enterEncodePicFileData = async (
-  outJsonData: string,
+  outState: { outJsonData: string; tatieSituation: string }[],
   kyaraTatieDirPath: string,
   globalSetting: globalSettingType,
 ): Promise<{ buffer: Uint8Array; path: string }> => {
-  // JSONデータを変換
-  const outSettingData: encodeProfileSendReType = JSON.parse(outJsonData)
+  // 一時ファイルのディレクトリを作成してpathを取得
+  const tempDirPath = await createTempDir()
 
-  // 立ち絵の存在チェック
-  const noTatieFile = !fs.existsSync(
-    path.join(kyaraTatieDirPath, outSettingData.settingList.tatie.tatieUUID.val + '.png'),
-  )
+  console.log('長さ; ' + outState.length)
 
-  // 立ち絵が存在する場合はファイル変換を実行する。
-  if (!noTatieFile) {
-    // 一時ファイルのディレクトリを作成してpathを取得
-    const tempDirPath = await createTempDir()
+  const imgList: string[] = []
+  let kazu = 0
+  for (const item of outState) {
+    // outJsonDataの中身があるか確認して処理を実行する。
+    if (item?.outJsonData !== undefined) {
+      const setting: outSettingType = JSON.parse(item.outJsonData)
+      console.log('変換: ' + setting.name + ', ' + kazu)
+      if (fs.existsSync(path.join(kyaraTatieDirPath, setting.tatie.tatieUUID.val + '.png'))) {
+        //// 画像ファイルの作成
 
-    //// 画像ファイルの作成
+        // 画像ファイルの作成を実行
+        imgList.push(
+          await enterEncodeImageData(
+            setting,
+            item.tatieSituation,
+            tempDirPath,
+            globalSetting.exeFilePath.convert,
+            kyaraTatieDirPath,
+            tempDirPath,
+            'tb_' + kazu,
+          ),
+        )
+        kazu += 1
+      }
+    }
+  }
 
-    // 画像ファイルの作成を実行
-    const imgFilePath = await enterEncodeImageData(
-      outSettingData.settingList,
-      tempDirPath,
-      globalSetting.exeFilePath.convert,
-      kyaraTatieDirPath,
-      tempDirPath,
-      'tenpMoveSizePic',
-    )
+  console.log('imgList: ' + imgList[0] + ' ' + imgList[1] + ' ' + imgList[2])
+  console.log('imgList:ここまで ')
 
+  // 立ち絵が一つだけの場合はそのまま返す。
+  if (imgList.length === 1) {
     // 作成したファイルを返す
-    const buffer = await fs.promises.readFile(imgFilePath)
+    console.log('ひとつだけ')
+    const buffer = await fs.promises.readFile(imgList[0])
     return {
       buffer: new Uint8Array(buffer),
-      path: imgFilePath,
+      path: imgList[0],
+    }
+  } else if (imgList.length > 1) {
+    console.log('ふくすう')
+    // 2つ以上の場合は合成する。
+    const ansPath = await imgCompositeFile(
+      globalSetting.exeFilePath.convert,
+      imgList,
+      tempDirPath,
+      'tenpCompositeMoveSizePic',
+    )
+    // 作成したファイルを返す
+    const buffer = await fs.promises.readFile(ansPath)
+    return {
+      buffer: new Uint8Array(buffer),
+      path: ansPath,
     }
   } else {
     // 立ち絵がない場合はnullのデータを返す。
@@ -645,18 +674,152 @@ export const loadGlobalSettingData = async (confPath: string): Promise<string> =
     }
   })
     .then((result: globalSettingV021Type) => {
-      console.log('useSubText を追加')
-      return {
-        ...result,
-        useSubText: true,
-      }
-    })
-    .then((result: globalSettingType) => {
       console.log('追加したデータを書き込む')
       // 追加したデータを書き込む
       const out = outSoftVersion()
       return JSON.stringify(
-        { exportStatus: out.exportStatus, softVar: out.softVer, globalSetting: result },
+        {
+          exportStatus: out.exportStatus,
+          softVar: out.softVer,
+          globalSetting: {
+            ...result,
+            useSubText: true,
+          },
+        },
+        undefined,
+        2,
+      )
+    })
+    .then((result: string) => {
+      return writeJsonData(confPath, result)
+    })
+    .then(() => {
+      console.log('再読込')
+      jsonData.value = readJsonData(confPath)
+    })
+    .catch(() => {
+      console.log('問題なし')
+    })
+
+  return jsonData.value
+}
+
+// キャラ設定プロファイルを読み込み、 設定が古い場合は、内容を更新する。
+export const loadKyaraProfileData = async (confPath: string): Promise<string> => {
+  const jsonData = ref<string>(readJsonData(confPath))
+
+  const inputJsonData: profileKyaraExportType = JSON.parse(jsonData.value)
+
+  ///////
+  // 古い設定ファイルだった場合、必要な項目を追加します。
+
+  // var 0.2 以下の場合
+  // waitTatieUUID と tatieOrderList がないので追加する
+  await new Promise((resolve, reject) => {
+    if (inputJsonData.softVer[0] <= 0 && inputJsonData.softVer[1] <= 2) {
+      console.log('var 0.2 以下の場合')
+      resolve('waitTatieUUID')
+    } else {
+      reject()
+    }
+  })
+    .then(() => {
+      // 追加したデータを書き込む
+      const out = outSoftVersion()
+      const tatieOrder: tatieOrderListType[] = []
+      return JSON.stringify(
+        {
+          softVar: out.softVer,
+          exportStatus: out.exportStatus,
+          infoSetting: inputJsonData.infoSetting,
+          tatieOrderList: tatieOrder,
+          settingList: inputJsonData.settingList.map((item) => {
+            return {
+              dataType: item.dataType,
+              uuid: item.uuid,
+              name: item.name,
+              kyaraStyle: item.kyaraStyle,
+              tatie: {
+                ...item.tatie,
+                waitTatieUUID: {
+                  val: DEFAULT_KYARA_TATIE_UUID,
+                  active: false,
+                },
+              },
+              subtitle: item.subtitle,
+              fileName: item.fileName,
+              fileExtension: item.fileExtension,
+              voiceID: item.voiceID,
+              fileTatieOrderList: { val: tatieOrder, active: false },
+            }
+          }),
+        },
+        undefined,
+        2,
+      )
+    })
+    .then((result: string) => {
+      return writeJsonData(confPath, result)
+    })
+    .then(() => {
+      console.log('再読込')
+      jsonData.value = readJsonData(confPath)
+    })
+    .catch(() => {
+      console.log('問題なし')
+    })
+
+  return jsonData.value
+}
+
+// 音声ファイルの個別設定データを読み込み、 設定が古い場合は、内容を更新する。
+export const loadVoiceFileData = async (confPath: string): Promise<string> => {
+  const jsonData = ref<string>(readJsonData(confPath))
+
+  const inputJsonData: profileVoiceFileExportType = JSON.parse(jsonData.value)
+
+  ///////
+  // 古い設定ファイルだった場合、必要な項目を追加します。
+
+  // var 0.2 以下の場合
+  // waitTatieUUID と tatieOrderList がないので追加する
+  await new Promise((resolve, reject) => {
+    if (inputJsonData.softVer[0] <= 0 && inputJsonData.softVer[1] <= 2) {
+      console.log('var 0.2 以下の場合')
+      resolve('waitTatieUUID')
+    } else {
+      reject()
+    }
+  })
+    .then(() => {
+      // 追加したデータを書き込む
+      const out = outSoftVersion()
+      const tatieOrder: tatieOrderListType[] = []
+      return JSON.stringify(
+        {
+          softVar: out.softVer,
+          exportStatus: out.exportStatus,
+          settingList: inputJsonData.settingList.map((item) => {
+            return {
+              dataType: item.dataType,
+              uuid: item.uuid,
+              name: item.name,
+              kyaraStyle: item.kyaraStyle,
+              tatie: {
+                ...item.tatie,
+                waitTatieUUID: {
+                  val: DEFAULT_KYARA_TATIE_UUID,
+                  active: false,
+                },
+              },
+              subtitle: item.subtitle,
+              fileName: item.fileName,
+              fileExtension: item.fileExtension,
+              voiceID: item.voiceID,
+              fileTatieOrderList: { val: tatieOrder, active: false },
+            }
+          }),
+        },
         undefined,
         2,
       )
