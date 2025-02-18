@@ -191,6 +191,7 @@ export const createNewDateList = (
   fileExtension?: string,
   voiceID?: string,
   fileTatieOrderList?: tatieOrderListType[],
+  fileActive?: boolean,
   platform?: NodeJS.Platform,
 ): outSettingType => {
   return {
@@ -260,6 +261,7 @@ export const createNewDateList = (
     fileExtension: fileExtension !== undefined ? fileExtension : '',
     voiceID: voiceID !== undefined ? voiceID : '',
     fileTatieOrderList: { val: fileTatieOrderList ?? [], active: fileTatieOrderList !== undefined ? true : false },
+    fileActive: fileActive !== undefined ? fileActive : false,
   }
 }
 
@@ -276,6 +278,7 @@ export const CreateCopyDateList = (kyraData: outSettingType, dataType: dataTextT
     fileExtension: '',
     voiceID: '',
     fileTatieOrderList: { val: [], active: false },
+    fileActive: false,
   }
 }
 

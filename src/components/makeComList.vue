@@ -172,6 +172,7 @@ const addNewKyara = (dataType: dataTextType, kyaraName: string, kyaraStyle: stri
           undefined,
           undefined,
           undefined,
+          undefined,
           yomAPI.getPlatformData(),
         ),
       )

@@ -147,6 +147,10 @@ export type outSettingType = {
   fileExtension: string // ファイル拡張子     (seidの音声ファイル用)
   voiceID: string // ID                       (seidの音声ファイル用)
   fileTatieOrderList: statusTatieOrderList // 複数立ち絵の表示順番を記録          (seidの音声ファイル用)
+  // 個別設定ファイルを読み込んだときに、
+  // 該当する音声ファイルが存在するかチェックして、
+  // あるならtrueにしてリストに表示するように指示    (seidの音声ファイル用)
+  fileActive: boolean
 }
 
 // 各情報タイプで選択していたキャラのID情報を記録

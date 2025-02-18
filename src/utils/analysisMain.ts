@@ -215,6 +215,7 @@ export const initializationSetting = (): profileKyaraExportType => {
         '',
         '',
         [],
+        false,
         process.platform,
       ),
     )
@@ -223,7 +224,20 @@ export const initializationSetting = (): profileKyaraExportType => {
     if (e.kyaraStyle !== undefined) {
       e.kyaraStyle.map((ekyaraStyle) =>
         outData.value.push(
-          createNewDateList('kyast', makeUUID(), e.kyaraName, ekyaraStyle, {}, {}, '', '', '', [], process.platform),
+          createNewDateList(
+            'kyast',
+            makeUUID(),
+            e.kyaraName,
+            ekyaraStyle,
+            {},
+            {},
+            '',
+            '',
+            '',
+            [],
+            false,
+            process.platform,
+          ),
         ),
       )
     }
@@ -751,6 +765,7 @@ export const loadKyaraProfileData = async (confPath: string): Promise<string> =>
               fileExtension: item.fileExtension,
               voiceID: item.voiceID,
               fileTatieOrderList: { val: tatieOrder, active: false },
+              fileActive: false,
             }
           }),
         },
@@ -817,6 +832,7 @@ export const loadVoiceFileData = async (confPath: string): Promise<string> => {
               fileExtension: item.fileExtension,
               voiceID: item.voiceID,
               fileTatieOrderList: { val: tatieOrder, active: false },
+              fileActive: false,
             }
           }),
         },
