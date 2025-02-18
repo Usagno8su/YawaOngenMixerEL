@@ -10,7 +10,7 @@ import {
   tatieSituationType,
 } from '../type/data-type'
 import { ref } from 'vue'
-import { createNewDataID, createNewDateList, createVoiceFileEncodeSetting } from './analysisData'
+import { createNewDateList, createVoiceFileEncodeSetting } from './analysisData'
 import { createDefoFileListTatie, NowTimeData } from './analysisGeneral'
 import { DEFAULT_KYARA_TATIE_UUID } from '../data/data'
 const { yomAPI } = window
@@ -39,6 +39,30 @@ export const analysisFileName = (
     }
   }
 
+  //// 個別設定リストの順番に、音声ファイルが存在するか確認する。
+  //// 存在する場合はfileActiveをtrueにし、ない場合はfalesにする。
+
+  // 取得結果が空でなければ実行
+  if (inputData.value?.settingList !== undefined && inputData.value?.settingList?.length !== 0) {
+    ansList.value = inputData.value.settingList.map((e) => {
+      // リストのファイルが存在するか確認し、
+      // 存在する場合はそのfileActiveをtrueにする。
+      const fileAns = lists.findIndex((f) => f === e.fileName + '.' + e.fileExtension)
+      if (fileAns !== -1) {
+        e.fileActive = true
+        // 存在したファイルはリストから消す
+        lists.splice(fileAns, 1)
+        return e
+      } else {
+        // ファイルが存在しないものをfalesにする
+        e.fileActive = false
+        return e
+      }
+    })
+  }
+
+  //// 個別設定リストにない音声ファイルを読み込んでリストに加える。
+
   // 取得結果が空でなければ実行
   if (lists.length !== 0) {
     // ファイルリストを調査し、必要な情報を入力する。
@@ -65,37 +89,23 @@ export const analysisFileName = (
         const tempStyle = nameData[1].slice(kyaraName.length)
         const kyaraStyle = tempStyle !== undefined ? tempStyle.slice(1, -1) : undefined
 
-        // ファイル名等が同じ個別設定データがある場合はそれを取り出す
-        const fileSetting = inputData.value?.settingList.find(
-          (e) =>
-            e.fileName === fileName &&
-            e.fileExtension === fileExtension &&
-            e.name === kyaraName &&
-            e.kyaraStyle === kyaraStyle,
+        // 新規に出力する。
+        ansList.value.push(
+          createNewDateList(
+            'seid',
+            yomAPI.getUUID(),
+            kyaraName,
+            kyaraStyle,
+            {},
+            {},
+            fileName,
+            fileExtension,
+            voiceID,
+            [],
+            true,
+            yomAPI.getPlatformData(),
+          ),
         )
-
-        // 同じ設定があるのであれば、それを出力する。
-        // なければ新規に出力する。
-        if (fileSetting !== undefined) {
-          ansList.value.push(fileSetting)
-        } else {
-          ansList.value.push(
-            createNewDateList(
-              'seid',
-              yomAPI.getUUID(),
-              kyaraName,
-              kyaraStyle,
-              {},
-              {},
-              fileName,
-              fileExtension,
-              voiceID,
-              [],
-              true,
-              yomAPI.getPlatformData(),
-            ),
-          )
-        }
       }
     }
   }

@@ -284,7 +284,7 @@ const loadVoiceDirList = (): void => {
     // 別ディレクトリの音声ファイル情報がある場合はそれを排除します。
     dateList.value = tempbuf.filter((item) => item.dataType !== 'seid')
 
-    // 音声ファイル名と同じ名前の字幕テキストファイルを読み込んで、字幕の内容をUUIDをキーにした連想配列に入れる。
+    // 音声ファイルと同名の字幕テキストファイルを読み込んで、字幕の内容をUUIDをキーにした連想配列に入れる。
     const itemList: { uuid: string; fileName: string }[] = ans.map((item) => {
       return { uuid: item.uuid, fileName: item.fileName }
     })
