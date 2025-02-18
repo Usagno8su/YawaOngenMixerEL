@@ -16,6 +16,8 @@ const props = defineProps<{
   checkIntoTatieOrderList: (uuid: string) => boolean
   searchKyaraEvent: (text: string) => void
   CopyKyaraSetting: (dataType: dataTextType, uuid: string) => void
+  KyaraListOrderDragStart: (index: number) => void
+  KyaraListOrderDragMove: (index: number) => void
 }>()
 import { watch, ref, nextTick } from 'vue'
 import { outSettingType, dataTextType, editKyaraNameType } from '@/type/data-type'
@@ -239,7 +241,16 @@ watch(
         @searchKyaraEvent="searchKyaraEvent"
         ref="refSearchString"
       />
-      <div v-if="settype !== 'defo'" v-for="(item, index) in dateList" v-bind:key="item.uuid" :ref="selectKyaraRef">
+      <div
+        v-if="settype !== 'defo'"
+        v-for="(item, index) in dateList"
+        v-bind:key="item.uuid"
+        :ref="selectKyaraRef"
+        :draggable="true"
+        @dragstart="() => KyaraListOrderDragStart(index)"
+        @dragenter="() => KyaraListOrderDragMove(index)"
+        @dragover.prevent
+      >
         <div
           :class="actSet(item.uuid)"
           @click="setDataTypeClick(index, item)"

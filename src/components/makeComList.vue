@@ -427,6 +427,24 @@ const searchKyaraEvent = (text: string) => {
   console.log('searchKyaraString: ' + searchKyaraString.value)
 }
 
+// キャラ設定の表示順をマウスで入れ替えるため、
+// 移動開始時の数値を保存する
+const KyaraListOrderDragStart = (index: number) => {
+  dragStartIndex.value = index
+}
+
+// キャラ設定の順番を入れ替える
+const KyaraListOrderDragMove = (index: number) => {
+  // もし、移動されていた場合は移動対象の配列要素を取り出して、
+  // indexで指定された場所に差し込む形で追加する。
+  // 処理が終わったら dragStartIndex.value と index の値を一致させて処理が無駄に実行されないようにする。
+  if (index !== dragStartIndex.value) {
+    const moveItem = dateList.value.splice(dragStartIndex.value, 1)[0]
+    dateList.value.splice(index, 0, moveItem)
+    dragStartIndex.value = index
+  }
+}
+
 // seidキャラ設定のfileTatieOrderListを子コンポーネントに渡すか判断する
 // true ならfileTatieOrderList、falesならプロファイルのtatieOrderListとなる
 const selectFileTatieOrderSetting = (): void => {
@@ -747,6 +765,8 @@ watch(
         :checkIntoTatieOrderList="(uuid: string) => checkIntoTatieOrderList(uuid)"
         :searchKyaraEvent="searchKyaraEvent"
         :CopyKyaraSetting="CopyKyaraSetting"
+        :KyaraListOrderDragStart="(index: number) => KyaraListOrderDragStart(index)"
+        :KyaraListOrderDragMove="(index: number) => KyaraListOrderDragMove(index)"
         ref="setKyaraListRef"
       />
       <!-- キャラ設定プロファイルの追加ボタンは、defoでのみ表示 -->
