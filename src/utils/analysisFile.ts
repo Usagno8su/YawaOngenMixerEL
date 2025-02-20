@@ -213,7 +213,7 @@ export const enterEncodeVideoFile = async (
   // 変換の実施
   return yomAPI.enterEncodeVideoData(
     voiceFileDirPath,
-    JSON.stringify(dateList[selectKyara], undefined, 2),
+    JSON.stringify(createVoiceFileEncodeSetting(selectKyara, dateList), undefined, 2),
     makeTatiePicEncodeList(tatieSituation, dateList, settype, tatieOrderList, selectKyara),
     JSON.stringify(infoSetting, undefined, 2),
   )
