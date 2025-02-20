@@ -172,6 +172,7 @@ const addNewKyara = (dataType: dataTextType, kyaraName: string, kyaraStyle: stri
           undefined,
           undefined,
           undefined,
+          undefined,
           yomAPI.getPlatformData(),
         ),
       )
@@ -283,7 +284,7 @@ const loadVoiceDirList = (): void => {
     // 別ディレクトリの音声ファイル情報がある場合はそれを排除します。
     dateList.value = tempbuf.filter((item) => item.dataType !== 'seid')
 
-    // 音声ファイル名と同じ名前の字幕テキストファイルを読み込んで、字幕の内容をUUIDをキーにした連想配列に入れる。
+    // 音声ファイルと同名の字幕テキストファイルを読み込んで、字幕の内容をUUIDをキーにした連想配列に入れる。
     const itemList: { uuid: string; fileName: string }[] = ans.map((item) => {
       return { uuid: item.uuid, fileName: item.fileName }
     })
@@ -425,6 +426,24 @@ const searchKyaraString = ref<string>(undefined)
 const searchKyaraEvent = (text: string) => {
   searchKyaraString.value = text
   console.log('searchKyaraString: ' + searchKyaraString.value)
+}
+
+// キャラ設定の表示順をマウスで入れ替えるため、
+// 移動開始時の数値を保存する
+const KyaraListOrderDragStart = (index: number) => {
+  dragStartIndex.value = index
+}
+
+// キャラ設定の順番を入れ替える
+const KyaraListOrderDragMove = (index: number) => {
+  // もし、移動されていた場合は移動対象の配列要素を取り出して、
+  // indexで指定された場所に差し込む形で追加する。
+  // 処理が終わったら dragStartIndex.value と index の値を一致させて処理が無駄に実行されないようにする。
+  if (index !== dragStartIndex.value) {
+    const moveItem = dateList.value.splice(dragStartIndex.value, 1)[0]
+    dateList.value.splice(index, 0, moveItem)
+    dragStartIndex.value = index
+  }
 }
 
 // seidキャラ設定のfileTatieOrderListを子コンポーネントに渡すか判断する
@@ -747,6 +766,8 @@ watch(
         :checkIntoTatieOrderList="(uuid: string) => checkIntoTatieOrderList(uuid)"
         :searchKyaraEvent="searchKyaraEvent"
         :CopyKyaraSetting="CopyKyaraSetting"
+        :KyaraListOrderDragStart="(index: number) => KyaraListOrderDragStart(index)"
+        :KyaraListOrderDragMove="(index: number) => KyaraListOrderDragMove(index)"
         ref="setKyaraListRef"
       />
       <!-- キャラ設定プロファイルの追加ボタンは、defoでのみ表示 -->
