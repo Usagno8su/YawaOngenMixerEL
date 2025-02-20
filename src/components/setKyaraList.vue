@@ -27,6 +27,7 @@ import MaterialIcons from '@/components/accessories/icons/MaterialIcons.vue'
 import SelectProfileList from '@/components/unit/SelectProfileList.vue'
 import SearchInputUnit from '@/components/unit/SearchInputUnit.vue'
 import SelectDisplayKyaraRightClickMenu from '@/components/accessories/SelectDisplayKyaraRightClickMenu.vue'
+import SelectSeidList from '@/components/unit/SelectSeidList.vue'
 
 const { yomAPI } = window
 
@@ -242,7 +243,7 @@ watch(
         ref="refSearchString"
       />
       <div
-        v-if="settype !== 'defo'"
+        v-if="settype !== 'defo' && settype !== 'seid'"
         v-for="(item, index) in dateList"
         v-bind:key="item.uuid"
         :ref="selectKyaraRef"
@@ -257,9 +258,7 @@ watch(
           v-if="
             settype === item.dataType &&
             isEditOpen !== item.uuid &&
-            (settype !== 'seid'
-              ? FindAllString(refSearchString.searchString, [item.name, settype === 'kyast' && item.kyaraStyle])
-              : true)
+            FindAllString(refSearchString.searchString, [item.name, settype === 'kyast' && item.kyaraStyle])
           "
         >
           <!-- 個々の設定タイプに応じて表示 -->
@@ -268,19 +267,7 @@ watch(
             <div class="max-w-2/3 min-w-24 truncate" :title="item.name">{{ item.name }}</div>
             <div class="truncate" :title="item.kyaraStyle">（{{ item.kyaraStyle }}）</div>
           </div>
-          <!-- 設定が有効で、字幕テキストファイルがある場合はその内容を表示 -->
-          <div
-            v-else-if="item.dataType === 'seid'"
-            class="w-full truncate"
-            :title="
-              useSubText && subTextStringList[item.uuid].active
-                ? subTextStringList[item.uuid].val
-                : item.fileName + '.' + item.fileExtension
-            "
-          >
-            {{ useSubText && subTextStringList[item.uuid].active ? subTextStringList[item.uuid].val : item.fileName }}
-          </div>
-          <div class="flex h-full" v-if="selectKyara === index && settype !== 'seid'">
+          <div class="flex h-full" v-if="selectKyara === index">
             <MaterialIcons
               icon="MoreHoriz"
               @click.right="() => (isMenuOpen = true)"
@@ -297,15 +284,6 @@ watch(
               />
             </div>
           </div>
-          <button
-            class="h-full rounded-md border border-gray-700 bg-yellow-300"
-            v-else-if="selectKyara === index && settype === 'seid'"
-            title="エンコードを実行"
-            @click.stop="encodeCliek(index)"
-            :disabled="disableEnterEncode"
-          >
-            <MaterialIcons icon="CinematicBlur" />
-          </button>
         </div>
         <AccEditKyaraName
           :isNewOpen="isEditOpen === item.uuid"
@@ -331,6 +309,20 @@ watch(
           :createProfileData="createProfileData"
           :selectAreaRef="selectAreaRef"
           ref="selectProfileListRef"
+        />
+      </div>
+      <div v-if="settype === 'seid'" class="h-full w-full">
+        <SelectSeidList
+          :dateList="dateList"
+          :settype="settype"
+          :selectKyara="selectKyara"
+          :KyaraListOrderDragStart="(index: number) => KyaraListOrderDragStart(index)"
+          :KyaraListOrderDragMove="(index: number) => KyaraListOrderDragMove(index)"
+          :setDataTypeClick="(index: number, item: outSettingType) => setDataTypeClick(index, item)"
+          :subTextStringList="subTextStringList"
+          :useSubText="useSubText"
+          :encodeCliek="(index: number) => encodeCliek(index)"
+          :disableEnterEncode="disableEnterEncode"
         />
       </div>
     </div>
