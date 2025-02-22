@@ -53,21 +53,21 @@
     "@typescript-eslint/eslint-plugin": "^8.5.0",
     "@typescript-eslint/parser": "^8.5.0",
     "@vitejs/plugin-vue": "^5.2.1",
-    "autoprefixer": "^10.4.20",
     "electron": "34.2.0",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.30.0",
     "eslint-plugin-vue": "^9.28.0",
-    "postcss": "^8.5.3",
     "prettier": "^3.5.2",
     "prettier-plugin-tailwindcss": "^0.6.11",
-    "tailwindcss": "^4.0.8",
     "ts-node": "^10.9.2",
     "typescript": "5.7.3"
   },
   "dependencies": {
+    "@tailwindcss/postcss": "^4.0.8",
     "electron-squirrel-startup": "^1.0.1",
+    "postcss": "^8.5.3",
+    "tailwindcss": "^4.0.8",
     "vue": "^3.5.13"
   }
 }
