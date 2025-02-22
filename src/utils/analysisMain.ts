@@ -757,7 +757,7 @@ export const loadKyaraProfileData = async (confPath: string): Promise<string> =>
                 ...item.tatie,
                 waitTatieUUID: {
                   val: DEFAULT_KYARA_TATIE_UUID,
-                  active: false,
+                  active: item.dataType === 'defo' ? true : false,
                 },
               },
               subtitle: item.subtitle,
@@ -824,7 +824,7 @@ export const loadVoiceFileData = async (confPath: string): Promise<string> => {
                 ...item.tatie,
                 waitTatieUUID: {
                   val: DEFAULT_KYARA_TATIE_UUID,
-                  active: false,
+                  active: item.dataType === 'defo' ? true : false,
                 },
               },
               subtitle: item.subtitle,
