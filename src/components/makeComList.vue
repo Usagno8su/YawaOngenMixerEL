@@ -820,7 +820,7 @@ watch(
           <button :class="actset('subtitle')" @click="setClick('subtitle')">字幕</button>
         </div>
       </div>
-      <div class="h-[610px] rounded-md border-2 bg-gray-200 p-2">
+      <div class="h-[660px] rounded-xs border-1 bg-gray-200 p-2">
         <div class="flex items-center justify-between" v-if="settype === 'tatieOrder'">
           <div title="個別の設定がOFFの場合はこちらの設定が優先されます">このプロファイルの立ち絵表示順番</div>
         </div>
@@ -836,7 +836,7 @@ watch(
           class="my-2 flex h-7 justify-between border-b-[1px] border-gray-400"
           v-if="editData !== 'tatieOrder' && settype !== 'tatieOrder'"
         >
-          <div class="mr-3 flex w-[37rem] items-center overflow-hidden truncate border-r-[1px] border-gray-400 pr-1">
+          <div class="mr-3 flex w-[37rem] items-center truncate overflow-hidden border-r-[1px] border-gray-400 pr-1">
             <DisplaySelectFileView
               :selectKyara="selectKyara"
               :dateList="dateList"

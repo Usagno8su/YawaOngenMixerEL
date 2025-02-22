@@ -29,6 +29,9 @@ import {
 import { createDefoInfoDateList } from './utils/analysisGeneral'
 import { outSettingType, profileKyaraExportType, globalSettingExportType } from './type/data-type'
 import { DEFAULT_KYARA_PROFILE_NAME } from './data/data'
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-expect-error
+import startup from 'electron-squirrel-startup'
 
 // 各種ディレクトリのパスを作成
 const configDirPathGLB = path.join(app.getPath('userData'), 'yomConfig') // メインディレクトリ
@@ -43,7 +46,7 @@ let isSaveStatus: boolean = true // 設定の保存を行っていればtrue
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 // eslint-disable-next-line
-if (require('electron-squirrel-startup')) {
+if (startup) {
   app.quit()
 }
 

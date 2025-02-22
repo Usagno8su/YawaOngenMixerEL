@@ -96,7 +96,7 @@ const OpenSelectDisplayTatieOrderKyara = (uuid: string, name: string, style?: st
       </div>
       <!-- 表示のみの場合は上にかぶせて操作できないようにする -->
       <div
-        class="absolute h-full w-full bg-gray-600 bg-opacity-40"
+        class="absolute h-full w-full bg-gray-600/40"
         v-if="!(props.settype === 'tatieOrder' || isFileTatieOrderSetting)"
       ></div>
     </div>

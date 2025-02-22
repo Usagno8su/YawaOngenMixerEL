@@ -38,10 +38,10 @@ const KyaraChange = (outSetting: outSettingType): void => {
 </script>
 
 <template>
-  <div class="fixed right-0 top-0 flex h-screen w-screen items-center justify-center" @click.self="clickClose()">
+  <div class="fixed top-0 right-0 flex h-screen w-screen items-center justify-center" @click.self="clickClose()">
     <!-- 画面外クリックでクローズ -->
   </div>
-  <div class="border-1 fixed top-1/3 flex w-96 flex-col rounded-xl border-gray-800 bg-blue-100 px-5 py-4 text-sm">
+  <div class="fixed top-1/3 flex w-96 flex-col rounded-xl border-1 border-gray-800 bg-blue-100 px-5 py-4 text-sm">
     <div class="h-80 overflow-y-scroll border border-gray-600">
       <SearchInputUnit classSetting="bg-gray-300" inputTitle="立ち絵名かキャラ名で検索" ref="refSearchString" />
       <div class="">

@@ -32,12 +32,12 @@ defineExpose({ searchString })
 <template>
   <div :class="MakeClassString(classSetting, 'relative mx-1 mt-1 rounded-2xl border border-gray-600 p-1')">
     <input
-      class="ml-1 w-10/12 truncate bg-opacity-0 outline-none"
+      class="ml-1 w-10/12 truncate bg-black/0 outline-none"
       v-model="searchString"
       @input="onChange(searchString)"
       :title="inputTitle ?? '検索文字列を入力'"
     />
-    <button class="absolute right-2 top-1" @click="deleteString" :title="deleteTitke ?? '検索文字列を削除'">
+    <button class="absolute top-1 right-2" @click="deleteString" :title="deleteTitke ?? '検索文字列を削除'">
       <MaterialIcons icon="Close" />
     </button>
   </div>

@@ -195,7 +195,7 @@ watch(
 </script>
 
 <template>
-  <div class="flex border-b-[1px] border-gray-400 py-2">
+  <div class="flex flex-col border-b-[1px] border-gray-400 py-2">
     <!-- 
           ここの設定を使用する場合に入力できる。
           上位設定を使用する場合は表示のみ。
@@ -272,7 +272,7 @@ watch(
         />
       </div>
     </div>
-    <div class="relative" v-if="isOpenTatieFile">
+    <div class="relative mt-1" v-if="isOpenTatieFile">
       <SelectDisplayTatieFile
         :clickClose="setIsOpenTatieFile"
         :selectTatieFile="dateList[selectKyara].tatie[editTatieType].val"
