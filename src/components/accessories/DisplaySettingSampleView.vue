@@ -32,14 +32,19 @@ const refDisplayMoviePicFile = ref<InstanceType<typeof DisplayMoviePicFile> | nu
 const profile = ref<outSettingType>(createVoiceFileEncodeSetting(props.selectKyara, props.dateList))
 // 設定変更の比較チェックのため、内容を文字列に変換して保存する変数
 const checkConf = ref<string>(
-  JSON.stringify([profile.value?.tatie, tatieSituation, props.tatieOrderList], undefined, 2),
+  JSON.stringify(createVoiceFileEncodeSetting(props.selectKyara, props.dateList)?.tatie, undefined, 2) +
+    tatieSituation.value +
+    JSON.stringify(props.tatieOrderList, undefined, 2),
 )
 
 // 立ち絵の表示を更新
 const enterEncodeTatie = () => {
   profile.value = createVoiceFileEncodeSetting(props.selectKyara, props.dateList)
   refDisplayMoviePicFile.value.EnterGetKyaraImg()
-  checkConf.value = JSON.stringify([profile.value?.tatie, tatieSituation, props.tatieOrderList], undefined, 2)
+  checkConf.value =
+    JSON.stringify(createVoiceFileEncodeSetting(props.selectKyara, props.dateList)?.tatie, undefined, 2) +
+    tatieSituation.value +
+    JSON.stringify(props.tatieOrderList, undefined, 2)
 }
 
 // enterEncodeTatie を親コンポーネントから呼び出せるようにします
@@ -50,11 +55,10 @@ const onEncodeTatie = setInterval(() => {
   // キャラが未選択でなければ実行
   if (props.selectKyara !== -1) {
     // 比較のために設定内容をJSON形式に変換
-    const ans = JSON.stringify(
-      [createVoiceFileEncodeSetting(props.selectKyara, props.dateList)?.tatie, tatieSituation, props.tatieOrderList],
-      undefined,
-      2,
-    )
+    const ans =
+      JSON.stringify(createVoiceFileEncodeSetting(props.selectKyara, props.dateList)?.tatie, undefined, 2) +
+      tatieSituation.value +
+      JSON.stringify(props.tatieOrderList, undefined, 2)
 
     // 比較して前回の内容と異なっていれば立ち絵画像の表示を更新する。
     if (checkConf.value !== ans) {
