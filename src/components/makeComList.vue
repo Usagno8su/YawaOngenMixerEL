@@ -820,7 +820,7 @@ watch(
           <button :class="actset('subtitle')" @click="setClick('subtitle')">字幕</button>
         </div>
       </div>
-      <div class="h-[610px] rounded-md border-2 bg-gray-200 p-2">
+      <div class="h-[660px] rounded-xs border-1 bg-gray-200 p-2">
         <div class="flex items-center justify-between" v-if="settype === 'tatieOrder'">
           <div title="個別の設定がOFFの場合はこちらの設定が優先されます">このプロファイルの立ち絵表示順番</div>
         </div>

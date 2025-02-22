@@ -4,6 +4,7 @@ import { ref } from 'vue'
 import { dataTextType } from '@/type/data-type'
 import { typeColor } from '@/data/data'
 import GlobalSettingInfo from '@/components/unit/GlobalSettingInfo.vue'
+import { MakeClassString } from '@/utils/analysisGeneral'
 
 const { yomAPI } = window
 
@@ -38,7 +39,7 @@ const setTypeColor = (stype: dataTextType): string => {
 // 選択中のボタンの場合は高さとフォントの太さを変更する
 const actset = (stype: dataTextType): string => {
   return (
-    'mr-1 p-1 border rounded-sm' +
+    'mr-1 p-1 border rounded-t-sm' +
     ' ' +
     setTypeColor(stype) +
     ' ' +
@@ -51,15 +52,6 @@ const actset = (stype: dataTextType): string => {
 const setChangeDataSettingSta = (sta: boolean): void => {
   seveStatus.value = sta
   yomAPI.saveStatus(false)
-}
-
-// 設定編集をしたかによってボタンの色を変更する
-const classSaveButton = (): string => {
-  return (
-    'rounded-lg border border-black px-2 py-1' +
-    ' ' +
-    (seveStatus.value === true ? 'bg-red-500 hover:bg-yellow-500 hover:text-gray-900' : 'text-gray-500 bg-gray-200')
-  )
 }
 
 // 現在表示中のプロファイル保存を実行
@@ -87,7 +79,16 @@ const seveProfile = (): void => {
       </div>
       <div>
         <!-- 設定保存状態によって文言とクリック可能状態にするかも指定する -->
-        <button :class="classSaveButton()" @click="seveProfile" :disabled="!seveStatus">
+        <button
+          :class="
+            MakeClassString(
+              'rounded-lg border border-black px-2 py-1',
+              seveStatus ? 'bg-red-500 hover:bg-yellow-500 hover:text-gray-900' : 'bg-gray-200 text-gray-500',
+            )
+          "
+          @click="seveProfile"
+          :disabled="!seveStatus"
+        >
           {{ seveStatus === true ? '設定保存' : '保存済み' }}
         </button>
       </div>
