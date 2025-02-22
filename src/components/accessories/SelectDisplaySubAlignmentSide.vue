@@ -20,7 +20,7 @@ const actset = (side: subAlignmentSideType): string => {
 </script>
 
 <template>
-  <div class="fixed right-0 top-0 flex h-screen w-screen items-center justify-center" @click.self="clickClose">
+  <div class="fixed top-0 right-0 flex h-screen w-screen items-center justify-center" @click.self="clickClose">
     <!-- 画面外クリックでクローズ -->
   </div>
   <div class="absolute flex" @click="clickClose">

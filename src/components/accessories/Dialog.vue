@@ -19,7 +19,7 @@ withDefaults(
 
 <template>
   <div
-    class="fixed right-0 top-0 flex h-screen w-screen items-center justify-center bg-gray-600 bg-opacity-50"
+    class="fixed top-0 right-0 flex h-screen w-screen items-center justify-center bg-gray-600/50"
     @click.self="clickClose"
     :disabled="closeDisable"
   >

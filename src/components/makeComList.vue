@@ -836,7 +836,7 @@ watch(
           class="my-2 flex h-7 justify-between border-b-[1px] border-gray-400"
           v-if="editData !== 'tatieOrder' && settype !== 'tatieOrder'"
         >
-          <div class="mr-3 flex w-[37rem] items-center overflow-hidden truncate border-r-[1px] border-gray-400 pr-1">
+          <div class="mr-3 flex w-[37rem] items-center truncate overflow-hidden border-r-[1px] border-gray-400 pr-1">
             <DisplaySelectFileView
               :selectKyara="selectKyara"
               :dateList="dateList"
