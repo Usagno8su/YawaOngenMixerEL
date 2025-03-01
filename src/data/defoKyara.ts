@@ -178,6 +178,18 @@ export const initializationSettingData: initializationSettingType[] = [
     subColor: '#fffafa',
     subOrdercr: '#7cfc00',
   },
+  {
+    kyaraName: 'ぞん子',
+    subColor: '#c700ff',
+    subOrdercr: '#ffffff',
+    kyaraStyle: ['低血圧', '覚醒', '実況風'],
+  },
+  {
+    kyaraName: '中部つるぎ',
+    subColor: '#0037ff',
+    subOrdercr: '#ffffff',
+    kyaraStyle: ['怒り', 'ヒソヒソ', 'おどおど', '絶望と敗北'],
+  },
   // SHAREVOX
   {
     kyaraName: '小春音アミ',
@@ -396,8 +408,53 @@ export const initializationSettingData: initializationSettingType[] = [
     kyaraStyle: ['いっしょうけんめい', 'ごきげん', 'どやがお'],
   },
   {
+    kyaraName: 'KANA',
+    subColor: '#2ca9e1',
+    subOrdercr: '#ffffff',
+  },
+  {
     kyaraName: 'ディアちゃん',
     subColor: '#ff248e',
+    subOrdercr: '#ffffff',
+  },
+  {
+    kyaraName: 'アルマちゃん',
+    subColor: '#ea5550',
+    subOrdercr: '#ffffff',
+  },
+  {
+    kyaraName: 'リリンちゃん',
+    subColor: '#fcc800',
+    subOrdercr: '#ffffff',
+  },
+  {
+    kyaraName: 'クロワちゃん',
+    subColor: '#d4d9dc',
+    subOrdercr: '#000000',
+  },
+  {
+    kyaraName: 'アンジーさん',
+    subColor: '#24140e',
+    subOrdercr: '#ffffff',
+  },
+  {
+    kyaraName: 'AI声優-朱花',
+    subColor: '#ec6d71',
+    subOrdercr: '#ffffff',
+  },
+  {
+    kyaraName: 'AI声優-青葉',
+    subColor: '#0095d9',
+    subOrdercr: '#ffffff',
+  },
+  {
+    kyaraName: 'AI声優-銀芽',
+    subColor: '#afafb0',
+    subOrdercr: '#ffffff',
+  },
+  {
+    kyaraName: 'AI声優-金苗',
+    subColor: '#ffdb4f',
     subOrdercr: '#ffffff',
   },
   // A.I.VOICE
@@ -460,7 +517,12 @@ export const initializationSettingData: initializationSettingType[] = [
     kyaraName: '羽ノ華',
     subColor: '#009e9f',
     subOrdercr: '#bee0c2',
-    kyaraStyle: ['雫'],
+    kyaraStyle: ['平静', '喜び', '怒り', '悲しみ', '雫'],
+  },
+  {
+    kyaraName: 'galaco',
+    subColor: '#9a0d7c',
+    subOrdercr: '#ffffff',
   },
   // CeVIO AI
   {
@@ -478,6 +540,12 @@ export const initializationSettingData: initializationSettingType[] = [
     subColor: '#f8f8ff',
     subOrdercr: '#ffffff',
   },
+  // VoiSona Talk
+  {
+    kyaraName: '田中傘',
+    subColor: '#203744',
+    subOrdercr: '#ffffff',
+  },
   // VOICEROID
   {
     kyaraName: '月読アイ',
@@ -488,5 +556,21 @@ export const initializationSettingData: initializationSettingType[] = [
     kyaraName: '月読ショウタ',
     subColor: '#bbe2f1',
     subOrdercr: '#0075c2',
+  },
+  // ガイノイドTalk
+  {
+    kyaraName: 'flower',
+    subColor: '#47266e',
+    subOrdercr: '#ffffff',
+  },
+  {
+    kyaraName: '鳴花ヒメ',
+    subColor: '#e7609e',
+    subOrdercr: '#ffffff',
+  },
+  {
+    kyaraName: '鳴花ミコト',
+    subColor: '#bbbcde',
+    subOrdercr: '#0d0015',
   },
 ]
