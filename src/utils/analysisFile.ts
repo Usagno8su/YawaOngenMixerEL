@@ -263,7 +263,7 @@ export const makeTatiePicEncodeList = (
         ) {
           chkSelectKyara = 1
           return {
-            outJsonData: JSON.stringify(createVoiceFileEncodeSetting(ans, dateList), undefined, 2),
+            outJsonData: JSON.stringify(selectSetting, undefined, 2),
             tatieSituation: tatieSituation,
           }
         } else {
