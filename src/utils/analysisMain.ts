@@ -26,6 +26,7 @@ import {
   globalSettingV021Type,
   profileVoiceFileExportType,
   tatieOrderListType,
+  tatieSituationType,
 } from '../type/data-type'
 import { DEFAULT_KYARA_PROFILE_NAME, DEFAULT_KYARA_TATIE_UUID } from '../data/data'
 import { createNewDateList } from './analysisData'
@@ -383,7 +384,7 @@ export const makeUUID = (): string => {
 // fileName が指定されていた場合は、画像ファイル名はそれにする。
 export const enterEncodeImageData = async (
   settingList: outSettingType,
-  tatieSituation: string,
+  tatieSituation: tatieSituationType,
   tempDirPath: string,
   convertPath: string,
   kyaraTatieDirPath: string,
@@ -401,7 +402,7 @@ export const enterEncodeImageData = async (
     convertPath,
     imgData,
     fileName || settingList.fileName,
-    settingList.tatie[tatieSituation === 'tatieUUID' ? 'tatieUUID' : 'waitTatieUUID'].val,
+    settingList.tatie[tatieSituation].val,
     kyaraTatieDirPath,
     outPicDir,
     tempDirPath,
@@ -475,14 +476,16 @@ export const enterEncodePicFileData = async (
     if (item?.outJsonData !== undefined) {
       const setting: outSettingType = JSON.parse(item.outJsonData)
       console.log('変換: ' + setting.name + ', ' + kazu)
-      if (fs.existsSync(path.join(kyaraTatieDirPath, setting.tatie.tatieUUID.val + '.png'))) {
+      const tatieSituation: tatieSituationType = item?.tatieSituation === 'tatieUUID' ? 'tatieUUID' : 'waitTatieUUID'
+
+      if (fs.existsSync(path.join(kyaraTatieDirPath, setting.tatie[tatieSituation].val + '.png'))) {
         //// 画像ファイルの作成
 
         // 画像ファイルの作成を実行
         imgList.push(
           await enterEncodeImageData(
             setting,
-            item.tatieSituation,
+            tatieSituation,
             tempDirPath,
             globalSetting.exeFilePath.convert,
             kyaraTatieDirPath,
