@@ -406,6 +406,8 @@ export const createVoiceFileEncodeSetting = (index: number, dateList: outSetting
     dateList[index].fileName,
     dateList[index].fileExtension,
     dateList[index].voiceID,
+    dateList[index].fileTatieOrderList.active ? dateList[index].fileTatieOrderList.val : undefined,
+    dateList[index].fileActive,
   )
 }
 
