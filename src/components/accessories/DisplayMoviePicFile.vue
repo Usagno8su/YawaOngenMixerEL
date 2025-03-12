@@ -41,6 +41,9 @@ const noTatieFile = ref<boolean>(false)
 const img = ref<string | ArrayBuffer>()
 const data = ref<{ buffer: Uint8Array; path: string }>({ buffer: undefined, path: '' })
 
+// サムネイル画像の出力サイズを制限
+const size: { w: number; h: number } = { w: 256, h: 144 }
+
 const ChangeKyaraImg = () => {
   // データが取得（nullではない）できれば表示する
   if (data.value.buffer !== null) {
@@ -66,7 +69,7 @@ const ChangeKyaraImg = () => {
   }
 }
 
-const getKyaraImg = async (index?: number) => {
+const getKyaraImg = async (index?: number, localSize?: { w: number; h: number }) => {
   // indexが存在する値を示しているか確認します。
   const ChkIndex = (): outSettingType | undefined => {
     if (index === -1 || index === undefined || props.dateList[index] === undefined) {
@@ -96,6 +99,7 @@ const getKyaraImg = async (index?: number) => {
       props.settype,
       props.tatieOrderList,
       index,
+      localSize,
     )
     ChangeKyaraImg()
   } else if ((props.settype === 'tatieOrder' || props.settype === 'seid') && props.tatieOrderList.length !== 0) {
@@ -111,6 +115,8 @@ const getKyaraImg = async (index?: number) => {
       props.dateList,
       props.settype,
       props.tatieOrderList,
+      undefined,
+      localSize,
     )
     ChangeKyaraImg()
   } else {
@@ -130,11 +136,12 @@ const saveImg = async () => {
 }
 
 // 立ち絵サムネイルの変更処理を実行
+// 作成の際には、サイズを縮小する
 const EnterGetKyaraImg = () => {
   if (props.settype === 'tatieOrder') {
-    getKyaraImg()
+    getKyaraImg(undefined, size)
   } else {
-    getKyaraImg(props.selectKyara)
+    getKyaraImg(props.selectKyara, size)
   }
 }
 
