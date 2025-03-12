@@ -11,7 +11,7 @@ import {
 } from '../type/data-type'
 import { ref } from 'vue'
 import { createNewDateList, createVoiceFileEncodeSetting } from './analysisData'
-import { createDefoFileListTatie, NowTimeData } from './analysisGeneral'
+import { createDefoFileListTatie, NowTimeData, resizeKyaraDateDisplay } from './analysisGeneral'
 import { DEFAULT_KYARA_TATIE_UUID } from '../data/data'
 const { yomAPI } = window
 
@@ -220,31 +220,38 @@ export const enterEncodeVideoFile = async (
 }
 
 // 指定された立ち絵ファイルの変換を行う。
+// 画面サイズが指定されている場合は、その情報も送付する。
 export const enterEncodeTatiePicFile = async (
   tatieSituation: string,
   dateList: outSettingType[],
   settype: dataTextType,
   tatieOrderList: tatieOrderListType[],
   selectKyara?: number,
+  size?: { w: number; h: number },
 ): Promise<{ buffer: Uint8Array; path: string }> => {
   return yomAPI.getEncodePicFileData(
-    makeTatiePicEncodeList(tatieSituation, dateList, settype, tatieOrderList, selectKyara),
+    makeTatiePicEncodeList(tatieSituation, dateList, settype, tatieOrderList, selectKyara, size),
   )
 }
 
 // 立ち絵の変換を行う際に、mainに送付するデータを作成する。
 // 複数の立ち絵を表示させる場合にはその内容をまとめて出力する。
+// 画面サイズが指定されている場合は、その情報も送付する。
 export const makeTatiePicEncodeList = (
   tatieSituation: string,
   dateList: outSettingType[],
   settype: dataTextType,
   tatieOrderList: tatieOrderListType[],
   selectKyara?: number,
+  size?: { w: number; h: number },
 ): {
   outJsonData: string
   tatieSituation: string
 }[] => {
-  const selectSetting = selectKyara !== undefined ? createVoiceFileEncodeSetting(selectKyara, dateList) : undefined
+  const selectSetting =
+    selectKyara !== undefined
+      ? resizeKyaraDateDisplay(createVoiceFileEncodeSetting(selectKyara, dateList), size)
+      : undefined
 
   // データ作成の実施
   if (settype === 'tatieOrder' || settype === 'seid') {
@@ -268,7 +275,11 @@ export const makeTatiePicEncodeList = (
           }
         } else {
           return {
-            outJsonData: JSON.stringify(createVoiceFileEncodeSetting(ans, dateList), undefined, 2),
+            outJsonData: JSON.stringify(
+              resizeKyaraDateDisplay(createVoiceFileEncodeSetting(ans, dateList), size),
+              undefined,
+              2,
+            ),
             tatieSituation: e.tatieSituation,
           }
         }

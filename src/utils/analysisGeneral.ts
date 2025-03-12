@@ -120,3 +120,35 @@ export const NowTimeData = (type?: string): string => {
 export const MakeClassString = (...classString: string[]): string => {
   return classString.join(' ')
 }
+
+// 画面サイズの設定を、指定された縦横の範囲内に入るように縮小する。
+// 事前にcreateVoiceFileEncodeSetting()を通したデータを入れること。
+// size が undefined の場合は setting をそのまま返す。
+export const resizeKyaraDateDisplay = (setting: outSettingType, size?: { w: number; h: number }): outSettingType => {
+  // size がundefinedでないことを確認する。
+  // undefined の場合は setting をそのまま返す。
+  if (size !== undefined) {
+    // 画像の横が長いか同じ場合は横の長さに合わせて縮小する
+    if (setting.tatie.moviW.val >= setting.tatie.moviH.val) {
+      const sizeAns = (size.w / setting.tatie.moviW.val) * setting.tatie.moviH.val
+      setting.tatie.moviW.val = size.w
+      setting.tatie.moviH.val = sizeAns
+
+      console.log('縮小結果w: ' + setting.tatie.moviW.val + ' ' + setting.tatie.moviH.val)
+
+      return setting
+
+      // 画像の縦が長い場合は縦の長さに合わせて縮小する
+    } else {
+      const sizeAns = (size.h / setting.tatie.moviH.val) * setting.tatie.moviW.val
+      setting.tatie.moviW.val = sizeAns
+      setting.tatie.moviH.val = size.h
+
+      console.log('縮小結果h: ' + setting.tatie.moviW.val + ' ' + setting.tatie.moviH.val)
+
+      return setting
+    }
+  } else {
+    return setting
+  }
+}
