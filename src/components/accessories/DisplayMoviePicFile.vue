@@ -37,18 +37,20 @@ const runMakeImg = ref<boolean>(true)
 
 // 立ち絵の存在チェック
 const noTatieFile = ref<boolean>(false)
+const noRawTatieFile = ref<boolean>(false)
 
 //  加工済み立ち絵画像を本来の大きさでエンコードして表示する画面を開く
 const isRawPicFileView = ref<boolean>(false)
 
 // 変換した立ち絵画像を取得
 const img = ref<string | ArrayBuffer>()
+const rawImg = ref<string | ArrayBuffer>()
 const data = ref<{ buffer: Uint8Array; path: string }>({ buffer: undefined, path: '' })
 
 // サムネイル画像の出力サイズを制限
 const size: { w: number; h: number } = { w: 256, h: 144 }
 
-const ChangeKyaraImg = () => {
+const ChangeKyaraImg = (rawEnable?: boolean) => {
   // データが取得（nullではない）できれば表示する
   if (data.value.buffer !== null) {
     let bobData = new Blob([data.value.buffer], { type: 'image/png' })
@@ -57,10 +59,16 @@ const ChangeKyaraImg = () => {
 
     // 読み込み完了時の処理を設定
     reader.onload = () => {
-      img.value = reader.result
+      if (rawEnable) {
+        rawImg.value = reader.result
+        // 立ち絵が存在するのでfalesにする
+        noRawTatieFile.value = false
+      } else {
+        img.value = reader.result
 
-      // 立ち絵が存在するのでfalesにする
-      noTatieFile.value = false
+        // 立ち絵が存在するのでfalesにする
+        noTatieFile.value = false
+      }
 
       // 終わったので戻す
       runMakeImg.value = true
@@ -106,10 +114,8 @@ const getKyaraImg = async (index?: number, localSize?: { w: number; h: number })
       localSize,
     )
 
-    // 本来の大きさでエンコードして表示の際には、サムネイル表示の更新を行わない。
-    if (localSize !== undefined) {
-      ChangeKyaraImg()
-    }
+    // 本来の大きさでエンコードして表示(localSize === undefined)の際にはtrueを入れる。
+    ChangeKyaraImg(localSize === undefined)
   } else if ((props.settype === 'tatieOrder' || props.settype === 'seid') && props.tatieOrderList.length !== 0) {
     // 立ち絵順序の設定の項目か音声ファイル個別の設定を表示しており、tatieOrderListに設定があれば実行
 
@@ -127,10 +133,8 @@ const getKyaraImg = async (index?: number, localSize?: { w: number; h: number })
       localSize,
     )
 
-    // 本来の大きさでエンコードして表示の際には、サムネイル表示の更新を行わない。
-    if (localSize !== undefined) {
-      ChangeKyaraImg()
-    }
+    // 本来の大きさでエンコードして表示(localSize === undefined)の際にはtrueを入れる。
+    ChangeKyaraImg(localSize === undefined)
   } else {
     // 立ち絵が存在しない
     noTatieFile.value = true
@@ -142,7 +146,7 @@ const saveImg = async () => {
 }
 
 // 設定通りのサイズの立ち絵画像をエンコード
-const RawImg = async () => {
+const GetRawImg = async () => {
   if (props.settype === 'tatieOrder') {
     await getKyaraImg(undefined)
   } else {
@@ -212,11 +216,13 @@ watch(
     :clickClose="
       () => {
         isRawPicFileView = false
-        runMakeImg = true
+        rawImg = null
       }
     "
-    :RawImg="() => RawImg()"
+    :GetRawImg="() => GetRawImg()"
     :data="data"
+    :rawImg="rawImg"
+    :noRawTatieFile="noRawTatieFile"
     v-if="isRawPicFileView"
   />
 </template>
