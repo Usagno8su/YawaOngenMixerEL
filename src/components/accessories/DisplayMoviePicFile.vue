@@ -27,6 +27,7 @@ import { enterEncodeTatiePicFile, enterSaveUint8ArrayFileData } from '@/utils/an
 import { DEFAULT_KYARA_TATIE_UUID } from '@/data/data'
 import { createVoiceFileEncodeSetting } from '@/utils/analysisData'
 import { MakeClassString } from '@/utils/analysisGeneral'
+import DialogRawPicFileView from '@/components/unit/DialogRawPicFileView.vue'
 
 // 保存ダイアログ表示時のディレクトリを指定
 const defoDir = ref<string>(null)
@@ -36,6 +37,9 @@ const runMakeImg = ref<boolean>(true)
 
 // 立ち絵の存在チェック
 const noTatieFile = ref<boolean>(false)
+
+//  加工済み立ち絵画像を本来の大きさでエンコードして表示する画面を開く
+const isRawPicFileView = ref<boolean>(false)
 
 // 変換した立ち絵画像を取得
 const img = ref<string | ArrayBuffer>()
@@ -101,7 +105,11 @@ const getKyaraImg = async (index?: number, localSize?: { w: number; h: number })
       index,
       localSize,
     )
-    ChangeKyaraImg()
+
+    // 本来の大きさでエンコードして表示の際には、サムネイル表示の更新を行わない。
+    if (localSize !== undefined) {
+      ChangeKyaraImg()
+    }
   } else if ((props.settype === 'tatieOrder' || props.settype === 'seid') && props.tatieOrderList.length !== 0) {
     // 立ち絵順序の設定の項目か音声ファイル個別の設定を表示しており、tatieOrderListに設定があれば実行
 
@@ -118,7 +126,11 @@ const getKyaraImg = async (index?: number, localSize?: { w: number; h: number })
       undefined,
       localSize,
     )
-    ChangeKyaraImg()
+
+    // 本来の大きさでエンコードして表示の際には、サムネイル表示の更新を行わない。
+    if (localSize !== undefined) {
+      ChangeKyaraImg()
+    }
   } else {
     // 立ち絵が存在しない
     noTatieFile.value = true
@@ -127,11 +139,14 @@ const getKyaraImg = async (index?: number, localSize?: { w: number; h: number })
 
 // 変換した立ち絵を保存する
 const saveImg = async () => {
-  const ans = await enterSaveUint8ArrayFileData(data.value.buffer, defoDir.value)
+}
 
-  // 保存に成功していたら、保存ダイアログ表示時のディレクトリを更新
-  if (ans !== null) {
-    defoDir.value = ans
+// 設定通りのサイズの立ち絵画像をエンコード
+const RawImg = async () => {
+  if (props.settype === 'tatieOrder') {
+    await getKyaraImg(undefined)
+  } else {
+    await getKyaraImg(props.selectKyara)
   }
 }
 
@@ -158,7 +173,7 @@ watch(
 </script>
 
 <template>
-  <img
+  <button
     v-if="
       (settype === 'tatieOrder' ||
         settype === 'seid' ||
@@ -166,11 +181,23 @@ watch(
       typeof img === 'string' &&
       noTatieFile !== true
     "
-    :src="img"
-    :class="imgClass"
-    @click="() => saveImg()"
-    title="クリックで変換画像を保存します。"
-  />
+    :class="
+      MakeClassString(
+        'flex items-center justify-center',
+        isRawPicFileView || !runMakeImg ? 'cursor-wait' : 'cursor-pointer',
+        imgClass,
+      )
+    "
+    @click="
+      () => {
+        isRawPicFileView = true
+      }
+    "
+    :disabled="isRawPicFileView || !runMakeImg"
+    title="クリックで変換画像を拡大表示します。"
+  >
+    <img :src="img" class="border border-gray-400" :width="size.w" :height="size.h" />
+  </button>
   <div
     v-else-if="profile?.tatie[tatieSituation].val === DEFAULT_KYARA_TATIE_UUID"
     :class="MakeClassString('flex items-center justify-center bg-sky-100', imgClass)"
@@ -181,4 +208,15 @@ watch(
     立ち絵ファイルが<br />見つかりませんでした
   </div>
   <div v-else :class="MakeClassString('flex items-center justify-center bg-sky-100', imgClass)">表示に失敗しました</div>
+  <DialogRawPicFileView
+    :clickClose="
+      () => {
+        isRawPicFileView = false
+        runMakeImg = true
+      }
+    "
+    :RawImg="() => RawImg()"
+    :data="data"
+    v-if="isRawPicFileView"
+  />
 </template>
