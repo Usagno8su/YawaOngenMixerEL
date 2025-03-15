@@ -491,9 +491,6 @@ const TatieOrderNew = () => {
 
   if (ans !== undefined) {
     TatieOrderAdd([ans])
-
-    // 立ち絵の変換サンプルを更新
-    refEnterEncodeTatie.value?.enterEncodeTatie()
   } else {
     TatieOrderAdd([dateList.value[0]])
   }
@@ -512,6 +509,8 @@ const TatieOrderAdd = (outSettingTtems: outSettingType[]) => {
       tatieSituation: item.tatie.waitTatieUUID.active ? 'waitTatieUUID' : 'tatieUUID',
     })
   }
+  // 立ち絵の変換サンプルを更新
+  refEnterEncodeTatie.value?.enterEncodeTatie()
 }
 
 // editTatieOrderListに表示する立ち絵を、選択されたキャラに変更する。
