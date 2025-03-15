@@ -141,8 +141,13 @@ const getKyaraImg = async (index?: number, localSize?: { w: number; h: number })
   }
 }
 
-// 変換した立ち絵を保存する
-const saveImg = async () => {
+// 設定通りのサイズでエンコードした立ち絵画像を保存
+const SaveRawImg = async () => {
+  const ans = await enterSaveUint8ArrayFileData(data.value.buffer, defoDir.value)
+  // 保存に成功していたら、保存ダイアログ表示時のディレクトリを更新
+  if (ans !== null) {
+    defoDir.value = ans
+  }
 }
 
 // 設定通りのサイズの立ち絵画像をエンコード
@@ -220,6 +225,7 @@ watch(
       }
     "
     :GetRawImg="() => GetRawImg()"
+    :SaveRawImg="() => SaveRawImg()"
     :data="data"
     :rawImg="rawImg"
     :noRawTatieFile="noRawTatieFile"
