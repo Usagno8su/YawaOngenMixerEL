@@ -12,6 +12,7 @@ const props = defineProps<{
   useSubText: boolean
   TatieOrderDragStart: (index: number) => void
   TatieOrderDragMove: (index: number) => void
+  TatieOrderDragEnd: (index: number) => void
   TatieOrderNew: () => void
   TatieOrderChange: (uuid: string, outSetting: outSettingType) => void
   TatieOrderDel: (index: number) => void
@@ -63,6 +64,8 @@ const OpenSelectDisplayTatieOrderKyara = (uuid: string, name: string, style?: st
         :draggable="true"
         @dragstart="() => TatieOrderDragStart(index)"
         @dragenter="() => TatieOrderDragMove(index)"
+        @dragend="() => TatieOrderDragEnd(index)"
+        @dragover.prevent
       >
         <div class="flex truncate">
           <div class="my-1 ml-2 rounded-3xl border border-black px-2">{{ index }}</div>
