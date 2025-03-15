@@ -115,8 +115,7 @@ const setKyaraListRef = ref(null)
 
 // 立ち絵の表示順をマウスで入れ替えるため、
 // 移動開始時の数値を保存する変数
-const dragStartIndex = ref<number>()
-const dragMovePoint = ref<number>(-1)
+const dragStartIndex = ref<number>(-1)
 
 const refEnterEncodeTatie = ref<InstanceType<typeof DisplaySettingSampleView> | null>(null)
 
@@ -463,27 +462,24 @@ const selectFileTatieOrderSetting = (): void => {
 // 移動開始時の数値を保存する
 const TatieOrderDragStart = (index: number) => {
   dragStartIndex.value = index
-  dragMovePoint.value = index
-}
-
-// 立ち絵の入れ替え位置を記録する。
-const TatieOrderDragMove = (index: number) => {
-  // 処理が終わったら dragMovePoint.value と index の値を一致させて処理が無駄に実行されないようにする。
-  if (index !== dragMovePoint.value) {
-    dragMovePoint.value = index
-  }
 }
 
 // 入れ替えがあった場合に、立ち絵の順番を入れ替える。
 // 立ち絵の変換サンプルの表示は別途更新される。
-const TatieOrderDragEnd = () => {
+const TatieOrderDragMove = (index: number) => {
   // もし、移動されていた場合は移動対象の配列要素を取り出して、
-  // dragMovePoint.valueで指定された場所に差し込む形で追加する。
-  if (dragMovePoint.value !== dragStartIndex.value) {
+  // index で指定された場所に差し込む形で追加する。
+  // 処理が終わったら dragStartIndex.value と index の値を一致させて処理が無駄に実行されないようにする。
+  if (index !== dragStartIndex.value) {
     const moveItem = editTatieOrderList.value.splice(dragStartIndex.value, 1)[0]
-    editTatieOrderList.value.splice(dragMovePoint.value, 0, moveItem)
+    editTatieOrderList.value.splice(index, 0, moveItem)
+    dragStartIndex.value = index
   }
-  dragMovePoint.value = -1
+}
+
+// 入れ替えを終了する。
+const TatieOrderDragEnd = () => {
+  dragStartIndex.value = -1
 }
 
 // 立ち絵順序の設定で、表示する立ち絵を追加する。
@@ -866,6 +862,7 @@ watch(
           :isFileTatieOrderSetting="isFileTatieOrderSetting"
           :subTextStringList="subTextStringList"
           :useSubText="globalSetting.useSubText"
+          :dragStartIndex="dragStartIndex"
           :TatieOrderDragStart="TatieOrderDragStart"
           :TatieOrderDragMove="TatieOrderDragMove"
           :TatieOrderDragEnd="TatieOrderDragEnd"
