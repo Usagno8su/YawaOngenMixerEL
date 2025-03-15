@@ -27,6 +27,7 @@ import { enterEncodeTatiePicFile, enterSaveUint8ArrayFileData } from '@/utils/an
 import { DEFAULT_KYARA_TATIE_UUID } from '@/data/data'
 import { createVoiceFileEncodeSetting } from '@/utils/analysisData'
 import { MakeClassString } from '@/utils/analysisGeneral'
+import DialogRawPicFileView from '@/components/unit/DialogRawPicFileView.vue'
 
 // 保存ダイアログ表示時のディレクトリを指定
 const defoDir = ref<string>(null)
@@ -36,15 +37,20 @@ const runMakeImg = ref<boolean>(true)
 
 // 立ち絵の存在チェック
 const noTatieFile = ref<boolean>(false)
+const noRawTatieFile = ref<boolean>(false)
+
+//  加工済み立ち絵画像を本来の大きさでエンコードして表示する画面を開く
+const isRawPicFileView = ref<boolean>(false)
 
 // 変換した立ち絵画像を取得
 const img = ref<string | ArrayBuffer>()
+const rawImg = ref<string | ArrayBuffer>()
 const data = ref<{ buffer: Uint8Array; path: string }>({ buffer: undefined, path: '' })
 
 // サムネイル画像の出力サイズを制限
 const size: { w: number; h: number } = { w: 256, h: 144 }
 
-const ChangeKyaraImg = () => {
+const ChangeKyaraImg = (rawEnable?: boolean) => {
   // データが取得（nullではない）できれば表示する
   if (data.value.buffer !== null) {
     let bobData = new Blob([data.value.buffer], { type: 'image/png' })
@@ -53,10 +59,16 @@ const ChangeKyaraImg = () => {
 
     // 読み込み完了時の処理を設定
     reader.onload = () => {
-      img.value = reader.result
+      if (rawEnable) {
+        rawImg.value = reader.result
+        // 立ち絵が存在するのでfalesにする
+        noRawTatieFile.value = false
+      } else {
+        img.value = reader.result
 
-      // 立ち絵が存在するのでfalesにする
-      noTatieFile.value = false
+        // 立ち絵が存在するのでfalesにする
+        noTatieFile.value = false
+      }
 
       // 終わったので戻す
       runMakeImg.value = true
@@ -101,7 +113,9 @@ const getKyaraImg = async (index?: number, localSize?: { w: number; h: number })
       index,
       localSize,
     )
-    ChangeKyaraImg()
+
+    // 本来の大きさでエンコードして表示(localSize === undefined)の際にはtrueを入れる。
+    ChangeKyaraImg(localSize === undefined)
   } else if ((props.settype === 'tatieOrder' || props.settype === 'seid') && props.tatieOrderList.length !== 0) {
     // 立ち絵順序の設定の項目か音声ファイル個別の設定を表示しており、tatieOrderListに設定があれば実行
 
@@ -118,20 +132,30 @@ const getKyaraImg = async (index?: number, localSize?: { w: number; h: number })
       undefined,
       localSize,
     )
-    ChangeKyaraImg()
+
+    // 本来の大きさでエンコードして表示(localSize === undefined)の際にはtrueを入れる。
+    ChangeKyaraImg(localSize === undefined)
   } else {
     // 立ち絵が存在しない
     noTatieFile.value = true
   }
 }
 
-// 変換した立ち絵を保存する
-const saveImg = async () => {
+// 設定通りのサイズでエンコードした立ち絵画像を保存
+const SaveRawImg = async () => {
   const ans = await enterSaveUint8ArrayFileData(data.value.buffer, defoDir.value)
-
   // 保存に成功していたら、保存ダイアログ表示時のディレクトリを更新
   if (ans !== null) {
     defoDir.value = ans
+  }
+}
+
+// 設定通りのサイズの立ち絵画像をエンコード
+const GetRawImg = async () => {
+  if (props.settype === 'tatieOrder') {
+    await getKyaraImg(undefined)
+  } else {
+    await getKyaraImg(props.selectKyara)
   }
 }
 
@@ -158,7 +182,7 @@ watch(
 </script>
 
 <template>
-  <img
+  <button
     v-if="
       (settype === 'tatieOrder' ||
         settype === 'seid' ||
@@ -166,11 +190,23 @@ watch(
       typeof img === 'string' &&
       noTatieFile !== true
     "
-    :src="img"
-    :class="imgClass"
-    @click="() => saveImg()"
-    title="クリックで変換画像を保存します。"
-  />
+    :class="
+      MakeClassString(
+        'flex items-center justify-center',
+        isRawPicFileView || !runMakeImg ? 'cursor-wait' : 'cursor-pointer',
+        imgClass,
+      )
+    "
+    @click="
+      () => {
+        isRawPicFileView = true
+      }
+    "
+    :disabled="isRawPicFileView || !runMakeImg"
+    title="クリックで変換画像を拡大表示します。"
+  >
+    <img :src="img" class="border border-gray-400" :width="size.w" :height="size.h" />
+  </button>
   <div
     v-else-if="profile?.tatie[tatieSituation].val === DEFAULT_KYARA_TATIE_UUID"
     :class="MakeClassString('flex items-center justify-center bg-sky-100', imgClass)"
@@ -181,4 +217,18 @@ watch(
     立ち絵ファイルが<br />見つかりませんでした
   </div>
   <div v-else :class="MakeClassString('flex items-center justify-center bg-sky-100', imgClass)">表示に失敗しました</div>
+  <DialogRawPicFileView
+    :clickClose="
+      () => {
+        isRawPicFileView = false
+        rawImg = null
+      }
+    "
+    :GetRawImg="() => GetRawImg()"
+    :SaveRawImg="() => SaveRawImg()"
+    :data="data"
+    :rawImg="rawImg"
+    :noRawTatieFile="noRawTatieFile"
+    v-if="isRawPicFileView"
+  />
 </template>
