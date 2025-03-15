@@ -10,8 +10,10 @@ const props = defineProps<{
   isFileTatieOrderSetting: boolean
   subTextStringList: { [key: string]: { val: string; active: boolean } }
   useSubText: boolean
+  dragStartIndex: number
   TatieOrderDragStart: (index: number) => void
   TatieOrderDragMove: (index: number) => void
+  TatieOrderDragEnd: (index: number) => void
   TatieOrderNew: () => void
   TatieOrderChange: (uuid: string, outSetting: outSettingType) => void
   TatieOrderDel: (index: number) => void
@@ -57,12 +59,19 @@ const OpenSelectDisplayTatieOrderKyara = (uuid: string, name: string, style?: st
   <div class="h-full w-full">
     <div class="relative flex h-5/6 w-full flex-col items-center overflow-y-scroll border border-gray-500 px-2 py-1">
       <div
-        class="mt-1 flex w-[580px] justify-between rounded-xl border border-black"
+        :class="
+          MakeClassString(
+            'mt-1 flex w-[580px] justify-between rounded-xl border border-black',
+            dragStartIndex === index ? 'bg-sky-300 opacity-60' : 'bg-sky-100',
+          )
+        "
         v-for="(item, index) in tatieOrderList"
         v-bind:key="item.uuid"
         :draggable="true"
         @dragstart="() => TatieOrderDragStart(index)"
         @dragenter="() => TatieOrderDragMove(index)"
+        @dragend="() => TatieOrderDragEnd(index)"
+        @dragover.prevent
       >
         <div class="flex truncate">
           <div class="my-1 ml-2 rounded-3xl border border-black px-2">{{ index }}</div>

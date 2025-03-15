@@ -173,7 +173,7 @@ const EnterGetKyaraImg = () => {
 defineExpose({ EnterGetKyaraImg })
 
 watch(
-  () => [props.profile, props.settype, props.tatieSituation, props.tatieOrderList, props.selectKyara],
+  () => [props.profile, props.settype, props.selectKyara],
   () => {
     EnterGetKyaraImg()
   },
