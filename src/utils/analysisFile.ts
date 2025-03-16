@@ -253,12 +253,19 @@ export const makeTatiePicEncodeList = (
       ? resizeKyaraDateDisplay(createVoiceFileEncodeSetting(selectKyara, dateList), size)
       : undefined
 
+  // seidキャラ設定のfileTatieOrderListを使用するか判断する
+  // true ならfileTatieOrderList、falesならプロファイルのtatieOrderListとなる
+  const useTatieOrderList: tatieOrderListType[] =
+    dateList[selectKyara]?.fileTatieOrderList.active === true
+      ? dateList[selectKyara].fileTatieOrderList.val
+      : tatieOrderList
+
   // データ作成の実施
   if (settype === 'tatieOrder' || settype === 'seid') {
     // seid のときに、selectKyaraのキャラがencodeListに入っているか確認する数値
     let chkSelectKyara = -1
 
-    const encodeList = tatieOrderList.map((e) => {
+    const encodeList = useTatieOrderList.map((e) => {
       // dateListに一致するものを探し、立ち絵の設定をencodeListに入れる。
 
       const ans = dateList.findIndex((f) => e.dataType + e.settingUUID === f.dataType + f.uuid)
