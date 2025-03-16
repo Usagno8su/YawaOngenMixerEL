@@ -29,42 +29,7 @@ export const createDefoKyaraProfileList = (): kyaraProfileListType => {
 
 // デフォルトのキャラ設定データを作成して返す
 export const createDefoKyaraDateList = (platform?: NodeJS.Platform): outSettingType => {
-  return createNewDateList(
-    'defo',
-    DEFAULT_KYARA_SETTING_UUID,
-    'デフォルト',
-    undefined,
-    {
-      tatieUUID: DEFAULT_KYARA_TATIE_UUID,
-      waitTatieUUID: DEFAULT_KYARA_TATIE_UUID,
-      moviW: 1280,
-      moviH: 720,
-      tatieConp: true,
-      tatieSide: 'SouthEast',
-      tatieHpx: 40,
-      tatiePwPs: 0,
-      tatiePhPs: 0,
-      fps: 2,
-    },
-    {
-      subText: true,
-      fontsPath: platform === 'win32' ? DEFAULT_FONT_WIN : DEFAULT_FONT_LINUX,
-      subAlignment: 'Center',
-      subAutoRt: true,
-      subTextBord: true,
-      subBG: false,
-      subSize: 38,
-      subTextSpaceSize: 10,
-      subColor: '#ffffff',
-      subOrdercr: '#000000',
-      subBorderW: 2,
-      subBgcolor: '#0000ff',
-      subBgTr: 0.7,
-      subTextUseVoiceFileName: false,
-      subChangeSta: false,
-      subSideSpaceSize: 5,
-    },
-  )
+  return createNewDateList('defo', DEFAULT_KYARA_SETTING_UUID, 'デフォルト', undefined, {}, {})
 }
 
 // デフォルトのキャラUUIDリストデータを作成して返す
