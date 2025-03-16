@@ -428,10 +428,15 @@ const searchKyaraEvent = (text: string) => {
   console.log('searchKyaraString: ' + searchKyaraString.value)
 }
 
-// キャラ設定の表示順をマウスで入れ替えるため、
+// 表示順をマウスで入れ替えるため、
 // 移動開始時の数値を保存する
-const KyaraListOrderDragStart = (index: number) => {
+const OrderDragStart = (index: number) => {
   dragStartIndex.value = index
+}
+
+// 入れ替えを終了する。
+const OrderDragEnd = () => {
+  dragStartIndex.value = -1
 }
 
 // キャラ設定の順番を入れ替える
@@ -443,6 +448,7 @@ const KyaraListOrderDragMove = (index: number) => {
     const moveItem = dateList.value.splice(dragStartIndex.value, 1)[0]
     dateList.value.splice(index, 0, moveItem)
     dragStartIndex.value = index
+    selectKyara.value = index // キャラ選択も追従する
   }
 }
 
@@ -458,12 +464,6 @@ const selectFileTatieOrderSetting = (): void => {
   }
 }
 
-// 立ち絵の表示順をマウスで入れ替えるため、
-// 移動開始時の数値を保存する
-const TatieOrderDragStart = (index: number) => {
-  dragStartIndex.value = index
-}
-
 // 入れ替えがあった場合に、立ち絵の順番を入れ替える。
 // 立ち絵の変換サンプルの表示は別途更新される。
 const TatieOrderDragMove = (index: number) => {
@@ -475,11 +475,6 @@ const TatieOrderDragMove = (index: number) => {
     editTatieOrderList.value.splice(index, 0, moveItem)
     dragStartIndex.value = index
   }
-}
-
-// 入れ替えを終了する。
-const TatieOrderDragEnd = () => {
-  dragStartIndex.value = -1
 }
 
 // 立ち絵順序の設定で、表示する立ち絵を追加する。
@@ -766,11 +761,13 @@ watch(
         :createProfileData="createProfileData"
         :subTextStringList="subTextStringList"
         :useSubText="globalSetting.useSubText"
+        :dragStartIndex="dragStartIndex"
         :checkIntoTatieOrderList="(uuid: string) => checkIntoTatieOrderList(uuid)"
         :searchKyaraEvent="searchKyaraEvent"
         :CopyKyaraSetting="CopyKyaraSetting"
-        :KyaraListOrderDragStart="(index: number) => KyaraListOrderDragStart(index)"
+        :KyaraListOrderDragStart="(index: number) => OrderDragStart(index)"
         :KyaraListOrderDragMove="(index: number) => KyaraListOrderDragMove(index)"
+        :KyaraListOrderDragEnd="() => OrderDragEnd()"
         ref="setKyaraListRef"
       />
       <!-- キャラ設定プロファイルの追加ボタンは、defoでのみ表示 -->
@@ -863,9 +860,9 @@ watch(
           :subTextStringList="subTextStringList"
           :useSubText="globalSetting.useSubText"
           :dragStartIndex="dragStartIndex"
-          :TatieOrderDragStart="TatieOrderDragStart"
+          :TatieOrderDragStart="OrderDragStart"
           :TatieOrderDragMove="TatieOrderDragMove"
-          :TatieOrderDragEnd="TatieOrderDragEnd"
+          :TatieOrderDragEnd="OrderDragEnd"
           :TatieOrderNew="TatieOrderNew"
           :TatieOrderChange="TatieOrderChange"
           :TatieOrderDel="TatieOrderDel"

@@ -13,11 +13,13 @@ const props = defineProps<{
   createProfileData: (copyUuid: boolean) => Promise<string>
   subTextStringList: { [key: string]: { val: string; active: boolean } }
   useSubText: boolean
+  dragStartIndex: number
   checkIntoTatieOrderList: (uuid: string) => boolean
   searchKyaraEvent: (text: string) => void
   CopyKyaraSetting: (dataType: dataTextType, uuid: string) => void
   KyaraListOrderDragStart: (index: number) => void
   KyaraListOrderDragMove: (index: number) => void
+  KyaraListOrderDragEnd: () => void
 }>()
 import { watch, ref, nextTick } from 'vue'
 import { outSettingType, dataTextType, editKyaraNameType } from '@/type/data-type'
@@ -28,6 +30,7 @@ import SelectProfileList from '@/components/unit/SelectProfileList.vue'
 import SearchInputUnit from '@/components/unit/SearchInputUnit.vue'
 import SelectDisplayKyaraRightClickMenu from '@/components/accessories/SelectDisplayKyaraRightClickMenu.vue'
 import SelectSeidList from '@/components/unit/SelectSeidList.vue'
+import { MakeClassString } from '@/utils/analysisGeneral'
 
 const { yomAPI } = window
 
@@ -51,18 +54,6 @@ const selectAreaRef = ref<HTMLDivElement>()
 
 // selectProfileListRef を親コンポーネントから呼び出せるようにします
 defineExpose({ selectProfileListRef })
-
-// 選択中のボタンの場合は背景色を変更する
-// dateList[props.selectKyara].uuidが一致すれば色を変える。
-const actSet = (ltype: string): string => {
-  return (
-    'h-8 flex items-center justify-between mt-1 mx-1 p-1 border border-gray-600' +
-    ' ' +
-    (props.dateList[props.selectKyara]?.uuid === ltype
-      ? 'bg-blue-400 hover:bg-blue-500 hover:text-gray-200'
-      : 'bg-blue-200 hover:bg-blue-500 hover:text-gray-200')
-  )
-}
 
 // リストの各項目にrefを設定する
 const kyaraRefs = ref<HTMLDivElement[]>([])
@@ -250,10 +241,17 @@ watch(
         :draggable="true"
         @dragstart="() => KyaraListOrderDragStart(index)"
         @dragenter="() => KyaraListOrderDragMove(index)"
+        @dragend="() => KyaraListOrderDragEnd()"
         @dragover.prevent
       >
         <div
-          :class="actSet(item.uuid)"
+          :class="
+            MakeClassString(
+              'mx-1 mt-1 flex h-8 items-center justify-between border border-gray-600 p-1 hover:bg-blue-500 hover:text-gray-200',
+              selectKyara === index ? 'bg-blue-400' : 'bg-blue-200',
+              dragStartIndex === index ? 'opacity-60' : '',
+            )
+          "
           @click="setDataTypeClick(index, item)"
           v-if="
             settype === item.dataType &&
