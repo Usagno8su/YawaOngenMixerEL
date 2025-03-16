@@ -10,8 +10,8 @@ import {
   tatieSituationType,
 } from '../type/data-type'
 import { ref } from 'vue'
-import { createNewDateList, createVoiceFileEncodeSetting } from './analysisData'
-import { createDefoFileListTatie, NowTimeData, resizeKyaraDateDisplay } from './analysisGeneral'
+import { createVoiceFileEncodeSetting, getPlatform } from './analysisData'
+import { createDefoFileListTatie, NowTimeData, resizeKyaraDateDisplay, createNewDateList } from './analysisGeneral'
 import { DEFAULT_KYARA_TATIE_UUID } from '../data/data'
 const { yomAPI } = window
 
@@ -92,6 +92,7 @@ export const analysisFileName = (
         // 新規に出力する。
         ansList.value.push(
           createNewDateList(
+            getPlatform(),
             'seid',
             yomAPI.getUUID(),
             kyaraName,
@@ -103,7 +104,6 @@ export const analysisFileName = (
             voiceID,
             undefined,
             true,
-            yomAPI.getPlatformData(),
           ),
         )
       }

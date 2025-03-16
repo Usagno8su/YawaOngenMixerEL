@@ -11,7 +11,6 @@ import setMainInfo from '@/components/setMainInfo.vue'
 import setTatieOrder from '@/components/setTatieOrder.vue'
 import setKyaraList from '@/components/setKyaraList.vue'
 import type {
-  tatieSetting,
   beforeKyaraSelectType,
   selectedEditDataType,
   outSettingType,
@@ -30,8 +29,6 @@ import {
   enterEncodeVideoFile,
 } from '@/utils/analysisFile'
 import {
-  createNewDataID,
-  createNewDateList,
   SelectHigherUpIndexList,
   getGlobalSetting,
   loadProfile,
@@ -41,7 +38,7 @@ import {
   CreateCopyDateList,
 } from '@/utils/analysisData'
 import { DEFAULT_KYARA_SETTING_UUID } from '@/data/data'
-import { createDefoKyaraDateList } from '@/utils/analysisGeneral'
+import { createDefoKyaraDateList, createNewDateList } from '@/utils/analysisGeneral'
 import type { deleteDialogRefType } from 'src/components/accessories/deleteDialog.vue'
 import deleteDialog from '@/components/accessories/deleteDialog.vue'
 import DisplaySelectFileView from '@/components/accessories/DisplaySelectFileView.vue'
@@ -162,6 +159,7 @@ const addNewKyara = (dataType: dataTextType, kyaraName: string, kyaraStyle: stri
       console.log('追加')
       dateList.value.push(
         createNewDateList(
+          getPlatform(),
           dataType,
           yomAPI.getUUID(),
           kyaraName,
@@ -173,7 +171,6 @@ const addNewKyara = (dataType: dataTextType, kyaraName: string, kyaraStyle: stri
           undefined,
           undefined,
           undefined,
-          yomAPI.getPlatformData(),
         ),
       )
     } else {

@@ -1,7 +1,16 @@
 // メインプロセス・レンダラー側双方で使用するライブラリ。
 
-import { createNewDateList, createNewFileListTatie } from './analysisData'
-import { outSettingType, infoSettingType, fileListTatieType, kyaraProfileListType } from '../type/data-type'
+import { createNewFileListTatie } from './analysisData'
+import {
+  outSettingType,
+  infoSettingType,
+  fileListTatieType,
+  kyaraProfileListType,
+  dataTextType,
+  tatieSideType,
+  subAlignmentSideType,
+  tatieOrderListType,
+} from '../type/data-type'
 import {
   DEFAULT_KYARA_TATIE_UUID,
   DEFAULT_KYARA_PROFILE_NAME,
@@ -27,9 +36,155 @@ export const createDefoKyaraProfileList = (): kyaraProfileListType => {
   }
 }
 
+// dateListにpushする新しいデータを作成する
+// dataType が 'defo' の場合は tatie と subtitle の active を true にする。
+export const createNewDateList = (
+  platform: NodeJS.Platform,
+  dataType: dataTextType,
+  uuid: string,
+  name: string,
+  kyaraStyle: string,
+  tatie?: {
+    tatieUUID?: string
+    waitTatieUUID?: string
+    moviW?: number
+    moviH?: number
+    tatieConp?: boolean
+    tatieSide?: tatieSideType
+    tatieHpx?: number
+    tatiePwPs?: number
+    tatiePhPs?: number
+    fps?: number
+  },
+  subtitle?: {
+    subText?: boolean
+    fontsPath?: string
+    subAlignment?: subAlignmentSideType
+    subAutoRt?: boolean
+    subTextBord?: boolean
+    subBG?: boolean
+    subSize?: number
+    subTextSpaceSize?: number
+    subColor?: string
+    subOrdercr?: string
+    subBorderW?: number
+    subBgcolor?: string
+    subBgTr?: number
+    subTextUseVoiceFileName?: boolean
+    subChangeSta?: boolean
+    subSideSpaceSize?: number
+    nameTagStringDis?: boolean
+    nameTagString?: string
+    nameTagH?: number
+    nameTagW?: number
+  },
+  fileName?: string,
+  fileExtension?: string,
+  voiceID?: string,
+  fileTatieOrderList?: tatieOrderListType[],
+  fileActive?: boolean,
+): outSettingType => {
+  return {
+    dataType: dataType,
+    uuid: uuid,
+    name: name,
+    kyaraStyle: kyaraStyle,
+    tatie: {
+      tatieUUID: {
+        val: tatie.tatieUUID ?? DEFAULT_KYARA_TATIE_UUID,
+        active: tatie.tatieUUID !== undefined ? true : dataType === 'defo',
+      },
+      waitTatieUUID: {
+        val: tatie.waitTatieUUID ?? DEFAULT_KYARA_TATIE_UUID,
+        active: tatie.waitTatieUUID !== undefined ? true : dataType === 'defo',
+      },
+      moviW: { val: tatie.moviW ?? 1920, active: tatie.moviW !== undefined ? true : dataType === 'defo' },
+      moviH: { val: tatie.moviH ?? 1080, active: tatie.moviH !== undefined ? true : dataType === 'defo' },
+      tatieConp: { val: tatie.tatieConp ?? true, active: tatie.tatieConp !== undefined ? true : dataType === 'defo' },
+      tatieSide: {
+        val: tatie.tatieSide ?? 'SouthEast',
+        active: tatie.tatieSide !== undefined ? true : dataType === 'defo',
+      },
+      tatieHpx: { val: tatie.tatieHpx ?? 65, active: tatie.tatieHpx !== undefined ? true : dataType === 'defo' },
+      tatiePwPs: { val: tatie.tatiePwPs ?? 0, active: tatie.tatiePwPs !== undefined ? true : dataType === 'defo' },
+      tatiePhPs: { val: tatie.tatiePhPs ?? 0, active: tatie.tatiePhPs !== undefined ? true : dataType === 'defo' },
+      fps: { val: tatie.fps ?? 6, active: tatie.fps !== undefined ? true : dataType === 'defo' },
+    },
+    subtitle: {
+      subText: { val: subtitle.subText ?? true, active: subtitle.subText !== undefined ? true : dataType === 'defo' },
+      fontsPath: {
+        val: subtitle.fontsPath ?? (platform === 'win32' ? DEFAULT_FONT_WIN : DEFAULT_FONT_LINUX),
+        active: subtitle.fontsPath !== undefined ? true : dataType === 'defo',
+      },
+      subAlignment: {
+        val: subtitle.subAlignment ?? 'Center',
+        active: subtitle.subAlignment !== undefined ? true : dataType === 'defo',
+      },
+      subAutoRt: {
+        val: subtitle.subAutoRt ?? true,
+        active: subtitle.subAutoRt !== undefined ? true : dataType === 'defo',
+      },
+      subTextBord: {
+        val: subtitle.subTextBord ?? true,
+        active: subtitle.subTextBord !== undefined ? true : dataType === 'defo',
+      },
+      subBG: { val: subtitle.subBG ?? false, active: subtitle.subBG !== undefined ? true : dataType === 'defo' },
+      subSize: { val: subtitle.subSize ?? 64, active: subtitle.subSize !== undefined ? true : dataType === 'defo' },
+      subTextSpaceSize: {
+        val: subtitle.subTextSpaceSize ?? 10,
+        active: subtitle.subTextSpaceSize !== undefined ? true : dataType === 'defo',
+      },
+      subColor: {
+        val: subtitle.subColor ?? '#ffffff',
+        active: subtitle.subColor !== undefined ? true : dataType === 'defo',
+      },
+      subOrdercr: {
+        val: subtitle.subOrdercr ?? '#000000',
+        active: subtitle.subOrdercr !== undefined ? true : dataType === 'defo',
+      },
+      subBorderW: {
+        val: subtitle.subBorderW ?? 2,
+        active: subtitle.subBorderW !== undefined ? true : dataType === 'defo',
+      },
+      subBgcolor: {
+        val: subtitle.subBgcolor ?? '#0000ff',
+        active: subtitle.subBgcolor !== undefined ? true : dataType === 'defo',
+      },
+      subBgTr: { val: subtitle.subBgTr ?? 0.7, active: subtitle.subBgTr !== undefined ? true : dataType === 'defo' },
+      subTextUseVoiceFileName: {
+        val: subtitle.subTextUseVoiceFileName ?? false,
+        active: subtitle.subTextUseVoiceFileName !== undefined ? true : dataType === 'defo',
+      },
+      subChangeSta: {
+        val: subtitle.subChangeSta ?? false,
+        active: subtitle.subChangeSta !== undefined ? true : dataType === 'defo',
+      },
+      subSideSpaceSize: {
+        val: subtitle.subSideSpaceSize ?? 5,
+        active: subtitle.subSideSpaceSize !== undefined ? true : dataType === 'defo',
+      },
+      nameTagStringDis: {
+        val: subtitle.nameTagStringDis ?? false,
+        active: subtitle.nameTagStringDis !== undefined ? true : dataType === 'defo',
+      },
+      nameTagString: {
+        val: subtitle.nameTagString ?? '',
+        active: subtitle.nameTagString !== undefined ? true : dataType === 'defo',
+      },
+      nameTagH: { val: subtitle.nameTagH ?? 0, active: subtitle.nameTagH !== undefined ? true : dataType === 'defo' },
+      nameTagW: { val: subtitle.nameTagW ?? 0, active: subtitle.nameTagW !== undefined ? true : dataType === 'defo' },
+    },
+    fileName: fileName !== undefined ? fileName : '',
+    fileExtension: fileExtension !== undefined ? fileExtension : '',
+    voiceID: voiceID !== undefined ? voiceID : '',
+    fileTatieOrderList: { val: fileTatieOrderList ?? [], active: fileTatieOrderList !== undefined ? true : false },
+    fileActive: fileActive !== undefined ? fileActive : false,
+  }
+}
+
 // デフォルトのキャラ設定データを作成して返す
-export const createDefoKyaraDateList = (platform?: NodeJS.Platform): outSettingType => {
-  return createNewDateList('defo', DEFAULT_KYARA_SETTING_UUID, 'デフォルト', undefined, {}, {})
+export const createDefoKyaraDateList = (platform: NodeJS.Platform): outSettingType => {
+  return createNewDateList(platform, 'defo', DEFAULT_KYARA_SETTING_UUID, 'デフォルト', undefined, {}, {})
 }
 
 // デフォルトのキャラUUIDリストデータを作成して返す

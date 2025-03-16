@@ -23,21 +23,21 @@ const props = defineProps<{
 }>()
 import { watch, ref, nextTick } from 'vue'
 import { outSettingType, dataTextType, editKyaraNameType } from '@/type/data-type'
-import { checkSameValues, FindAllString, createNewDateList } from '@/utils/analysisData'
+import { checkSameValues, FindAllString, getPlatform } from '@/utils/analysisData'
 import AccEditKyaraName from '@/components/accessories/AccEditKyaraName.vue'
 import MaterialIcons from '@/components/accessories/icons/MaterialIcons.vue'
 import SelectProfileList from '@/components/unit/SelectProfileList.vue'
 import SearchInputUnit from '@/components/unit/SearchInputUnit.vue'
 import SelectDisplayKyaraRightClickMenu from '@/components/accessories/SelectDisplayKyaraRightClickMenu.vue'
 import SelectSeidList from '@/components/unit/SelectSeidList.vue'
-import { MakeClassString } from '@/utils/analysisGeneral'
+import { MakeClassString, createNewDateList } from '@/utils/analysisGeneral'
 
 const { yomAPI } = window
 
 const isNewOpen = ref<boolean>(false)
 const isEditOpen = ref<string | boolean>(null)
 const isMenuOpen = ref<boolean>(false)
-const editKyaraName = ref<outSettingType>(createNewDateList(undefined, undefined, '', '', {}, {}))
+const editKyaraName = ref<outSettingType>(createNewDateList(getPlatform(), undefined, undefined, '', '', {}, {}))
 const editBeforeKyaraNameType = ref<editKyaraNameType>({
   name: undefined,
   kyaraStyle: undefined,

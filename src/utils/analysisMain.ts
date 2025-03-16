@@ -8,6 +8,7 @@ import {
   createDefoFileListTatie,
   createDefoKyaraProfileList,
   NowTimeData,
+  createNewDateList,
 } from './analysisGeneral'
 import { ref } from 'vue'
 import { createHash, randomUUID } from 'crypto'
@@ -19,7 +20,6 @@ import {
   globalSettingExportType,
   globalSettingType,
   kyaraProfileListExportType,
-  kyaraProfileListType,
   pathStatusType,
   globalSettingExportTempType,
   globalSettingExportV021Type,
@@ -29,12 +29,11 @@ import {
   tatieSituationType,
 } from '../type/data-type'
 import { DEFAULT_KYARA_PROFILE_NAME, DEFAULT_KYARA_TATIE_UUID } from '../data/data'
-import { createNewDateList } from './analysisData'
 import { createComImg } from './comExec/comIMG'
 import { createImgFile, createMoviFile, enterEncodeSmallTatie, imgCompositeFile } from './comExec/comEnter'
 import { createComMovi } from './comExec/comMOVI'
 import { app, dialog } from 'electron'
-import path, { resolve } from 'path'
+import path from 'path'
 import fs from 'fs'
 
 // 作業用の一時ファイルを設置するディレクトリを作成する。
@@ -206,6 +205,7 @@ export const initializationSetting = (): profileKyaraExportType => {
     // キャラ名の設定
     outData.value.push(
       createNewDateList(
+        process.platform,
         'kyara',
         makeUUID(),
         e.kyaraName,
@@ -217,7 +217,6 @@ export const initializationSetting = (): profileKyaraExportType => {
         '',
         undefined,
         false,
-        process.platform,
       ),
     )
 
@@ -226,6 +225,7 @@ export const initializationSetting = (): profileKyaraExportType => {
       e.kyaraStyle.map((ekyaraStyle) =>
         outData.value.push(
           createNewDateList(
+            process.platform,
             'kyast',
             makeUUID(),
             e.kyaraName,
@@ -237,7 +237,6 @@ export const initializationSetting = (): profileKyaraExportType => {
             '',
             undefined,
             false,
-            process.platform,
           ),
         ),
       )
