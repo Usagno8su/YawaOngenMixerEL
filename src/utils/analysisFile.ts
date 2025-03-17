@@ -10,8 +10,8 @@ import {
   tatieSituationType,
 } from '../type/data-type'
 import { ref } from 'vue'
-import { createNewDateList, createVoiceFileEncodeSetting } from './analysisData'
-import { createDefoFileListTatie, NowTimeData, resizeKyaraDateDisplay } from './analysisGeneral'
+import { createVoiceFileEncodeSetting, getPlatform } from './analysisData'
+import { createDefoFileListTatie, NowTimeData, resizeKyaraDateDisplay, createNewDateList } from './analysisGeneral'
 import { DEFAULT_KYARA_TATIE_UUID } from '../data/data'
 const { yomAPI } = window
 
@@ -92,6 +92,7 @@ export const analysisFileName = (
         // 新規に出力する。
         ansList.value.push(
           createNewDateList(
+            getPlatform(),
             'seid',
             yomAPI.getUUID(),
             kyaraName,
@@ -103,7 +104,6 @@ export const analysisFileName = (
             voiceID,
             undefined,
             true,
-            yomAPI.getPlatformData(),
           ),
         )
       }
@@ -253,12 +253,19 @@ export const makeTatiePicEncodeList = (
       ? resizeKyaraDateDisplay(createVoiceFileEncodeSetting(selectKyara, dateList), size)
       : undefined
 
+  // seidキャラ設定のfileTatieOrderListを使用するか判断する
+  // true ならfileTatieOrderList、falesならプロファイルのtatieOrderListとなる
+  const useTatieOrderList: tatieOrderListType[] =
+    dateList[selectKyara]?.fileTatieOrderList.active === true
+      ? dateList[selectKyara].fileTatieOrderList.val
+      : tatieOrderList
+
   // データ作成の実施
   if (settype === 'tatieOrder' || settype === 'seid') {
     // seid のときに、selectKyaraのキャラがencodeListに入っているか確認する数値
     let chkSelectKyara = -1
 
-    const encodeList = tatieOrderList.map((e) => {
+    const encodeList = useTatieOrderList.map((e) => {
       // dateListに一致するものを探し、立ち絵の設定をencodeListに入れる。
 
       const ans = dateList.findIndex((f) => e.dataType + e.settingUUID === f.dataType + f.uuid)

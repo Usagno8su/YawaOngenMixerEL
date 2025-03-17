@@ -11,7 +11,6 @@ import setMainInfo from '@/components/setMainInfo.vue'
 import setTatieOrder from '@/components/setTatieOrder.vue'
 import setKyaraList from '@/components/setKyaraList.vue'
 import type {
-  tatieSetting,
   beforeKyaraSelectType,
   selectedEditDataType,
   outSettingType,
@@ -30,8 +29,6 @@ import {
   enterEncodeVideoFile,
 } from '@/utils/analysisFile'
 import {
-  createNewDataID,
-  createNewDateList,
   SelectHigherUpIndexList,
   getGlobalSetting,
   loadProfile,
@@ -41,7 +38,7 @@ import {
   CreateCopyDateList,
 } from '@/utils/analysisData'
 import { DEFAULT_KYARA_SETTING_UUID } from '@/data/data'
-import { createDefoKyaraDateList } from '@/utils/analysisGeneral'
+import { createDefoKyaraDateList, createNewDateList } from '@/utils/analysisGeneral'
 import type { deleteDialogRefType } from 'src/components/accessories/deleteDialog.vue'
 import deleteDialog from '@/components/accessories/deleteDialog.vue'
 import DisplaySelectFileView from '@/components/accessories/DisplaySelectFileView.vue'
@@ -162,6 +159,7 @@ const addNewKyara = (dataType: dataTextType, kyaraName: string, kyaraStyle: stri
       console.log('追加')
       dateList.value.push(
         createNewDateList(
+          getPlatform(),
           dataType,
           yomAPI.getUUID(),
           kyaraName,
@@ -173,7 +171,6 @@ const addNewKyara = (dataType: dataTextType, kyaraName: string, kyaraStyle: stri
           undefined,
           undefined,
           undefined,
-          yomAPI.getPlatformData(),
         ),
       )
     } else {
@@ -428,10 +425,15 @@ const searchKyaraEvent = (text: string) => {
   console.log('searchKyaraString: ' + searchKyaraString.value)
 }
 
-// キャラ設定の表示順をマウスで入れ替えるため、
+// 表示順をマウスで入れ替えるため、
 // 移動開始時の数値を保存する
-const KyaraListOrderDragStart = (index: number) => {
+const OrderDragStart = (index: number) => {
   dragStartIndex.value = index
+}
+
+// 入れ替えを終了する。
+const OrderDragEnd = () => {
+  dragStartIndex.value = -1
 }
 
 // キャラ設定の順番を入れ替える
@@ -443,6 +445,7 @@ const KyaraListOrderDragMove = (index: number) => {
     const moveItem = dateList.value.splice(dragStartIndex.value, 1)[0]
     dateList.value.splice(index, 0, moveItem)
     dragStartIndex.value = index
+    selectKyara.value = index // キャラ選択も追従する
   }
 }
 
@@ -458,12 +461,6 @@ const selectFileTatieOrderSetting = (): void => {
   }
 }
 
-// 立ち絵の表示順をマウスで入れ替えるため、
-// 移動開始時の数値を保存する
-const TatieOrderDragStart = (index: number) => {
-  dragStartIndex.value = index
-}
-
 // 入れ替えがあった場合に、立ち絵の順番を入れ替える。
 // 立ち絵の変換サンプルの表示は別途更新される。
 const TatieOrderDragMove = (index: number) => {
@@ -475,11 +472,6 @@ const TatieOrderDragMove = (index: number) => {
     editTatieOrderList.value.splice(index, 0, moveItem)
     dragStartIndex.value = index
   }
-}
-
-// 入れ替えを終了する。
-const TatieOrderDragEnd = () => {
-  dragStartIndex.value = -1
 }
 
 // 立ち絵順序の設定で、表示する立ち絵を追加する。
@@ -766,11 +758,13 @@ watch(
         :createProfileData="createProfileData"
         :subTextStringList="subTextStringList"
         :useSubText="globalSetting.useSubText"
+        :dragStartIndex="dragStartIndex"
         :checkIntoTatieOrderList="(uuid: string) => checkIntoTatieOrderList(uuid)"
         :searchKyaraEvent="searchKyaraEvent"
         :CopyKyaraSetting="CopyKyaraSetting"
-        :KyaraListOrderDragStart="(index: number) => KyaraListOrderDragStart(index)"
+        :KyaraListOrderDragStart="(index: number) => OrderDragStart(index)"
         :KyaraListOrderDragMove="(index: number) => KyaraListOrderDragMove(index)"
+        :KyaraListOrderDragEnd="() => OrderDragEnd()"
         ref="setKyaraListRef"
       />
       <!-- キャラ設定プロファイルの追加ボタンは、defoでのみ表示 -->
@@ -863,9 +857,9 @@ watch(
           :subTextStringList="subTextStringList"
           :useSubText="globalSetting.useSubText"
           :dragStartIndex="dragStartIndex"
-          :TatieOrderDragStart="TatieOrderDragStart"
+          :TatieOrderDragStart="OrderDragStart"
           :TatieOrderDragMove="TatieOrderDragMove"
-          :TatieOrderDragEnd="TatieOrderDragEnd"
+          :TatieOrderDragEnd="OrderDragEnd"
           :TatieOrderNew="TatieOrderNew"
           :TatieOrderChange="TatieOrderChange"
           :TatieOrderDel="TatieOrderDel"
