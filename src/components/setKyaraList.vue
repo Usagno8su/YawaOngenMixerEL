@@ -17,6 +17,7 @@ const props = defineProps<{
   checkIntoTatieOrderList: (uuid: string) => boolean
   searchKyaraEvent: (text: string) => void
   CopyKyaraSetting: (dataType: dataTextType, uuid: string) => void
+  dragChangeIndex: number
   KyaraListOrderDragStart: (index: number) => void
   KyaraListOrderDragMove: (index: number) => void
   KyaraListOrderDragEnd: () => void
@@ -244,6 +245,7 @@ watch(
         @dragend="() => KyaraListOrderDragEnd()"
         @dragover.prevent
       >
+        <div v-if="dragChangeIndex === index" class="h-5 w-5"></div>
         <div
           :class="
             MakeClassString(
@@ -314,8 +316,10 @@ watch(
           :dateList="dateList"
           :settype="settype"
           :selectKyara="selectKyara"
+          :dragChangeIndex="dragChangeIndex"
           :KyaraListOrderDragStart="(index: number) => KyaraListOrderDragStart(index)"
           :KyaraListOrderDragMove="(index: number) => KyaraListOrderDragMove(index)"
+          :KyaraListOrderDragEnd="() => KyaraListOrderDragEnd()"
           :setDataTypeClick="(index: number, item: outSettingType) => setDataTypeClick(index, item)"
           :subTextStringList="subTextStringList"
           :useSubText="useSubText"

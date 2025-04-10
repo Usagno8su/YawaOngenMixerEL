@@ -6,8 +6,10 @@ const props = defineProps<{
   dateList: outSettingType[]
   settype: dataTextType
   selectKyara: number
+  dragChangeIndex: number
   KyaraListOrderDragStart: (index: number) => void
   KyaraListOrderDragMove: (index: number) => void
+  KyaraListOrderDragEnd: () => void
   setDataTypeClick: (index: number, item: outSettingType) => void
   useSubText: boolean
   subTextStringList: { [key: string]: { val: string; active: boolean } }
@@ -28,8 +30,10 @@ import { MakeClassString } from '@/utils/analysisGeneral'
       :draggable="true"
       @dragstart="() => KyaraListOrderDragStart(index)"
       @dragenter="() => KyaraListOrderDragMove(index)"
+      @dragend="() => KyaraListOrderDragEnd()"
       @dragover.prevent
     >
+      <div v-if="dragChangeIndex === index" class="h-5 w-5"></div>
       <div
         :class="
           MakeClassString(

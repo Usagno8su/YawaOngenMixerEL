@@ -431,22 +431,34 @@ const OrderDragStart = (index: number) => {
   dragStartIndex.value = index
 }
 
-// 入れ替えを終了する。
-const OrderDragEnd = () => {
-  dragStartIndex.value = -1
+// キャラ設定の入れ替え予定地点を記録する。
+const KyaraListOrderDragMove = (index: number) => {
+  if (index !== dragStartIndex.value) {
+    dragChangeIndex.value = index
+  } else if (dragChangeIndex.value !== -1) {
+    dragChangeIndex.value = -1
+  }
 }
 
-// キャラ設定の順番を入れ替える
-const KyaraListOrderDragMove = (index: number) => {
+// キャラ設定の順番を入れ替えて、処理を終了する。
+const KyaraListOrderDragEnd = () => {
   // もし、移動されていた場合は移動対象の配列要素を取り出して、
   // indexで指定された場所に差し込む形で追加する。
-  // 処理が終わったら dragStartIndex.value と index の値を一致させて処理が無駄に実行されないようにする。
-  if (index !== dragStartIndex.value) {
+
+  // 元あった場所より後ろの場合は、自分がいなくなることで値が１個ずれる。
+  const changeIndex = dragChangeIndex.value > dragStartIndex.value ? dragChangeIndex.value - 1 : dragChangeIndex.value
+
+  // 値が移動している場合。
+  if (dragChangeIndex.value !== -1 && changeIndex !== dragStartIndex.value) {
+    // 入れ替える
     const moveItem = dateList.value.splice(dragStartIndex.value, 1)[0]
-    dateList.value.splice(index, 0, moveItem)
-    dragStartIndex.value = index
-    selectKyara.value = index // キャラ選択も追従する
+    dateList.value.splice(changeIndex, 0, moveItem)
+    selectKyara.value = changeIndex // キャラ選択も追従する
   }
+
+  // 値を初期化
+  dragStartIndex.value = -1
+  dragChangeIndex.value = -1
 }
 
 // seidキャラ設定のfileTatieOrderListを子コンポーネントに渡すか判断する
