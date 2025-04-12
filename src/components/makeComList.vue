@@ -114,6 +114,8 @@ const setKyaraListRef = ref(null)
 // 移動開始時の数値を保存する変数
 const dragStartIndex = ref<number>(-1)
 
+const dragChangeIndex = ref<number>(-1)
+
 const refEnterEncodeTatie = ref<InstanceType<typeof DisplaySettingSampleView> | null>(null)
 
 // エンコードダイアログを閉じる
@@ -431,22 +433,34 @@ const OrderDragStart = (index: number) => {
   dragStartIndex.value = index
 }
 
-// 入れ替えを終了する。
-const OrderDragEnd = () => {
-  dragStartIndex.value = -1
+// キャラ設定の入れ替え予定地点を記録する。
+const KyaraListOrderDragMove = (index: number) => {
+  if (index !== dragStartIndex.value) {
+    dragChangeIndex.value = index
+  } else if (dragChangeIndex.value !== -1) {
+    dragChangeIndex.value = -1
+  }
 }
 
-// キャラ設定の順番を入れ替える
-const KyaraListOrderDragMove = (index: number) => {
+// キャラ設定の順番を入れ替えて、処理を終了する。
+const KyaraListOrderDragEnd = () => {
   // もし、移動されていた場合は移動対象の配列要素を取り出して、
   // indexで指定された場所に差し込む形で追加する。
-  // 処理が終わったら dragStartIndex.value と index の値を一致させて処理が無駄に実行されないようにする。
-  if (index !== dragStartIndex.value) {
+
+  // 元あった場所より後ろの場合は、自分がいなくなることで値が１個ずれる。
+  const changeIndex = dragChangeIndex.value > dragStartIndex.value ? dragChangeIndex.value - 1 : dragChangeIndex.value
+
+  // 値が移動している場合。
+  if (dragChangeIndex.value !== -1 && changeIndex !== dragStartIndex.value) {
+    // 入れ替える
     const moveItem = dateList.value.splice(dragStartIndex.value, 1)[0]
-    dateList.value.splice(index, 0, moveItem)
-    dragStartIndex.value = index
-    selectKyara.value = index // キャラ選択も追従する
+    dateList.value.splice(changeIndex, 0, moveItem)
+    selectKyara.value = changeIndex // キャラ選択も追従する
   }
+
+  // 値を初期化
+  dragStartIndex.value = -1
+  dragChangeIndex.value = -1
 }
 
 // seidキャラ設定のfileTatieOrderListを子コンポーネントに渡すか判断する
@@ -461,17 +475,34 @@ const selectFileTatieOrderSetting = (): void => {
   }
 }
 
-// 入れ替えがあった場合に、立ち絵の順番を入れ替える。
-// 立ち絵の変換サンプルの表示は別途更新される。
+// 立ち絵の順番の入れ替え予定地点を記録する。
 const TatieOrderDragMove = (index: number) => {
+  if (index !== dragStartIndex.value) {
+    dragChangeIndex.value = index
+  } else if (dragChangeIndex.value !== -1) {
+    dragChangeIndex.value = -1
+  }
+}
+
+// 入れ替えがあった場合に、立ち絵の順番を入れ替えて、処理を終了する。
+// 立ち絵の変換サンプルの表示は別途更新される。
+const TatieOrderDragEnd = () => {
   // もし、移動されていた場合は移動対象の配列要素を取り出して、
   // index で指定された場所に差し込む形で追加する。
-  // 処理が終わったら dragStartIndex.value と index の値を一致させて処理が無駄に実行されないようにする。
-  if (index !== dragStartIndex.value) {
+
+  // 元あった場所より後ろの場合は、自分がいなくなることで値が１個ずれる。
+  const changeIndex = dragChangeIndex.value > dragStartIndex.value ? dragChangeIndex.value - 1 : dragChangeIndex.value
+
+  // 値が移動している場合。
+  if (dragChangeIndex.value !== -1 && changeIndex !== dragStartIndex.value) {
+    // 入れ替える
     const moveItem = editTatieOrderList.value.splice(dragStartIndex.value, 1)[0]
-    editTatieOrderList.value.splice(index, 0, moveItem)
-    dragStartIndex.value = index
+    editTatieOrderList.value.splice(changeIndex, 0, moveItem)
   }
+
+  // 値を初期化
+  dragStartIndex.value = -1
+  dragChangeIndex.value = -1
 }
 
 // 立ち絵順序の設定で、表示する立ち絵を追加する。
@@ -762,9 +793,10 @@ watch(
         :checkIntoTatieOrderList="(uuid: string) => checkIntoTatieOrderList(uuid)"
         :searchKyaraEvent="searchKyaraEvent"
         :CopyKyaraSetting="CopyKyaraSetting"
+        :dragChangeIndex="dragChangeIndex"
         :KyaraListOrderDragStart="(index: number) => OrderDragStart(index)"
         :KyaraListOrderDragMove="(index: number) => KyaraListOrderDragMove(index)"
-        :KyaraListOrderDragEnd="() => OrderDragEnd()"
+        :KyaraListOrderDragEnd="() => KyaraListOrderDragEnd()"
         ref="setKyaraListRef"
       />
       <!-- キャラ設定プロファイルの追加ボタンは、defoでのみ表示 -->
@@ -857,13 +889,14 @@ watch(
           :subTextStringList="subTextStringList"
           :useSubText="globalSetting.useSubText"
           :dragStartIndex="dragStartIndex"
-          :TatieOrderDragStart="OrderDragStart"
-          :TatieOrderDragMove="TatieOrderDragMove"
-          :TatieOrderDragEnd="OrderDragEnd"
-          :TatieOrderNew="TatieOrderNew"
-          :TatieOrderChange="TatieOrderChange"
-          :TatieOrderDel="TatieOrderDel"
-          :TatieOrderChangeSituation="TatieOrderChangeSituation"
+          :dragChangeIndex="dragChangeIndex"
+          :TatieOrderDragStart="(index: number) => OrderDragStart(index)"
+          :TatieOrderDragMove="(index: number) => TatieOrderDragMove(index)"
+          :TatieOrderDragEnd="() => TatieOrderDragEnd()"
+          :TatieOrderNew="() => TatieOrderNew()"
+          :TatieOrderChange="(uuid: string, outSetting: outSettingType) => TatieOrderChange(uuid, outSetting)"
+          :TatieOrderDel="(index: number) => TatieOrderDel(index)"
+          :TatieOrderChangeSituation="(index: number) => TatieOrderChangeSituation(index)"
           :CopyTatieOrderListToFileList="(index: number) => CopyTatieOrderListToFileList(index)"
           v-else-if="settype === 'tatieOrder' || (editData === 'tatieOrder' && dateList[selectKyara] !== undefined)"
         />

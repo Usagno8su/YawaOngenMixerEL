@@ -11,9 +11,10 @@ const props = defineProps<{
   subTextStringList: { [key: string]: { val: string; active: boolean } }
   useSubText: boolean
   dragStartIndex: number
+  dragChangeIndex: number
   TatieOrderDragStart: (index: number) => void
   TatieOrderDragMove: (index: number) => void
-  TatieOrderDragEnd: (index: number) => void
+  TatieOrderDragEnd: () => void
   TatieOrderNew: () => void
   TatieOrderChange: (uuid: string, outSetting: outSettingType) => void
   TatieOrderDel: (index: number) => void
@@ -59,49 +60,53 @@ const OpenSelectDisplayTatieOrderKyara = (uuid: string, name: string, style?: st
   <div class="h-full w-full">
     <div class="relative flex h-5/6 w-full flex-col items-center overflow-y-scroll border border-gray-500 px-2 py-1">
       <div
-        :class="
-          MakeClassString(
-            'mt-1 flex w-[580px] justify-between rounded-xl border border-black',
-            dragStartIndex === index ? 'bg-sky-300 opacity-60' : 'bg-sky-100',
-          )
-        "
         v-for="(item, index) in tatieOrderList"
         v-bind:key="item.uuid"
         :draggable="true"
         @dragstart="() => TatieOrderDragStart(index)"
         @dragenter="() => TatieOrderDragMove(index)"
-        @dragend="() => TatieOrderDragEnd(index)"
+        @dragend="() => TatieOrderDragEnd()"
         @dragover.prevent
       >
-        <div class="flex truncate">
-          <div class="my-1 ml-2 rounded-3xl border border-black px-2">{{ index }}</div>
-          <button
-            :class="
-              MakeClassString(
-                'my-1 ml-1 flex items-center rounded-3xl border border-black px-2',
-                typeColor[item.dataType].bg,
-              )
-            "
-            :title="item.name + (item.dataType === 'kyast' ? '（' + item.kyaraStyle + '）' : '')"
-            @click="() => OpenSelectDisplayTatieOrderKyara(item.uuid, item.name, item.kyaraStyle)"
-          >
-            <div class="max-w-52 truncate">{{ item.name }}</div>
-            <div class="max-w-40 truncate" v-if="item.dataType === 'kyast'">
-              {{ '（' + item.kyaraStyle + '）' }}
-            </div>
-          </button>
-          <MaterialIcons classString="w-5" icon="ArrowForward400024" />
-          <button
-            class="my-1 ml-1 rounded-3xl border border-black px-2"
-            @click="() => TatieOrderChangeSituation(index)"
-            title="クリックで設定変更します"
-          >
-            {{ item.tatieSituation === 'waitTatieUUID' ? '待機中' : '会話中' }}
+        <div v-if="dragChangeIndex === index" class="h-5 w-5"></div>
+        <div
+          :class="
+            MakeClassString(
+              'mt-1 flex w-[580px] justify-between rounded-xl border border-black',
+              dragStartIndex === index ? 'bg-sky-300 opacity-60' : 'bg-sky-100',
+            )
+          "
+        >
+          <div class="flex truncate">
+            <div class="my-1 ml-2 rounded-3xl border border-black px-2">{{ index }}</div>
+            <button
+              :class="
+                MakeClassString(
+                  'my-1 ml-1 flex items-center rounded-3xl border border-black px-2',
+                  typeColor[item.dataType].bg,
+                )
+              "
+              :title="item.name + (item.dataType === 'kyast' ? '（' + item.kyaraStyle + '）' : '')"
+              @click="() => OpenSelectDisplayTatieOrderKyara(item.uuid, item.name, item.kyaraStyle)"
+            >
+              <div class="max-w-52 truncate">{{ item.name }}</div>
+              <div class="max-w-40 truncate" v-if="item.dataType === 'kyast'">
+                {{ '（' + item.kyaraStyle + '）' }}
+              </div>
+            </button>
+            <MaterialIcons classString="w-5" icon="ArrowForward400024" />
+            <button
+              class="my-1 ml-1 rounded-3xl border border-black px-2"
+              @click="() => TatieOrderChangeSituation(index)"
+              title="クリックで設定変更します"
+            >
+              {{ item.tatieSituation === 'waitTatieUUID' ? '待機中' : '会話中' }}
+            </button>
+          </div>
+          <button @click="() => AskDelete(index)" title="リストから削除" class="h-9 w-9 p-1">
+            <MaterialIcons icon="Delete" />
           </button>
         </div>
-        <button @click="() => AskDelete(index)" title="リストから削除" class="h-9 w-9 p-1">
-          <MaterialIcons icon="Delete" />
-        </button>
       </div>
       <!-- 表示のみの場合は上にかぶせて操作できないようにする -->
       <div
