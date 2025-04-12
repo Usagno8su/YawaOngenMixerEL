@@ -39,7 +39,7 @@ export type subtitleSetting = {
 // 基本設定
 export type infoSettingType = {
   outDir: string // 動画出力先
-  outPicDir: string // 画面サイズの画像保存先
+  outPicDir: string // 画面サイズの画像保存先 0.3以降は未使用
   cutHR: boolean // 「-」を区切り文字として使うかどうか
 }
 
