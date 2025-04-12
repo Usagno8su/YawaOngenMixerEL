@@ -133,10 +133,10 @@ export const outInfoData = (): infoSettingType => {
     }
     if (!fs.existsSync(outMovieDir)) throw new Error('動画ディレクトリ作成失敗')
 
-    if (!fs.existsSync(outPicDir)) {
-      fs.mkdirSync(outPicDir)
-    }
-    if (!fs.existsSync(outPicDir)) throw new Error('画像ディレクトリ作成失敗')
+    // if (!fs.existsSync(outPicDir)) {
+    //   fs.mkdirSync(outPicDir)
+    // }
+    // if (!fs.existsSync(outPicDir)) throw new Error('画像ディレクトリ作成失敗')
 
     // 作成した情報を返す
 

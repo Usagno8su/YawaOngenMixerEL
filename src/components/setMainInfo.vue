@@ -31,21 +31,6 @@ const changeDir = async (path: string, title: string, changeInfo: 'outDir' | 'ou
         </button>
       </div>
     </div>
-    <!-- 画面サイズの画像保存先 -->
-    <div class="flex border-b-[1px] border-gray-400 py-2">
-      <div class="mr-2 flex w-full justify-between">
-        <div title="出力動画の画面サイズと同じ大きさに拡大した立ち絵画像ファイル" class="flex items-center">
-          画像保存先
-        </div>
-        <button
-          class="w-96 truncate rounded-md border border-gray-600 bg-sky-300 px-2 py-1 hover:bg-sky-500"
-          :title="infoData.outPicDir"
-          @click="changeDir(infoData.outPicDir, '画像保存先', 'outPicDir')"
-        >
-          {{ infoData.outPicDir }}
-        </button>
-      </div>
-    </div>
     <!-- 「-」を区切り文字として使うかどうか -->
     <div class="flex border-b-[1px] border-gray-400 py-2">
       <div class="mr-2 flex w-full justify-between">
