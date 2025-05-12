@@ -27,6 +27,7 @@ import {
   writeFileListKyaraData,
   readFileListTatieData,
   enterEncodeVideoFile,
+  TatieOrderListAddValue,
 } from '@/utils/analysisFile'
 import {
   SelectHigherUpIndexList,
@@ -527,33 +528,19 @@ const TatieOrderNew = () => {
 // 配列で複数の立ち絵順序の設定をできる。
 const TatieOrderAdd = (outSettingTtems: outSettingType[]) => {
   for (const item of outSettingTtems) {
-    editTatieOrderList.value.push({
-      uuid: yomAPI.getUUID(),
-      dataType: item.dataType,
-      settingUUID: item.uuid,
-      name: item.name,
-      kyaraStyle: item.dataType === 'kyast' ? item.kyaraStyle : undefined,
-      tatieSituation: item.tatie.waitTatieUUID.active ? 'waitTatieUUID' : 'tatieUUID',
-    })
+    editTatieOrderList.value.push(TatieOrderListAddValue(item))
   }
   // 立ち絵の変換サンプルを更新
   refEnterEncodeTatie.value?.enterEncodeTatie()
 }
 
 // editTatieOrderListに表示する立ち絵を、選択されたキャラに変更する。
-const TatieOrderChange = (uuid: string, outSetting: outSettingType) => {
+const TatieOrderChange = (uuid: string, outSettingTtem: outSettingType) => {
   const changeItemindex = editTatieOrderList.value.findIndex((e) => e.uuid === uuid)
 
   // 値が見つかったら変更
   if (changeItemindex !== -1) {
-    editTatieOrderList.value[changeItemindex] = {
-      uuid: uuid,
-      dataType: outSetting.dataType,
-      settingUUID: outSetting.uuid,
-      name: outSetting.name,
-      kyaraStyle: outSetting.dataType === 'kyast' ? outSetting.kyaraStyle : undefined,
-      tatieSituation: outSetting.tatie.waitTatieUUID.active ? 'waitTatieUUID' : 'tatieUUID',
-    }
+    editTatieOrderList.value[changeItemindex] = TatieOrderListAddValue(outSettingTtem, uuid)
   }
   // 立ち絵の変換サンプルを更新
   refEnterEncodeTatie.value?.enterEncodeTatie()
