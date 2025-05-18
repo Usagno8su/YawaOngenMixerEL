@@ -330,7 +330,19 @@ export const makeTatiePicEncodeList = (
           }
         }
       })
-      .flatMap((e) => e ?? []) // mapで出るundefinedを消す
+      .flatMap(
+        (
+          e,
+        ):
+          | {
+              outJsonData: string
+              tatieSituation: string
+            }
+          | undefined[] => {
+          // mapで出るundefinedを消す
+          return e ?? []
+        },
+      )
 
     console.log('encodeList: ' + encodeList.length)
 
