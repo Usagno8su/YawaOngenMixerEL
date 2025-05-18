@@ -236,14 +236,25 @@ export const enterEncodeTatiePicFile = async (
 
 // 立ち絵の表示順リスト（TatieOrderList）へ、outSettingTtemの内容を入れる。
 // 既存のリストの内容を変更する際には、TatieOrderListのuuidを引数で指定して、同じUUIDが入るようにする。
-export const TatieOrderListAddValue = (outSettingTtem: outSettingType, uuid?: string): tatieOrderListType => {
+// tatieSituation で会話中か待機中どちらの立ち絵を表示するか指定されているときはそれを指定、
+// 　ないときはwaitTatieUUIDが設定されていればそちらを優先する。
+export const TatieOrderListAddValue = (
+  outSettingTtem: outSettingType,
+  uuid?: string,
+  tatieSituation?: tatieSituationType,
+): tatieOrderListType => {
   return {
     uuid: uuid === undefined ? yomAPI.getUUID() : uuid,
     dataType: outSettingTtem.dataType,
     settingUUID: outSettingTtem.uuid,
     name: outSettingTtem.name,
     kyaraStyle: outSettingTtem.dataType === 'kyast' ? outSettingTtem.kyaraStyle : undefined,
-    tatieSituation: outSettingTtem.tatie.waitTatieUUID.active ? 'waitTatieUUID' : 'tatieUUID',
+    tatieSituation:
+      tatieSituation !== undefined
+        ? tatieSituation
+        : outSettingTtem.tatie.waitTatieUUID.active
+          ? 'waitTatieUUID'
+          : 'tatieUUID',
   }
 }
 
@@ -268,9 +279,7 @@ export const MakeEncodeTatieOrderList = (
       selectSetting?.name + (e.dataType === 'kyast' ? selectSetting?.kyaraStyle : '')
     ) {
       chkSelectKyara = 1
-      const tempAns = TatieOrderListAddValue(selectSetting, e.uuid)
-      tempAns.tatieSituation = tatieSituation
-      return tempAns
+      return TatieOrderListAddValue(selectSetting, e.uuid, tatieSituation)
     } else {
       return e
     }
@@ -278,7 +287,7 @@ export const MakeEncodeTatieOrderList = (
 
   // selectKyaraでキャラが指定されているときに、outListにselectSettingのキャラがない場合は追加する
   if (selectKyara !== undefined && chkSelectKyara !== 1) {
-    outList.unshift(TatieOrderListAddValue(selectSetting))
+    outList.unshift(TatieOrderListAddValue(selectSetting, undefined, tatieSituation))
   }
 
   return outList
