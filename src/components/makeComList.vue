@@ -28,6 +28,7 @@ import {
   readFileListTatieData,
   enterEncodeVideoFile,
   TatieOrderListAddValue,
+  MakeEncodeTatieOrderList,
 } from '@/utils/analysisFile'
 import {
   SelectHigherUpIndexList,
@@ -570,6 +571,39 @@ const CopyTatieOrderListToFileList = (index: number): void => {
   editTatieOrderList.value = dateList.value[index].fileTatieOrderList.val
 }
 
+// 指定した個別ファイル設定の一つ前のファイル設定から、立ち絵順序をコピーする。
+// 最初の要素で起動した場合は、プロファイルから取る。
+const CopyTatieOrderListToBeforeList = (index: number): void => {
+  // dateListを後ろから検索し、dataTypeがseidでindexの前にある要素を見つける。
+  const ans = dateList.value.findLastIndex((e, i) => e.dataType === 'seid' && i < index)
+
+  // indexで指定されたところより前に個別ファイル設定が存在すれば実行する
+  if (ans !== -1) {
+    // 対象の個別立ち絵順所設定が有効ですれば、それを使用する。
+    // また、ansで指定された個別ファイル設定のキャラは、会話中状態にする。
+
+    // 立ち絵順所設定をコピー
+    dateList.value[index].fileTatieOrderList.val = JSON.parse(
+      JSON.stringify(
+        MakeEncodeTatieOrderList(
+          'tatieUUID',
+          dateList.value,
+          dateList.value[ans].fileTatieOrderList.active
+            ? dateList.value[ans].fileTatieOrderList.val
+            : tatieOrderList.value,
+          ans,
+        ),
+      ),
+    )
+
+    // 個別立ち絵順序設定を有効にする。
+    selectFileTatieOrderSetting()
+  } else {
+    // ないときはプロファイル設定からコピーする
+    CopyTatieOrderListToFileList(index)
+  }
+}
+
 // editTatieOrderListのtatieSituation設定を変更する。
 const TatieOrderChangeSituation = (index: number) => {
   if (editTatieOrderList.value[index].tatieSituation === 'tatieUUID') {
@@ -885,6 +919,7 @@ watch(
           :TatieOrderDel="(index: number) => TatieOrderDel(index)"
           :TatieOrderChangeSituation="(index: number) => TatieOrderChangeSituation(index)"
           :CopyTatieOrderListToFileList="(index: number) => CopyTatieOrderListToFileList(index)"
+          :CopyTatieOrderListToBeforeList="(index: number) => CopyTatieOrderListToBeforeList(index)"
           v-else-if="settype === 'tatieOrder' || (editData === 'tatieOrder' && dateList[selectKyara] !== undefined)"
         />
         <setTatie
