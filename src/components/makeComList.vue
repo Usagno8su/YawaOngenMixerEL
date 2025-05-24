@@ -597,9 +597,11 @@ const CopyTatieOrderListToBeforeList = (index: number): void => {
     )
 
     // 個別立ち絵順序設定を有効にする。
+    dateList.value[index].fileTatieOrderList.active = true
     selectFileTatieOrderSetting()
   } else {
     // ないときはプロファイル設定からコピーする
+    dateList.value[index].fileTatieOrderList.active = true
     CopyTatieOrderListToFileList(index)
   }
 }
