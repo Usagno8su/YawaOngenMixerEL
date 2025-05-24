@@ -20,6 +20,7 @@ const props = defineProps<{
   TatieOrderDel: (index: number) => void
   TatieOrderChangeSituation: (index: number) => void
   CopyTatieOrderListToFileList: (index: number) => void
+  CopyTatieOrderListToBeforeList: (index: number) => void
 }>()
 // 複数の立ち絵の表示順番を設定します。
 
@@ -131,6 +132,14 @@ const OpenSelectDisplayTatieOrderKyara = (uuid: string, name: string, style?: st
           <MaterialIcons
             :icon="dateList[selectKyara].fileTatieOrderList.active ? 'RadioButtonChecked' : 'RadioButtonUnchecked'"
           />
+        </button>
+        <button
+          @click="CopyTatieOrderListToBeforeList(selectKyara)"
+          title="一つ前のファイル設定から、立ち絵順序をコピーします"
+          class="ml-2 h-9 w-9 rounded-md border border-black"
+          v-if="settype === 'seid'"
+        >
+          <MaterialIcons icon="InterpreterMode" />
         </button>
       </div>
       <div>

@@ -27,6 +27,8 @@ import {
   writeFileListKyaraData,
   readFileListTatieData,
   enterEncodeVideoFile,
+  TatieOrderListAddValue,
+  MakeEncodeTatieOrderList,
 } from '@/utils/analysisFile'
 import {
   SelectHigherUpIndexList,
@@ -527,33 +529,19 @@ const TatieOrderNew = () => {
 // 配列で複数の立ち絵順序の設定をできる。
 const TatieOrderAdd = (outSettingTtems: outSettingType[]) => {
   for (const item of outSettingTtems) {
-    editTatieOrderList.value.push({
-      uuid: yomAPI.getUUID(),
-      dataType: item.dataType,
-      settingUUID: item.uuid,
-      name: item.name,
-      kyaraStyle: item.dataType === 'kyast' ? item.kyaraStyle : undefined,
-      tatieSituation: item.tatie.waitTatieUUID.active ? 'waitTatieUUID' : 'tatieUUID',
-    })
+    editTatieOrderList.value.push(TatieOrderListAddValue(item))
   }
   // 立ち絵の変換サンプルを更新
   refEnterEncodeTatie.value?.enterEncodeTatie()
 }
 
 // editTatieOrderListに表示する立ち絵を、選択されたキャラに変更する。
-const TatieOrderChange = (uuid: string, outSetting: outSettingType) => {
+const TatieOrderChange = (uuid: string, outSettingTtem: outSettingType) => {
   const changeItemindex = editTatieOrderList.value.findIndex((e) => e.uuid === uuid)
 
   // 値が見つかったら変更
   if (changeItemindex !== -1) {
-    editTatieOrderList.value[changeItemindex] = {
-      uuid: uuid,
-      dataType: outSetting.dataType,
-      settingUUID: outSetting.uuid,
-      name: outSetting.name,
-      kyaraStyle: outSetting.dataType === 'kyast' ? outSetting.kyaraStyle : undefined,
-      tatieSituation: outSetting.tatie.waitTatieUUID.active ? 'waitTatieUUID' : 'tatieUUID',
-    }
+    editTatieOrderList.value[changeItemindex] = TatieOrderListAddValue(outSettingTtem, uuid)
   }
   // 立ち絵の変換サンプルを更新
   refEnterEncodeTatie.value?.enterEncodeTatie()
@@ -581,6 +569,41 @@ const checkIntoTatieOrderList = (uuid: string): boolean => {
 const CopyTatieOrderListToFileList = (index: number): void => {
   dateList.value[index].fileTatieOrderList.val = JSON.parse(JSON.stringify(tatieOrderList.value))
   editTatieOrderList.value = dateList.value[index].fileTatieOrderList.val
+}
+
+// 指定した個別ファイル設定の一つ前のファイル設定から、立ち絵順序をコピーする。
+// 最初の要素で起動した場合は、プロファイルから取る。
+const CopyTatieOrderListToBeforeList = (index: number): void => {
+  // dateListを後ろから検索し、dataTypeがseidでindexの前にある要素を見つける。
+  const ans = dateList.value.findLastIndex((e, i) => e.dataType === 'seid' && i < index)
+
+  // indexで指定されたところより前に個別ファイル設定が存在すれば実行する
+  if (ans !== -1) {
+    // 対象の個別立ち絵順所設定が有効ですれば、それを使用する。
+    // また、ansで指定された個別ファイル設定のキャラは、会話中状態にする。
+
+    // 立ち絵順所設定をコピー
+    dateList.value[index].fileTatieOrderList.val = JSON.parse(
+      JSON.stringify(
+        MakeEncodeTatieOrderList(
+          'tatieUUID',
+          dateList.value,
+          dateList.value[ans].fileTatieOrderList.active
+            ? dateList.value[ans].fileTatieOrderList.val
+            : tatieOrderList.value,
+          ans,
+        ),
+      ),
+    )
+
+    // 個別立ち絵順序設定を有効にする。
+    dateList.value[index].fileTatieOrderList.active = true
+    selectFileTatieOrderSetting()
+  } else {
+    // ないときはプロファイル設定からコピーする
+    dateList.value[index].fileTatieOrderList.active = true
+    CopyTatieOrderListToFileList(index)
+  }
 }
 
 // editTatieOrderListのtatieSituation設定を変更する。
@@ -898,6 +921,7 @@ watch(
           :TatieOrderDel="(index: number) => TatieOrderDel(index)"
           :TatieOrderChangeSituation="(index: number) => TatieOrderChangeSituation(index)"
           :CopyTatieOrderListToFileList="(index: number) => CopyTatieOrderListToFileList(index)"
+          :CopyTatieOrderListToBeforeList="(index: number) => CopyTatieOrderListToBeforeList(index)"
           v-else-if="settype === 'tatieOrder' || (editData === 'tatieOrder' && dateList[selectKyara] !== undefined)"
         />
         <setTatie
