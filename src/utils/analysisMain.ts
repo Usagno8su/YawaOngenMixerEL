@@ -730,7 +730,7 @@ export const loadKyaraProfileData = async (confPath: string): Promise<string> =>
   // 古い設定ファイルだった場合、必要な項目を追加します。
 
   // var 0.2 以下の場合
-  // waitTatieUUID と tatieOrderList がないので追加する
+  // waitTatieUUID と rotate と tatieOrderList がないので追加する
   await new Promise((resolve, reject) => {
     if (inputJsonData.softVer[0] <= 0 && inputJsonData.softVer[1] <= 2) {
       console.log('var 0.2 以下の場合')
@@ -759,6 +759,10 @@ export const loadKyaraProfileData = async (confPath: string): Promise<string> =>
                 ...item.tatie,
                 waitTatieUUID: {
                   val: DEFAULT_KYARA_TATIE_UUID,
+                  active: item.dataType === 'defo' ? true : false,
+                },
+                rotate: {
+                  val: 0,
                   active: item.dataType === 'defo' ? true : false,
                 },
               },
@@ -799,7 +803,7 @@ export const loadVoiceFileData = async (confPath: string): Promise<string> => {
   // 古い設定ファイルだった場合、必要な項目を追加します。
 
   // var 0.2 以下の場合
-  // waitTatieUUID と tatieOrderList がないので追加する
+  // waitTatieUUID と rotate と tatieOrderList がないので追加する
   await new Promise((resolve, reject) => {
     if (inputJsonData.softVer[0] <= 0 && inputJsonData.softVer[1] <= 2) {
       console.log('var 0.2 以下の場合')
@@ -826,6 +830,10 @@ export const loadVoiceFileData = async (confPath: string): Promise<string> => {
                 ...item.tatie,
                 waitTatieUUID: {
                   val: DEFAULT_KYARA_TATIE_UUID,
+                  active: item.dataType === 'defo' ? true : false,
+                },
+                rotate: {
+                  val: 0,
                   active: item.dataType === 'defo' ? true : false,
                 },
               },

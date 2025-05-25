@@ -54,6 +54,7 @@ export const createNewDateList = (
     tatieHpx?: number
     tatiePwPs?: number
     tatiePhPs?: number
+    rotate?: number
     fps?: number
   },
   subtitle?: {
@@ -108,6 +109,7 @@ export const createNewDateList = (
       tatieHpx: { val: tatie.tatieHpx ?? 65, active: tatie.tatieHpx !== undefined ? true : dataType === 'defo' },
       tatiePwPs: { val: tatie.tatiePwPs ?? 0, active: tatie.tatiePwPs !== undefined ? true : dataType === 'defo' },
       tatiePhPs: { val: tatie.tatiePhPs ?? 0, active: tatie.tatiePhPs !== undefined ? true : dataType === 'defo' },
+      rotate: { val: tatie.rotate ?? 0, active: tatie.rotate !== undefined ? true : dataType === 'defo' },
       fps: { val: tatie.fps ?? 6, active: tatie.fps !== undefined ? true : dataType === 'defo' },
     },
     subtitle: {
