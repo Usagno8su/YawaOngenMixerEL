@@ -60,7 +60,14 @@ export const createComImg = async (fileSetting: outSettingType): Promise<createC
     //
     // 立ち絵を画面の高さの何％にするか「 fileSetting.tatie.tatieHpx.val 」に指定されているので、それに合わせて高さを算出する。
     // 小数点以下は切り捨てる。
-    tatieResizeCom: ['-resize', `x${Math.floor((fileSetting.tatie.moviH.val / 100) * fileSetting.tatie.tatieHpx.val)}`],
+    tatieResizeCom: [
+      '-resize',
+      `x${Math.floor((fileSetting.tatie.moviH.val / 100) * fileSetting.tatie.tatieHpx.val)}`,
+      '-background',
+      'none',
+      '-rotate',
+      fileSetting.tatie.rotate.val.toString(),
+    ],
     //// 動画の画面サイズの透明な画像を生成するコマンドを作成
     // convert -size ${画像の幅}x${画像の高さ} xc:none 透明な画面サイズの出力ファイル（一時的）.png
     //

@@ -12,6 +12,7 @@ import EditDisplayTatieKyaraData from '@/components/accessories/EditDisplayTatie
 import EditDisplayTatiePicPathKyaraData from '@/components/accessories/EditDisplayTatiePicPathKyaraData.vue'
 import EditDisplayTatieCheckboxKyaraData from '@/components/accessories/EditDisplayTatieCheckboxKyaraData.vue'
 import EditDisplayTatieSideKyaraData from '@/components/accessories/EditDisplayTatieSideKyaraData.vue'
+import EditDisplayTatieKyaraRotate from '@/components/accessories/EditDisplayTatieKyaraRotate.vue'
 </script>
 
 <template>
@@ -91,6 +92,15 @@ import EditDisplayTatieSideKyaraData from '@/components/accessories/EditDisplayT
       tatieSetting="tatiePhPs"
       editName="立ち絵を縦移動(％)"
       titleName="「配置位置」で指定した場所から指定された分だけ縦移動させます"
+    />
+    <EditDisplayTatieKyaraRotate
+      :settype="settype"
+      :dateList="dateList"
+      :selectKyara="selectKyara"
+      :higherUpList="higherUpList"
+      tatieSetting="rotate"
+      editName="立ち絵の傾き"
+      titleName="指定した角度で立ち絵を表示します"
     />
     <EditDisplayTatieKyaraData
       :settype="settype"
