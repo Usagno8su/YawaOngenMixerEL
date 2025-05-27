@@ -9,6 +9,7 @@ export type tatieSetting = {
   tatieHpx: statusNumber // 立ち絵の高さ
   tatiePwPs: statusNumber // 立ち絵を横に移動
   tatiePhPs: statusNumber // 立ち絵を縦に移動
+  rotate: statusNumber // 立ち絵の傾き
   fps: statusNumber // フレームレート
 }
 
@@ -81,6 +82,7 @@ export type tatieSettingType =
   | 'tatieHpx'
   | 'tatiePwPs'
   | 'tatiePhPs'
+  | 'rotate'
   | 'fps'
 
 // 字幕の項目のタイプ
