@@ -3,7 +3,7 @@ import { VitePlugin } from '@electron-forge/plugin-vite';
 
 const config: ForgeConfig = {
   packagerConfig: {
-    icon: './public/YOM_logoV2_icon',
+    icon: './public/YOM-logo-v3',
   },
   rebuildConfig: {},
   makers: [
@@ -11,7 +11,7 @@ const config: ForgeConfig = {
       name: '@electron-forge/maker-deb',
       config: {
         options: {
-          icon: './public/YOM_logoV2_icon.png',
+          icon: './public/YOM-logo-v3.png',
         },
       },
     },
@@ -20,7 +20,7 @@ const config: ForgeConfig = {
       config:{
         authors: 'Usagi no asu',
         description: 'Yawa Ongen Mixer EL',
-        icon: './public/YOM_logoV2_icon',
+        icon: './public/YOM-logo-v3',
       },
       platforms:["win32"],
     },
