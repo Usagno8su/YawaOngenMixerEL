@@ -10,6 +10,7 @@ import {
   tatieSideType,
   subAlignmentSideType,
   tatieOrderListType,
+  tatieColorOption,
 } from '../type/data-type'
 import {
   DEFAULT_KYARA_TATIE_UUID,
@@ -55,6 +56,7 @@ export const createNewDateList = (
     tatiePwPs?: number
     tatiePhPs?: number
     rotate?: number
+    colorEdit?: tatieColorOption
     fps?: number
   },
   subtitle?: {
@@ -110,6 +112,16 @@ export const createNewDateList = (
       tatiePwPs: { val: tatie.tatiePwPs ?? 0, active: tatie.tatiePwPs !== undefined ? true : dataType === 'defo' },
       tatiePhPs: { val: tatie.tatiePhPs ?? 0, active: tatie.tatiePhPs !== undefined ? true : dataType === 'defo' },
       rotate: { val: tatie.rotate ?? 0, active: tatie.rotate !== undefined ? true : dataType === 'defo' },
+      colorEdit: {
+        val: tatie.colorEdit ?? {
+          selectStyle: 'default',
+          colorspaceOption: 'gray',
+          negateOption: '',
+          monochromeOption: '',
+          sepiaToneOption: 80,
+        },
+        active: tatie.colorEdit !== undefined ? true : dataType === 'defo',
+      },
       fps: { val: tatie.fps ?? 6, active: tatie.fps !== undefined ? true : dataType === 'defo' },
     },
     subtitle: {
