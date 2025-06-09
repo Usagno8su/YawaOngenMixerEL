@@ -694,9 +694,9 @@ export const loadGlobalSettingData = async (confPath: string): Promise<string> =
       // 追加したデータを書き込む
       const out = outSoftVersion()
       return JSON.stringify(
-        {
+        <globalSettingExportType>{
           exportStatus: out.exportStatus,
-          softVar: out.softVer,
+          softVer: out.softVer,
           globalSetting: {
             ...result,
             useSubText: true,
@@ -744,8 +744,8 @@ export const loadKyaraProfileData = async (confPath: string): Promise<string> =>
       const out = outSoftVersion()
       const tatieOrder: tatieOrderListType[] = []
       return JSON.stringify(
-        {
-          softVar: out.softVer,
+        <profileKyaraExportType>{
+          softVer: out.softVer,
           exportStatus: out.exportStatus,
           infoSetting: inputJsonData.infoSetting,
           tatieOrderList: tatieOrder,
@@ -827,8 +827,8 @@ export const loadVoiceFileData = async (confPath: string): Promise<string> => {
       const out = outSoftVersion()
       const tatieOrder: tatieOrderListType[] = []
       return JSON.stringify(
-        {
-          softVar: out.softVer,
+        <profileVoiceFileExportType>{
+          softVer: out.softVer,
           exportStatus: out.exportStatus,
           settingList: inputJsonData.settingList.map((item) => {
             return {
