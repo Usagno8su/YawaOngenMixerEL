@@ -138,13 +138,16 @@ export type tatieSideType =
 // 'sepiaTone': セピア調
 // 'default': 加工なし（デフォルト）
 export type tatieColorOption = {
-  selectStyle: 'colorspace' | 'negate' | 'monochrome' | 'sepiaTone' | 'default'
+  selectStyle: tatieColorSelectStyleType
   // 各項目のオプション設定
   colorspaceOption: string
   negateOption: string
   monochromeOption: string
   sepiaToneOption: number
 }
+
+// 立ち絵の色の加工スタイル
+export type tatieColorSelectStyleType = 'colorspace' | 'negate' | 'sepiaTone' | 'default'
 
 // 字幕の文字列をどちらに寄せるか（左 右 中央）
 export type subAlignmentSideType = 'Left' | 'Right' | 'Center' | null
