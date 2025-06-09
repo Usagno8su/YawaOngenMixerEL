@@ -1,6 +1,6 @@
 // このファイルはメイン側で利用するため、レンダラー側では読み込めない
 // ImageMagic関連のコマンドを記載
-import { outSettingType } from '../../type/data-type'
+import { outSettingType, tatieColorOption } from '../../type/data-type'
 
 // 設定情報を元にImageMagicに送付するコマンドを作成
 // これをメイン側に送って画像作成を行う
@@ -53,6 +53,20 @@ export const createComImg = async (fileSetting: outSettingType): Promise<createC
   }
   const tatieSignH = await selectTatieSignH()
 
+  // 立ち絵の色を加工する場合は内容を指定する
+  const TatieColorEdit = (colorEdit: tatieColorOption): string[] => {
+    switch (colorEdit.selectStyle) {
+      case 'colorspace':
+        return ['-colorspace', 'gray']
+      case 'negate':
+        return ['-negate']
+      case 'sepiaTone':
+        return ['-sepia-tone', colorEdit.sepiaToneOption.toString() + '%']
+      default:
+        return []
+    }
+  }
+
   // 結果を出力する
   return {
     //// 元の立ち絵を設定に応じて縮小するコマンドを作成
@@ -67,7 +81,7 @@ export const createComImg = async (fileSetting: outSettingType): Promise<createC
       'none',
       '-rotate',
       fileSetting.tatie.rotate.val.toString(),
-    ],
+    ].concat(TatieColorEdit(fileSetting.tatie.colorEdit.val)),
     //// 動画の画面サイズの透明な画像を生成するコマンドを作成
     // convert -size ${画像の幅}x${画像の高さ} xc:none 透明な画面サイズの出力ファイル（一時的）.png
     //

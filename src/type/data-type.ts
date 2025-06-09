@@ -10,6 +10,7 @@ export type tatieSetting = {
   tatiePwPs: statusNumber // 立ち絵を横に移動
   tatiePhPs: statusNumber // 立ち絵を縦に移動
   rotate: statusNumber // 立ち絵の傾き
+  colorEdit: statusColorEdit // 立ち絵の色を加工
   fps: statusNumber // フレームレート
 }
 
@@ -61,6 +62,10 @@ export type statustatieSide = {
   val: tatieSideType
   active: boolean
 }
+export type statusColorEdit = {
+  val: tatieColorOption
+  active: boolean
+}
 export type statusSubAlignment = {
   val: subAlignmentSideType
   active: boolean
@@ -83,6 +88,7 @@ export type tatieSettingType =
   | 'tatiePwPs'
   | 'tatiePhPs'
   | 'rotate'
+  | 'colorEdit'
   | 'fps'
 
 // 字幕の項目のタイプ
@@ -124,6 +130,24 @@ export type tatieSideType =
   | 'SouthWest'
   | 'South'
   | 'SouthEast'
+
+// 立ち絵画像の色を加工する設定
+// 'colorspace': グレースケール
+// 'negate': カラーの反転
+// 'monochrome': モノクロ2階調
+// 'sepiaTone': セピア調
+// 'default': 加工なし（デフォルト）
+export type tatieColorOption = {
+  selectStyle: tatieColorSelectStyleType
+  // 各項目のオプション設定
+  colorspaceOption: string
+  negateOption: string
+  monochromeOption: string
+  sepiaToneOption: number
+}
+
+// 立ち絵の色の加工スタイル
+export type tatieColorSelectStyleType = 'colorspace' | 'negate' | 'sepiaTone' | 'default'
 
 // 字幕の文字列をどちらに寄せるか（左 右 中央）
 export type subAlignmentSideType = 'Left' | 'Right' | 'Center' | null

@@ -181,6 +181,16 @@ export const createVoiceFileEncodeSetting = (index: number, dateList: outSetting
     tatiePwPs: { val: 0, active: false },
     tatiePhPs: { val: 0, active: false },
     rotate: { val: 0, active: false },
+    colorEdit: {
+      val: {
+        selectStyle: 'default',
+        colorspaceOption: 'gray',
+        negateOption: '',
+        monochromeOption: '',
+        sepiaToneOption: 80,
+      },
+      active: false,
+    },
     fps: { val: 0, active: false },
   })
   const outDataSubtitle = ref<subtitleSetting>({
@@ -256,6 +266,7 @@ export const createVoiceFileEncodeSetting = (index: number, dateList: outSetting
       tatiePwPs: outDataTatie.value.tatiePwPs.val,
       tatiePhPs: outDataTatie.value.tatiePhPs.val,
       rotate: outDataTatie.value.rotate.val,
+      colorEdit: outDataTatie.value.colorEdit.val,
       fps: outDataTatie.value.fps.val,
     },
     {
