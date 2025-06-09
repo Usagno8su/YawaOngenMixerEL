@@ -13,6 +13,7 @@ import EditDisplayTatiePicPathKyaraData from '@/components/accessories/EditDispl
 import EditDisplayTatieCheckboxKyaraData from '@/components/accessories/EditDisplayTatieCheckboxKyaraData.vue'
 import EditDisplayTatieSideKyaraData from '@/components/accessories/EditDisplayTatieSideKyaraData.vue'
 import EditDisplayTatieKyaraRotate from '@/components/accessories/EditDisplayTatieKyaraRotate.vue'
+import EditDisplayTatieKyaraColorEdit from '@/components/accessories/EditDisplayTatieKyaraColorEdit.vue'
 </script>
 
 <template>
@@ -46,6 +47,15 @@ import EditDisplayTatieKyaraRotate from '@/components/accessories/EditDisplayTat
       editName="画面の縦(px)"
       inputMin="0"
       titleName="作成する動画の縦の長さを指定します"
+    />
+    <EditDisplayTatieKyaraColorEdit
+      :settype="settype"
+      :dateList="dateList"
+      :selectKyara="selectKyara"
+      :higherUpList="higherUpList"
+      tatieSetting="colorEdit"
+      editName="カラー設定"
+      titleName="立ち絵の色を加工します"
     />
     <EditDisplayTatieCheckboxKyaraData
       :settype="settype"
