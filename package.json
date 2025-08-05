@@ -52,7 +52,7 @@
     "@electron-forge/plugin-vite": "^7.8.2",
     "@typescript-eslint/eslint-plugin": "^8.39.0",
     "@typescript-eslint/parser": "^8.39.0",
-    "@vitejs/plugin-vue": "^5.2.4",
+    "@vitejs/plugin-vue": "^6.0.1",
     "electron": "37.2.5",
     "eslint": "^9.32.0",
     "eslint-config-prettier": "^10.1.8",
