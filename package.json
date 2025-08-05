@@ -68,6 +68,6 @@
     "electron-squirrel-startup": "^1.0.1",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.11",
-    "vue": "^3.5.17"
+    "vue": "^3.5.18"
   }
 }
