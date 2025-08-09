@@ -23,9 +23,14 @@ const actset = (side: subAlignmentSideType): string => {
   <div class="fixed top-0 right-0 flex h-screen w-screen items-center justify-center" @click.self="clickClose">
     <!-- 画面外クリックでクローズ -->
   </div>
-  <div class="absolute flex" @click="clickClose">
-    <button :class="actset('Left')" @click="changeSubAlignmentSide('Left')">左寄せ</button>
-    <button :class="actset('Center')" @click="changeSubAlignmentSide('Center')">中央寄せ</button>
-    <button :class="actset('Right')" @click="changeSubAlignmentSide('Right')">右寄せ</button>
+  <div class="absolute border-2 border-gray-600 bg-blue-100" @click="clickClose">
+    <div class="flex justify-center">
+      <button :class="actset('topCnter')" @click="changeSubAlignmentSide('topCnter')">上部中央寄せ</button>
+    </div>
+    <div class="flex">
+      <button :class="actset('Left')" @click="changeSubAlignmentSide('Left')">左寄せ</button>
+      <button :class="actset('Center')" @click="changeSubAlignmentSide('Center')">中央寄せ</button>
+      <button :class="actset('Right')" @click="changeSubAlignmentSide('Right')">右寄せ</button>
+    </div>
   </div>
 </template>

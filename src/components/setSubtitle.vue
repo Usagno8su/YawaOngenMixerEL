@@ -34,15 +34,14 @@ import EditDisplaySubtitleSubAlignmentKyaraData from '@/components/accessories/E
       editName="フォントファイル"
       titleName="フォントファイルを指定します"
     />
-    <!-- 文字を寄せる方向 -->
     <EditDisplaySubtitleSubAlignmentKyaraData
       :settype="settype"
       :dateList="dateList"
       :selectKyara="selectKyara"
       :higherUpList="higherUpList"
       subtitleSetting="subAlignment"
-      editName="文字を寄せる方向"
-      titleName="文字を左右中央のどこに寄せるか指定します"
+      editName="文字の位置"
+      titleName="文字の位置を指定します"
     />
     <EditDisplaySubtitleCheckboxKyaraData
       :settype="settype"
@@ -88,9 +87,9 @@ import EditDisplaySubtitleSubAlignmentKyaraData from '@/components/accessories/E
       :selectKyara="selectKyara"
       :higherUpList="higherUpList"
       subtitleSetting="subTextSpaceSize"
-      editName="文字下の空白(px)"
+      editName="動画端の空白(px)"
       inputMin="0"
-      titleName="字幕の下に隙間を配置します"
+      titleName="字幕と動画端との間に隙間を配置します"
     />
     <EditDisplaySubtitleColorKyaraData
       :settype="settype"

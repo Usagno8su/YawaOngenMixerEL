@@ -18,12 +18,12 @@ export type tatieSetting = {
 export type subtitleSetting = {
   subText: statusBoolean // 字幕を表示するかどうか
   fontsPath: statusString // フォントのパス
-  subAlignment: statusSubAlignment // 文字を寄せる方向
+  subAlignment: statusSubAlignment // 字幕の位置
   subAutoRt: statusBoolean // 自動改行を有効化
   subTextBord: statusBoolean // 文字のフチに色をつける
   subBG: statusBoolean // 字幕に背景色をつける
   subSize: statusNumber // フォントサイズ
-  subTextSpaceSize: statusNumber // 背景色をつけない時の、文字下の空きスペース
+  subTextSpaceSize: statusNumber // 背景色をつけない時の、字幕と動画端との間に配置する隙間
   subColor: statusString //フォントカラー
   subOrdercr: statusString // フォントのフチの色
   subBorderW: statusNumber // フォント周りのフチの大きさ
@@ -149,8 +149,8 @@ export type tatieColorOption = {
 // 立ち絵の色の加工スタイル
 export type tatieColorSelectStyleType = 'colorspace' | 'negate' | 'sepiaTone' | 'default'
 
-// 字幕の文字列をどちらに寄せるか（左 右 中央）
-export type subAlignmentSideType = 'Left' | 'Right' | 'Center' | null
+// 字幕の文字列をどちらに寄せるか（左 右 中央 上部中央）
+export type subAlignmentSideType = 'Left' | 'Right' | 'Center' | 'topCnter' | null
 
 // キャラ名とスタイル名のみ
 export type editKyaraNameType = {

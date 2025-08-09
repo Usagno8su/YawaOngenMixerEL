@@ -142,12 +142,18 @@ export const makeTextList = async (
   console.log('textList: ' + textList)
   let ans = ''
 
-  for await (const line of textList) {
+  for await (const [index, line] of textList.entries()) {
+    // 字幕位置が上部中央寄せの場合は、
+    // subTextSpaceSizeは上の方の隙間の値として使用する。
+    const drawtext_y =
+      fileSetting.subtitle.subAlignment.val === 'topCnter'
+        ? `${fileSetting.subtitle.subTextSpaceSize.val}+(${index}*${fileSetting.subtitle.subSize.val})`
+        : `h-(((${fileSetting.subtitle.subSize.val})*${textLineLength})+${fileSetting.subtitle.subTextSpaceSize.val})`
     ans +=
       `,drawtext=fontfile='${fileSetting.subtitle.fontsPath.val.replace(/\\/g, '\\\\').replace(/:\\/g, '\\:\\')}':` +
       `textfile='${line}':fontcolor=${fileSetting.subtitle.subColor.val}:` +
       `${subTextBord}fontsize=${fileSetting.subtitle.subSize.val}:` +
-      `x=${subSide}:y=h-(((${fileSetting.subtitle.subSize.val})*${textLineLength})+${fileSetting.subtitle.subTextSpaceSize.val})`
+      `x=${subSide}:y=${drawtext_y}`
 
     // 文字列をひとつ出力したので、次の文字がその下に表示されるように textLineLength の値をひとつ少なくします。
     textLineLength--
