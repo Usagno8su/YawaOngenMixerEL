@@ -696,7 +696,7 @@ export const loadGlobalSettingData = async (confPath: string): Promise<string> =
       return JSON.stringify(
         <globalSettingExportType>{
           exportStatus: out.exportStatus,
-          softVer: out.softVer,
+          softVer: [0, 2, 2],
           globalSetting: {
             ...result,
             useSubText: true,
@@ -745,7 +745,7 @@ export const loadKyaraProfileData = async (confPath: string): Promise<string> =>
       const tatieOrder: tatieOrderListType[] = []
       return JSON.stringify(
         <profileKyaraExportType>{
-          softVer: out.softVer,
+          softVer: [0, 3, 0],
           exportStatus: out.exportStatus,
           infoSetting: inputJsonData.infoSetting,
           tatieOrderList: tatieOrder,
@@ -828,7 +828,7 @@ export const loadVoiceFileData = async (confPath: string): Promise<string> => {
       const tatieOrder: tatieOrderListType[] = []
       return JSON.stringify(
         <profileVoiceFileExportType>{
-          softVer: out.softVer,
+          softVer: [0, 3, 0],
           exportStatus: out.exportStatus,
           settingList: inputJsonData.settingList.map((item) => {
             return {
