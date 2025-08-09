@@ -149,8 +149,8 @@ export type tatieColorOption = {
 // 立ち絵の色の加工スタイル
 export type tatieColorSelectStyleType = 'colorspace' | 'negate' | 'sepiaTone' | 'default'
 
-// 字幕の文字列をどちらに寄せるか（左 右 中央）
-export type subAlignmentSideType = 'Left' | 'Right' | 'Center' | null
+// 字幕の文字列をどちらに寄せるか（左 右 中央 上部中央）
+export type subAlignmentSideType = 'Left' | 'Right' | 'Center' | 'topCnter' | null
 
 // キャラ名とスタイル名のみ
 export type editKyaraNameType = {

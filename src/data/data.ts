@@ -36,6 +36,7 @@ export const subAlignmentView: { [key in subAlignmentSideType]: string } = {
   Left: '左寄せ',
   Right: '右寄せ',
   Center: '中央寄せ',
+  topCnter: '上部中央寄せ',
 }
 
 // 各キャラ設定タイプの色を決定する
