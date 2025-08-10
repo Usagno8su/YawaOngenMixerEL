@@ -742,14 +742,15 @@ export const loadKyaraProfileData = async (confPath: string): Promise<string> =>
     .then(() => {
       // 追加したデータを書き込む
       const out = outSoftVersion()
-      const tatieOrder: tatieOrderListType[] = []
+      const defoData = createNewDateList(process.platform, undefined, undefined, '', '', {}, {})
       return JSON.stringify(
         <profileKyaraExportType>{
           softVer: [0, 3, 0],
           exportStatus: out.exportStatus,
           infoSetting: inputJsonData.infoSetting,
-          tatieOrderList: tatieOrder,
+          tatieOrderList: defoData.fileTatieOrderList.val,
           settingList: inputJsonData.settingList.map((item) => {
+            const activeType = item.dataType === 'defo' ? true : false
             return {
               dataType: item.dataType,
               uuid: item.uuid,
@@ -758,22 +759,42 @@ export const loadKyaraProfileData = async (confPath: string): Promise<string> =>
               tatie: {
                 ...item.tatie,
                 waitTatieUUID: {
-                  val: DEFAULT_KYARA_TATIE_UUID,
-                  active: item.dataType === 'defo' ? true : false,
+                  val: defoData.tatie.waitTatieUUID.val,
+                  active: activeType,
                 },
                 rotate: {
-                  val: 0,
-                  active: item.dataType === 'defo' ? true : false,
+                  val: defoData.tatie.rotate.val,
+                  active: activeType,
                 },
                 colorEdit: {
-                  val: {
-                    selectStyle: 'default',
-                    colorspaceOption: 'gray',
-                    negateOption: '',
-                    monochromeOption: '',
-                    sepiaToneOption: 80,
-                  },
-                  active: item.dataType === 'defo' ? true : false,
+                  val: defoData.tatie.colorEdit.val,
+                  active: activeType,
+                },
+              },
+              subtitle: item.subtitle,
+              fileName: item.fileName,
+              fileExtension: item.fileExtension,
+              voiceID: item.voiceID,
+              fileTatieOrderList: defoData.fileTatieOrderList,
+              fileActive: false,
+            }
+          }),
+        },
+        undefined,
+        2,
+      )
+    })
+    .then((result: string) => {
+      return writeJsonData(confPath, result)
+    })
+    .then(() => {
+      console.log('再読込')
+      jsonData.value = readJsonData(confPath)
+    })
+    .catch(() => {
+      console.log('問題なし')
+    })
+
                 },
               },
               subtitle: item.subtitle,
@@ -825,12 +846,13 @@ export const loadVoiceFileData = async (confPath: string): Promise<string> => {
     .then(() => {
       // 追加したデータを書き込む
       const out = outSoftVersion()
-      const tatieOrder: tatieOrderListType[] = []
+      const defoData = createNewDateList(process.platform, undefined, undefined, '', '', {}, {})
       return JSON.stringify(
         <profileVoiceFileExportType>{
           softVer: [0, 3, 0],
           exportStatus: out.exportStatus,
           settingList: inputJsonData.settingList.map((item) => {
+            const activeType = item.dataType === 'defo' ? true : false
             return {
               dataType: item.dataType,
               uuid: item.uuid,
@@ -839,22 +861,42 @@ export const loadVoiceFileData = async (confPath: string): Promise<string> => {
               tatie: {
                 ...item.tatie,
                 waitTatieUUID: {
-                  val: DEFAULT_KYARA_TATIE_UUID,
-                  active: item.dataType === 'defo' ? true : false,
+                  val: defoData.tatie.waitTatieUUID.val,
+                  active: activeType,
                 },
                 rotate: {
-                  val: 0,
-                  active: item.dataType === 'defo' ? true : false,
+                  val: defoData.tatie.rotate.val,
+                  active: activeType,
                 },
                 colorEdit: {
-                  val: {
-                    selectStyle: 'default',
-                    colorspaceOption: 'gray',
-                    negateOption: '',
-                    monochromeOption: '',
-                    sepiaToneOption: 80,
-                  },
-                  active: item.dataType === 'defo' ? true : false,
+                  val: defoData.tatie.colorEdit.val,
+                  active: activeType,
+                },
+              },
+              subtitle: item.subtitle,
+              fileName: item.fileName,
+              fileExtension: item.fileExtension,
+              voiceID: item.voiceID,
+              fileTatieOrderList: defoData.fileTatieOrderList,
+              fileActive: false,
+            }
+          }),
+        },
+        undefined,
+        2,
+      )
+    })
+    .then((result: string) => {
+      return writeJsonData(confPath, result)
+    })
+    .then(() => {
+      console.log('再読込')
+      jsonData.value = readJsonData(confPath)
+    })
+    .catch(() => {
+      console.log('問題なし')
+    })
+
                 },
               },
               subtitle: item.subtitle,
