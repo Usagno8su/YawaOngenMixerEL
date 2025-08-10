@@ -795,13 +795,69 @@ export const loadKyaraProfileData = async (confPath: string): Promise<string> =>
       console.log('問題なし')
     })
 
+  // var 0.3.0 以下の場合
+  // tatieFlip,  tatieFlop, tatieFlop, ModulateBright, ModulateChroma, ModulateHue, tatieMedian, tatieEdge と tatieOrderList がないので追加する
+  await new Promise((resolve, reject) => {
+    if (inputJsonData.softVer[0] <= 0 && inputJsonData.softVer[1] <= 3 && inputJsonData.softVer[2] <= 0) {
+      console.log('var 0.3.0 以下の場合')
+      resolve('waitTatieUUID')
+    } else {
+      reject()
+    }
+  })
+    .then(() => {
+      // 追加したデータを書き込む
+      const out = outSoftVersion()
+      const defoData = createNewDateList(process.platform, undefined, undefined, '', '', {}, {})
+      return JSON.stringify(
+        <profileKyaraExportType>{
+          softVer: [0, 3, 1],
+          exportStatus: out.exportStatus,
+          infoSetting: inputJsonData.infoSetting,
+          tatieOrderList: inputJsonData.tatieOrderList,
+          settingList: inputJsonData.settingList.map((item) => {
+            const activeType = item.dataType === 'defo' ? true : false
+            return {
+              dataType: item.dataType,
+              uuid: item.uuid,
+              name: item.name,
+              kyaraStyle: item.kyaraStyle,
+              tatie: {
+                ...item.tatie,
+                tatieFlip: {
+                  val: defoData.tatie.tatieFlip.val,
+                  active: activeType,
+                },
+                tatieFlop: {
+                  val: defoData.tatie.tatieFlop.val,
+                  active: activeType,
+                },
+                ModulateBright: {
+                  val: defoData.tatie.ModulateBright.val,
+                  active: activeType,
+                },
+                ModulateChroma: {
+                  val: defoData.tatie.ModulateChroma.val,
+                  active: activeType,
+                },
+                ModulateHue: {
+                  val: defoData.tatie.ModulateHue.val,
+                  active: activeType,
+                },
+                tatieMedian: {
+                  val: defoData.tatie.tatieMedian.val,
+                  active: activeType,
+                },
+                tatieEdge: {
+                  val: defoData.tatie.tatieEdge.val,
+                  active: activeType,
                 },
               },
               subtitle: item.subtitle,
               fileName: item.fileName,
               fileExtension: item.fileExtension,
               voiceID: item.voiceID,
-              fileTatieOrderList: { val: tatieOrder, active: false },
+              fileTatieOrderList: item.fileTatieOrderList,
               fileActive: false,
             }
           }),
@@ -897,13 +953,67 @@ export const loadVoiceFileData = async (confPath: string): Promise<string> => {
       console.log('問題なし')
     })
 
+  // var 0.3.0 以下の場合
+  // tatieFlip,  tatieFlop, tatieFlop, ModulateBright, ModulateChroma, ModulateHue, tatieMedian, tatieEdge と tatieOrderList がないので追加する
+  await new Promise((resolve, reject) => {
+    if (inputJsonData.softVer[0] <= 0 && inputJsonData.softVer[1] <= 3 && inputJsonData.softVer[2] <= 0) {
+      console.log('var 0.3.0 以下の場合')
+      resolve('waitTatieUUID')
+    } else {
+      reject()
+    }
+  })
+    .then(() => {
+      // 追加したデータを書き込む
+      const out = outSoftVersion()
+      const defoData = createNewDateList(process.platform, undefined, undefined, '', '', {}, {})
+      return JSON.stringify(
+        <profileVoiceFileExportType>{
+          softVer: [0, 3, 1],
+          exportStatus: out.exportStatus,
+          settingList: inputJsonData.settingList.map((item) => {
+            const activeType = item.dataType === 'defo' ? true : false
+            return {
+              dataType: item.dataType,
+              uuid: item.uuid,
+              name: item.name,
+              kyaraStyle: item.kyaraStyle,
+              tatie: {
+                ...item.tatie,
+                tatieFlip: {
+                  val: defoData.tatie.tatieFlip.val,
+                  active: activeType,
+                },
+                tatieFlop: {
+                  val: defoData.tatie.tatieFlop.val,
+                  active: activeType,
+                },
+                ModulateBright: {
+                  val: defoData.tatie.ModulateBright.val,
+                  active: activeType,
+                },
+                ModulateChroma: {
+                  val: defoData.tatie.ModulateChroma.val,
+                  active: activeType,
+                },
+                ModulateHue: {
+                  val: defoData.tatie.ModulateHue.val,
+                  active: activeType,
+                },
+                tatieMedian: {
+                  val: defoData.tatie.tatieMedian.val,
+                  active: activeType,
+                },
+                tatieEdge: {
+                  val: defoData.tatie.tatieEdge.val,
+                  active: activeType,
                 },
               },
               subtitle: item.subtitle,
               fileName: item.fileName,
               fileExtension: item.fileExtension,
               voiceID: item.voiceID,
-              fileTatieOrderList: { val: tatieOrder, active: false },
+              fileTatieOrderList: defoData.fileTatieOrderList,
               fileActive: false,
             }
           }),
