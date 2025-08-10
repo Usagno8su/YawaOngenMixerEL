@@ -56,6 +56,14 @@ export const createNewDateList = (
     tatiePwPs?: number
     tatiePhPs?: number
     rotate?: number
+    tatieFlip?: boolean
+    tatieFlop?: boolean
+    ModulateBright?: number
+    ModulateChroma?: number
+    ModulateHue?: number
+    tatieBlur?: [number, number]
+    tatieMedian?: number
+    tatieEdge?: number
     colorEdit?: tatieColorOption
     fps?: number
   },
@@ -112,6 +120,25 @@ export const createNewDateList = (
       tatiePwPs: { val: tatie.tatiePwPs ?? 0, active: tatie.tatiePwPs !== undefined ? true : dataType === 'defo' },
       tatiePhPs: { val: tatie.tatiePhPs ?? 0, active: tatie.tatiePhPs !== undefined ? true : dataType === 'defo' },
       rotate: { val: tatie.rotate ?? 0, active: tatie.rotate !== undefined ? true : dataType === 'defo' },
+      tatieFlip: { val: tatie.tatieFlip ?? false, active: tatie.tatieFlip !== undefined ? true : dataType === 'defo' },
+      tatieFlop: { val: tatie.tatieFlop ?? false, active: tatie.tatieFlop !== undefined ? true : dataType === 'defo' },
+      ModulateBright: {
+        val: tatie.ModulateBright ?? 100,
+        active: tatie.ModulateBright !== undefined ? true : dataType === 'defo',
+      },
+      ModulateChroma: {
+        val: tatie.ModulateChroma ?? 100,
+        active: tatie.ModulateChroma !== undefined ? true : dataType === 'defo',
+      },
+      ModulateHue: {
+        val: tatie.ModulateHue ?? 100,
+        active: tatie.ModulateHue !== undefined ? true : dataType === 'defo',
+      },
+      tatieMedian: {
+        val: tatie.tatieMedian ?? 0,
+        active: tatie.tatieMedian !== undefined ? true : dataType === 'defo',
+      },
+      tatieEdge: { val: tatie.tatieEdge ?? 0, active: tatie.tatieEdge !== undefined ? true : dataType === 'defo' },
       colorEdit: {
         val: tatie.colorEdit ?? {
           selectStyle: 'default',
