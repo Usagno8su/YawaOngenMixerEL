@@ -15,7 +15,9 @@ import {
 import {
   DEFAULT_KYARA_TATIE_UUID,
   DEFAULT_KYARA_PROFILE_NAME,
+  DEFAULT_KYARA_PROFILE_DISPLAY_NAME,
   DEFAULT_KYARA_SETTING_UUID,
+  DEFAULT_KYARA_SETTING_DISPLAY_NAME,
   DEFAULT_FONT_WIN,
   DEFAULT_FONT_LINUX,
 } from '../data/data'
@@ -33,7 +35,7 @@ export const createDefoInfoDateList = (): infoSettingType => {
 export const createDefoKyaraProfileList = (): kyaraProfileListType => {
   return {
     uuid: DEFAULT_KYARA_PROFILE_NAME,
-    displayName: 'デフォルト',
+    displayName: DEFAULT_KYARA_PROFILE_DISPLAY_NAME,
   }
 }
 
@@ -225,7 +227,15 @@ export const createNewDateList = (
 
 // デフォルトのキャラ設定データを作成して返す
 export const createDefoKyaraDateList = (platform: NodeJS.Platform): outSettingType => {
-  return createNewDateList(platform, 'defo', DEFAULT_KYARA_SETTING_UUID, 'デフォルト', undefined, {}, {})
+  return createNewDateList(
+    platform,
+    'defo',
+    DEFAULT_KYARA_SETTING_UUID,
+    DEFAULT_KYARA_SETTING_DISPLAY_NAME,
+    undefined,
+    {},
+    {},
+  )
 }
 
 // デフォルトのキャラUUIDリストデータを作成して返す
