@@ -15,7 +15,7 @@ const props = defineProps<{
 
 import { ref } from 'vue'
 import type { outSettingType, dataTextType } from 'src/type/data-type'
-import { typeColor } from '@/data/data'
+import { typeColor, DEFAULT_KYARA_SETTING_DISPLAY_NAME } from '@/data/data'
 import { MakeClassString } from '@/utils/analysisGeneral'
 import { FindAllString } from '@/utils/analysisData'
 import SearchInputUnit from '@/components/unit/SearchInputUnit.vue'
@@ -43,7 +43,12 @@ const KyaraChange = (outSetting: outSettingType): void => {
   </div>
   <div class="fixed top-1/3 flex w-96 flex-col rounded-xl border-1 border-gray-800 bg-blue-100 px-5 py-4 text-sm">
     <div class="h-80 overflow-y-scroll border border-gray-600">
-      <SearchInputUnit classSetting="bg-gray-300" inputTitle="立ち絵名かキャラ名で検索" ref="refSearchString" />
+      <SearchInputUnit
+        :defaultString="selectKyaraName !== DEFAULT_KYARA_SETTING_DISPLAY_NAME ? selectKyaraName : undefined"
+        classSetting="bg-gray-300"
+        inputTitle="立ち絵名かキャラ名で検索"
+        ref="refSearchString"
+      />
       <div class="">
         <div v-for="item in kyaraProfileList" v-bind:key="item.uuid">
           <button
