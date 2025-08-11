@@ -8,7 +8,7 @@ const props = defineProps<{
   editName: string
   titleName: string
 }>()
-// 立ち絵の色をどのように加工するか設定。
+// 立ち絵のカラーエフェクトを設定。
 
 import type { dataTextType, outSettingType, tatieSettingType, tatieColorSelectStyleType } from 'src/type/data-type'
 import { SelectTatieIndexHigherUpData } from '@/utils/analysisData'
@@ -23,7 +23,7 @@ const ChangeTatieColor = (select: tatieColorSelectStyleType): void => {
 const isOpen = ref<boolean>(false)
 
 // 設定のリスト
-const selectList = { default: 'なし', colorspace: 'グレースケール', negate: 'カラー反転', sepiaTone: 'セピア調' }
+const selectList = { default: 'なし', colorspace: '白黒', negate: '色反転', sepiaTone: 'セピア調' }
 
 // どの上位設定を使うか決定する
 const higherUpEditKyara = ref<number>(
@@ -40,39 +40,31 @@ watch(
 
 <template>
   <div class="flex border-b-[1px] border-gray-400 py-2">
-    <div class="mr-2 flex w-full justify-between">
+    <div class="mr-1 flex w-full justify-between">
       <div :title="titleName">{{ editName }}</div>
       <!-- 
           ここの設定を使用する場合に入力できる。
           上位設定を使用する場合は表示のみ。
          -->
 
-      <div class="flex w-2/3 flex-col">
+      <div class="flex w-2/3 flex-col justify-center">
         <div v-if="dateList[selectKyara].tatie.colorEdit.active" class="flex w-full">
           <button
-            class="w-1/2 border border-gray-800 bg-blue-300 px-1 hover:bg-blue-600 hover:text-gray-200"
+            class="ml-2 w-20 border border-gray-800 bg-blue-300 px-1 text-sm hover:bg-blue-600 hover:text-gray-200"
             @click="() => (isOpen = true)"
           >
             {{ selectList[dateList[selectKyara].tatie.colorEdit.val.selectStyle] }}
           </button>
-          <div v-if="dateList[selectKyara].tatie.colorEdit.val.selectStyle === 'sepiaTone'" class="flex">
-            <input
-              class="ml-1 w-1/2"
-              type="range"
-              min="0"
-              max="100"
-              v-model="dateList[selectKyara].tatie.colorEdit.val.sepiaToneOption"
-            />
-            <input
-              class="ml-5 w-1/4"
-              type="number"
-              min="0"
-              max="100"
-              v-model="dateList[selectKyara].tatie.colorEdit.val.sepiaToneOption"
-            />
-          </div>
+          <input
+            v-if="dateList[selectKyara].tatie.colorEdit.val.selectStyle === 'sepiaTone'"
+            class="ml-3 w-1/3"
+            type="number"
+            min="0"
+            max="100"
+            v-model="dateList[selectKyara].tatie.colorEdit.val.sepiaToneOption"
+          />
         </div>
-        <button v-else class="w-1/2 border border-gray-800 bg-blue-300 px-1 text-gray-600" disabled>
+        <button v-else class="w-1/2 border border-gray-800 bg-blue-300 px-1 text-sm text-gray-600" disabled>
           {{ selectList[dateList[higherUpEditKyara].tatie.colorEdit.val.selectStyle] }}
         </button>
         <div v-if="isOpen && dateList[selectKyara].tatie.colorEdit.active" class="relative">
