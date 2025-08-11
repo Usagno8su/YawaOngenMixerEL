@@ -133,6 +133,7 @@ import EditDisplayTatieCheckFlipKyaraData from '@/components/accessories/EditDis
           :higherUpList="higherUpList"
           tatieSetting="ModulateBright"
           editName="明るさ"
+          inputMin="0"
           titleName="立ち絵の明度を変更します（デフォルトは100）"
         />
         <EditDisplayTatieKyaraData
@@ -142,6 +143,7 @@ import EditDisplayTatieCheckFlipKyaraData from '@/components/accessories/EditDis
           :higherUpList="higherUpList"
           tatieSetting="ModulateChroma"
           editName="彩度"
+          inputMin="0"
           titleName="立ち絵の彩度を変更します（デフォルトは100）"
         />
         <EditDisplayTatieKyaraData
@@ -151,6 +153,7 @@ import EditDisplayTatieCheckFlipKyaraData from '@/components/accessories/EditDis
           :higherUpList="higherUpList"
           tatieSetting="ModulateHue"
           editName="色相"
+          inputMin="0"
           titleName="立ち絵の色相を変更します（デフォルトは100）"
         />
         <EditDisplayTatieKyaraData
