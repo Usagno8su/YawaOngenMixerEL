@@ -156,24 +156,6 @@ import EditDisplayTatieCheckFlipKyaraData from '@/components/accessories/EditDis
           inputMin="0"
           titleName="立ち絵の色相を変更します（デフォルトは100）"
         />
-        <EditDisplayTatieKyaraData
-          :settype="settype"
-          :dateList="dateList"
-          :selectKyara="selectKyara"
-          :higherUpList="higherUpList"
-          tatieSetting="tatieMedian"
-          editName="中央値"
-          titleName="立ち絵の中央値を変更します（デフォルトは0）"
-        />
-        <EditDisplayTatieKyaraData
-          :settype="settype"
-          :dateList="dateList"
-          :selectKyara="selectKyara"
-          :higherUpList="higherUpList"
-          tatieSetting="tatieEdge"
-          editName="エッジ"
-          titleName="立ち絵のエッジを変更します（デフォルトは0）"
-        />
         <EditDisplayTatieKyaraColorEdit
           :settype="settype"
           :dateList="dateList"
