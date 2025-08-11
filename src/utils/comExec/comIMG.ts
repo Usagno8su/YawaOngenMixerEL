@@ -67,6 +67,23 @@ export const createComImg = async (fileSetting: outSettingType): Promise<createC
     }
   }
 
+  // 立ち絵の上下左右反転の設定を入れる。
+  const FlipFlopEdit = (): string[] => {
+    return (fileSetting.tatie.tatieFlip.val ? ['-flip'] : []).concat(fileSetting.tatie.tatieFlop.val ? ['-flop'] : [])
+  }
+
+  // 立ち絵の明るさ・彩度・色相の設定を入れる。
+  const ModulateEdit = (): string[] => {
+    return [
+      '-modulate',
+      fileSetting.tatie.ModulateBright.val.toString() +
+        ',' +
+        fileSetting.tatie.ModulateChroma.val.toString() +
+        ',' +
+        fileSetting.tatie.ModulateHue.val.toString(),
+    ]
+  }
+
   // 結果を出力する
   return {
     //// 元の立ち絵を設定に応じて縮小するコマンドを作成
@@ -79,9 +96,11 @@ export const createComImg = async (fileSetting: outSettingType): Promise<createC
       `x${Math.floor((fileSetting.tatie.moviH.val / 100) * fileSetting.tatie.tatieHpx.val)}`,
       '-background',
       'none',
-      '-rotate',
-      fileSetting.tatie.rotate.val.toString(),
-    ].concat(TatieColorEdit(fileSetting.tatie.colorEdit.val)),
+    ]
+      .concat(ModulateEdit())
+      .concat(FlipFlopEdit())
+      .concat(['-rotate', fileSetting.tatie.rotate.val.toString()])
+      .concat(TatieColorEdit(fileSetting.tatie.colorEdit.val)),
     //// 動画の画面サイズの透明な画像を生成するコマンドを作成
     // convert -size ${画像の幅}x${画像の高さ} xc:none 透明な画面サイズの出力ファイル（一時的）.png
     //

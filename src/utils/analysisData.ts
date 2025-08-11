@@ -181,6 +181,25 @@ export const createVoiceFileEncodeSetting = (index: number, dateList: outSetting
     tatiePwPs: { val: 0, active: false },
     tatiePhPs: { val: 0, active: false },
     rotate: { val: 0, active: false },
+    tatieFlip: { val: false, active: false },
+    tatieFlop: { val: false, active: false },
+    ModulateBright: {
+      val: 100,
+      active: false,
+    },
+    ModulateChroma: {
+      val: 100,
+      active: false,
+    },
+    ModulateHue: {
+      val: 100,
+      active: false,
+    },
+    tatieMedian: {
+      val: 0,
+      active: false,
+    },
+    tatieEdge: { val: 0, active: false },
     colorEdit: {
       val: {
         selectStyle: 'default',
@@ -266,6 +285,13 @@ export const createVoiceFileEncodeSetting = (index: number, dateList: outSetting
       tatiePwPs: outDataTatie.value.tatiePwPs.val,
       tatiePhPs: outDataTatie.value.tatiePhPs.val,
       rotate: outDataTatie.value.rotate.val,
+      tatieFlip: outDataTatie.value.tatieFlip.val,
+      tatieFlop: outDataTatie.value.tatieFlop.val,
+      ModulateBright: outDataTatie.value.ModulateBright.val,
+      ModulateChroma: outDataTatie.value.ModulateChroma.val,
+      ModulateHue: outDataTatie.value.ModulateHue.val,
+      tatieMedian: outDataTatie.value.tatieMedian.val,
+      tatieEdge: outDataTatie.value.tatieEdge.val,
       colorEdit: outDataTatie.value.colorEdit.val,
       fps: outDataTatie.value.fps.val,
     },

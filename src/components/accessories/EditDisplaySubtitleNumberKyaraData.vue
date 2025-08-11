@@ -43,6 +43,7 @@ watch(
         :id="subtitleSetting"
         type="number"
         :min="inputMin"
+        :max="inputMax"
         v-model="dateList[selectKyara].subtitle[subtitleSetting].val"
       />
       <input

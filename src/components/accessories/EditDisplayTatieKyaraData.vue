@@ -7,6 +7,7 @@ const props = defineProps<{
   higherUpList: [number, number]
   editName: string
   inputMin?: string
+  inputMax?: string
   titleName: string
 }>()
 import type { dataTextType, outSettingType, tatieSettingType } from 'src/type/data-type'
@@ -41,6 +42,7 @@ watch(
         :id="tatieSetting"
         type="number"
         :min="inputMin"
+        :max="inputMax"
         v-model="dateList[selectKyara].tatie[tatieSetting].val"
       />
       <input

@@ -10,6 +10,13 @@ export type tatieSetting = {
   tatiePwPs: statusNumber // 立ち絵を横に移動
   tatiePhPs: statusNumber // 立ち絵を縦に移動
   rotate: statusNumber // 立ち絵の傾き
+  tatieFlip: statusBoolean // 立ち絵の上下反転の有効化
+  tatieFlop: statusBoolean // 立ち絵の左右反転の有効化
+  ModulateBright: statusNumber // 立ち絵の明るさ
+  ModulateChroma: statusNumber // 立ち絵の彩度
+  ModulateHue: statusNumber // 立ち絵の色相
+  tatieMedian: statusNumber // 立ち絵の中央値
+  tatieEdge: statusNumber // 立ち絵のエッジ
   colorEdit: statusColorEdit // 立ち絵の色を加工
   fps: statusNumber // フレームレート
 }
@@ -88,6 +95,13 @@ export type tatieSettingType =
   | 'tatiePwPs'
   | 'tatiePhPs'
   | 'rotate'
+  | 'tatieFlip'
+  | 'tatieFlop'
+  | 'ModulateBright'
+  | 'ModulateChroma'
+  | 'ModulateHue'
+  | 'tatieMedian'
+  | 'tatieEdge'
   | 'colorEdit'
   | 'fps'
 
@@ -151,6 +165,8 @@ export type tatieColorSelectStyleType = 'colorspace' | 'negate' | 'sepiaTone' | 
 
 // 字幕の文字列をどちらに寄せるか（左 右 中央 上部中央）
 export type subAlignmentSideType = 'Left' | 'Right' | 'Center' | 'topCnter' | null
+
+export type statusBlurType = [number, number]
 
 // キャラ名とスタイル名のみ
 export type editKyaraNameType = {

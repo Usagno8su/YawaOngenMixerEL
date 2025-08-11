@@ -23,7 +23,7 @@ const actset = (side: tatieSideType): string => {
   <div class="fixed top-0 right-0 flex h-screen w-screen items-center justify-center" @click.self="clickClose">
     <!-- 画面外クリックでクローズ -->
   </div>
-  <div class="absolute" @click="clickClose">
+  <div class="absolute w-72" @click="clickClose">
     <div class="flex">
       <button :class="actset('NorthWest')" @click="changeTatieSide('NorthWest')">上段左</button>
       <button :class="actset('North')" @click="changeTatieSide('North')">上段中央</button>
