@@ -8,8 +8,14 @@ import { tatieSideType, subAlignmentSideType } from '../type/data-type'
 // デフォルトのキャラ設定プロファイル名
 export const DEFAULT_KYARA_PROFILE_NAME = 'default'
 
+// デフォルトのキャラ設定プロファイルの画面上の表示名
+export const DEFAULT_KYARA_PROFILE_DISPLAY_NAME = 'デフォルト'
+
 // デフォルトのキャラ設定につけるUUID
 export const DEFAULT_KYARA_SETTING_UUID = '0'
+
+// デフォルトのキャラ設定の表示名
+export const DEFAULT_KYARA_SETTING_DISPLAY_NAME = 'デフォルト'
 
 // デフォルトの立ち絵のUUID
 export const DEFAULT_KYARA_TATIE_UUID = '0'
