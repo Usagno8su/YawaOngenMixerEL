@@ -405,11 +405,11 @@ export const enterEncodeImageData = async (
   return await createImgFile(
     convertPath,
     imgData,
-    fileName || settingList.fileName,
     settingList.tatie[tatieSituation].val,
     kyaraTatieDirPath,
     outPicDir,
     tempDirPath,
+    fileName,
   )
 }
 
@@ -473,6 +473,9 @@ export const enterEncodePicFileData = async (
 
   console.log('長さ; ' + outState.length)
 
+  // 合成前の画像のリスト
+  let picOneList: string[] = []
+
   const imgList: string[] = []
   let kazu = 0
   for (const item of outState) {
@@ -494,7 +497,6 @@ export const enterEncodePicFileData = async (
             globalSetting.exeFilePath.convert,
             kyaraTatieDirPath,
             tempDirPath,
-            'tb_' + kazu,
           ),
         )
         kazu += 1

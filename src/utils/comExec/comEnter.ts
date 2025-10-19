@@ -73,24 +73,33 @@ export const resizeTatiePath = async (
 export const createImgFile = async (
   convertPath: string,
   comList: createComImgType,
-  voiceFileName: string,
   picFileName: string,
   kyaraTatieDirPath: string,
   outDir: string,
   tempDir: string,
+  outFileName?: string,
 ): Promise<string> => {
   console.log(`変換開始-----------------------------aa-`)
 
   // 画像ファイルのパスを作成する
   const makePicPath = async (): Promise<PicPathType> => {
+    const tempTatiePic = path.join(
+      tempDir,
+      'tempTatie' + CreateSHA256Hash(picFileName + '.png' + comList.tatieResizeCom.toString()) + '.png',
+    )
+    const baseTempPic = path.join(tempDir, 'base' + CreateSHA256Hash(comList.baseTempPicCom.toString()) + '.png')
+    const cnvBackPic =
+      outFileName === undefined
+        ? path.join(
+            outDir,
+            CreateSHA256Hash(tempTatiePic + baseTempPic + comList.cnvBackPicmakeCom.toString()) + '.png',
+          )
+        : outFileName + '.png'
     return {
       inputTatie: path.join(kyaraTatieDirPath, picFileName + '.png'), // 立ち絵のUUIDから立ち絵のパスを作る
-      tempTatiePic: path.join(
-        tempDir,
-        CreateSHA256Hash(picFileName + '.png' + comList.tatieResizeCom.toString()) + '.png',
-      ), // 立ち絵を縮小した立ち絵ファイル
-      baseTempPic: path.join(tempDir, CreateSHA256Hash(comList.baseTempPicCom.toString()) + '.png'), // 動画の画面サイズの透明な画像
-      cnvBackPic: path.join(outDir, voiceFileName), // 画面に立ち絵を合成したファイルのパス
+      tempTatiePic: tempTatiePic, // 立ち絵を縮小した立ち絵ファイル
+      baseTempPic: baseTempPic, // 動画の画面サイズの透明な画像
+      cnvBackPic: cnvBackPic, // 画面に立ち絵を合成したファイルのパス
     }
   }
   const picPath = await makePicPath()
@@ -146,26 +155,42 @@ export const createImgFile = async (
 
   console.log('動画の画面サイズの透明な画像を生成するok')
 
+  const MakeVoiceFilePicPath = async (): Promise<{
+    stdout: string
+    stderr: string
+  }> => {
+    // ファイルがすでに存在する場合はエンコードを行わずにpathを返す。
+    if (fs.existsSync(picPath.cnvBackPic)) {
+      return {
+        stdout: '',
+        stderr: '',
+      }
+    } else {
+      return await execFile(
+        convertPath,
+        [picPath.baseTempPic, picPath.tempTatiePic].concat(comList.cnvBackPicmakeCom).concat([picPath.cnvBackPic]),
+      )
+        .then((value) => {
+          return value
+        })
+        .catch((e) => {
+          return {
+            stdout: '',
+            stderr: '画面サイズの透明画像と立ち絵の画像を合成に失敗',
+          }
+        })
+    }
+  }
+
   // 画面サイズの透明画像と立ち絵の画像を合成する
   // UUIDが DEFAULT_KYARA_TATIE_UUID かnoTatieFileがtrueなら存在しないので、画面サイズの透明画像のパスを返す
   if (picFileName !== DEFAULT_KYARA_TATIE_UUID && !noTatieFile) {
-    const cnvBackPic = await execFile(
-      convertPath,
-      [picPath.baseTempPic, picPath.tempTatiePic]
-        .concat(comList.cnvBackPicmakeCom)
-        .concat([picPath.cnvBackPic + '.png']),
-    )
-      .then((value) => {
-        return value
-      })
-      .catch((e) => {
-        return e
-      })
+    const cnvBackPic = await MakeVoiceFilePicPath()
     if (cnvBackPic.stderr !== '') {
       return 'Error: ' + cnvBackPic.stderr.toString()
+    } else {
+      return picPath.cnvBackPic
     }
-
-    return picPath.cnvBackPic + '.png'
   } else {
     return picPath.baseTempPic
   }
