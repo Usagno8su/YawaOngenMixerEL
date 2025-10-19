@@ -117,4 +117,6 @@ contextBridge.exposeInMainWorld('yomAPI', {
   EntAskDelete: (listener: () => void) => ipcRenderer.on('AskDeleteKeyCom', () => listener()),
   CopyToKyara: (listener: (dataType: string) => void) =>
     ipcRenderer.on('CopyToKyaraCom', (_event: IpcRendererEvent, dataType: string) => listener(dataType)),
+  MoveToKyara: (listener: (index: number) => void) =>
+    ipcRenderer.on('MoveToKyaraCom', (_event: IpcRendererEvent, index: number) => listener(index)),
 })

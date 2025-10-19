@@ -862,6 +862,7 @@ watch(
         :checkIntoTatieOrderList="(uuid: string) => checkIntoTatieOrderList(uuid)"
         :searchKyaraEvent="searchKyaraEvent"
         :CopyKyaraSetting="CopyKyaraSetting"
+        :MoveKyaraSetting="(index: number) => KyaraListOrderKeyChange(index)"
         :dragChangeIndex="dragChangeIndex"
         :KyaraListOrderDragStart="(index: number) => OrderDragStart(index)"
         :KyaraListOrderDragMove="(index: number) => KyaraListOrderDragMove(index)"

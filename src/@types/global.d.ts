@@ -54,4 +54,5 @@ export interface WGyomAPI {
   EntEditName: (listener: () => void) => void
   EntAskDelete: (listener: () => void) => void
   CopyToKyara: (listener: (dataType: string) => void) => void
+  MoveToKyara: (listener: (index: number) => void) => void
 }
