@@ -84,6 +84,11 @@ export const createMainNewDataID = (dateList: outSettingType[], newName: string)
   return newID
 }
 
+// 文字列をSHA256ハッシュにする。
+export const CreateSHA256Hash = (inputStringData: string): string => {
+  return createHash('sha256').update(inputStringData).digest('hex')
+}
+
 // 現在のアプリバージョンと、念の為、確認処理で処理で発生したエラー等の個数も合わせて入れる。
 export const outSoftVersion = (): { softVer: [number, number, number]; exportStatus: number } => {
   // 現在のアプリバージョン番号を取得（x.y.z）
@@ -400,11 +405,11 @@ export const enterEncodeImageData = async (
   return await createImgFile(
     convertPath,
     imgData,
-    fileName || settingList.fileName,
     settingList.tatie[tatieSituation].val,
     kyaraTatieDirPath,
     outPicDir,
     tempDirPath,
+    fileName,
   )
 }
 
@@ -468,6 +473,9 @@ export const enterEncodePicFileData = async (
 
   console.log('長さ; ' + outState.length)
 
+  // 合成前の画像のリスト
+  let picOneList: string[] = []
+
   const imgList: string[] = []
   let kazu = 0
   for (const item of outState) {
@@ -489,7 +497,6 @@ export const enterEncodePicFileData = async (
             globalSetting.exeFilePath.convert,
             kyaraTatieDirPath,
             tempDirPath,
-            'tb_' + kazu,
           ),
         )
         kazu += 1
@@ -512,12 +519,7 @@ export const enterEncodePicFileData = async (
   } else if (imgList.length > 1) {
     console.log('ふくすう')
     // 2つ以上の場合は合成する。
-    const ansPath = await imgCompositeFile(
-      globalSetting.exeFilePath.convert,
-      imgList,
-      tempDirPath,
-      'tenpCompositeMoveSizePic',
-    )
+    const ansPath = await imgCompositeFile(globalSetting.exeFilePath.convert, imgList, tempDirPath)
     // 作成したファイルを返す
     const buffer = await fs.promises.readFile(ansPath)
     return {
