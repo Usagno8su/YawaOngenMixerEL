@@ -507,6 +507,52 @@ const TatieOrderDragEnd = () => {
   dragChangeIndex.value = -1
 }
 
+// 指定された数値によりキャラ設定の順番を入れ替える。
+// 値がプラスなら下に、マイナスなら上に、それぞれ一つ移動する。
+const KyaraListOrderKeyChange = (index: number) => {
+  console.log('移動開始: ' + index)
+  console.log('移動開始 selectKyara.value: ' + selectKyara.value)
+
+  // マウスで入れ替え中の場合は実行しない。
+  // あとindexがゼロの場合も実行しない。
+  if (dragStartIndex.value === -1 && index !== 0) {
+    // 値が0以上（プラス）の場合は指定された下に移動する
+    // 自分がいなくなるため指定より１つ下に移動する
+    if (index > 0) {
+      dragStartIndex.value = selectKyara.value
+      const moveIndex = dateList.value.findIndex((e, i) => i > selectKyara.value && props.settype === e.dataType)
+
+      // 一番うしろのため、移動を実行しない。
+      if (moveIndex === -1) {
+        // 移動をしないので初期化
+        dragStartIndex.value = -1
+        dragChangeIndex.value = -1
+      } else {
+        // プラス１する
+        dragChangeIndex.value = moveIndex + 1
+
+        console.log('下へ移動: ' + dragChangeIndex.value)
+        KyaraListOrderDragEnd()
+      }
+    } else {
+      // マイナスの場合は指定された上に移動する
+      dragStartIndex.value = selectKyara.value
+      dragChangeIndex.value = dateList.value.findLastIndex(
+        (e, i) => i < selectKyara.value && props.settype === e.dataType,
+      )
+      // dragChangeIndex がゼロ以下になっていないことを確認する。
+      if (dragChangeIndex.value > 0) {
+        console.log('上へ移動: ' + dragChangeIndex.value)
+        KyaraListOrderDragEnd()
+      } else {
+        // ゼロ以下の場合は移動をしないので初期化
+        dragStartIndex.value = -1
+        dragChangeIndex.value = -1
+      }
+    }
+  }
+}
+
 // 立ち絵順序の設定で、表示する立ち絵を追加する。
 // まだ追加されておらず、立ち絵が設定されているキャラ設定を調べて、それを追加する。
 // ない場合はデフォルトの項目を追加する。
@@ -816,6 +862,7 @@ watch(
         :checkIntoTatieOrderList="(uuid: string) => checkIntoTatieOrderList(uuid)"
         :searchKyaraEvent="searchKyaraEvent"
         :CopyKyaraSetting="CopyKyaraSetting"
+        :MoveKyaraSetting="(index: number) => KyaraListOrderKeyChange(index)"
         :dragChangeIndex="dragChangeIndex"
         :KyaraListOrderDragStart="(index: number) => OrderDragStart(index)"
         :KyaraListOrderDragMove="(index: number) => KyaraListOrderDragMove(index)"

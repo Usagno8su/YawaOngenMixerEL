@@ -17,6 +17,7 @@ const props = defineProps<{
   checkIntoTatieOrderList: (uuid: string) => boolean
   searchKyaraEvent: (text: string) => void
   CopyKyaraSetting: (dataType: dataTextType, uuid: string) => void
+  MoveKyaraSetting: (index: number) => void
   dragChangeIndex: number
   KyaraListOrderDragStart: (index: number) => void
   KyaraListOrderDragMove: (index: number) => void
@@ -181,6 +182,14 @@ yomAPI.CopyToKyara((dataType: string) => {
     props.CopyKyaraSetting('kyara', props.dateList[props.selectKyara].uuid)
   } else if (dataType === 'kyast') {
     props.CopyKyaraSetting('kyast', props.dateList[props.selectKyara].uuid)
+  }
+})
+
+// ショートカットキーでキャラ設定移動のコマンドがあった場合はそれを行う。
+yomAPI.MoveToKyara((index: number) => {
+  isMenuOpen.value = false
+  if (props.settype === 'kyara' || props.settype === 'kyast' || props.settype === 'seid') {
+    props.MoveKyaraSetting(index)
   }
 })
 

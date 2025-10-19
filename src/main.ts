@@ -172,6 +172,24 @@ const createWindow = () => {
           },
         },
         {
+          label: 'キャラ設定を１つ上に移動',
+          accelerator: 'CmdOrCtrl+Up',
+          click: () => {
+            if (app.isReady()) {
+              mainWindow.webContents.send('MoveToKyaraCom', -1)
+            }
+          },
+        },
+        {
+          label: 'キャラ設定を１つ下に移動',
+          accelerator: 'CmdOrCtrl+Down',
+          click: () => {
+            if (app.isReady()) {
+              mainWindow.webContents.send('MoveToKyaraCom', 1)
+            }
+          },
+        },
+        {
           label: '名前の変更',
           accelerator: 'CmdOrCtrl+Space',
           click: () => {
