@@ -84,6 +84,11 @@ export const createMainNewDataID = (dateList: outSettingType[], newName: string)
   return newID
 }
 
+// 文字列をSHA256ハッシュにする。
+export const CreateSHA256Hash = (inputStringData: string): string => {
+  return createHash('sha256').update(inputStringData).digest('hex')
+}
+
 // 現在のアプリバージョンと、念の為、確認処理で処理で発生したエラー等の個数も合わせて入れる。
 export const outSoftVersion = (): { softVer: [number, number, number]; exportStatus: number } => {
   // 現在のアプリバージョン番号を取得（x.y.z）
