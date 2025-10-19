@@ -1,6 +1,7 @@
 // このファイルはメイン側で利用するため、レンダラー側では読み込めない
 // 作成したコマンドを実行する
 import type { createComImgType } from './comIMG'
+import { CreateSHA256Hash } from '../analysisMain'
 import { outSettingType } from '../../type/data-type'
 import path from 'path'
 import fs from 'fs'
@@ -45,13 +46,21 @@ export const resizeTatiePath = async (
   stderr: string
 }> => {
   if (picFileName !== DEFAULT_KYARA_TATIE_UUID) {
-    return await execFile(convertPath, [inputTatie].concat(tatieResizeCom, [tempTatiePic]))
-      .then((value) => {
-        return value
-      })
-      .catch((e) => {
-        return e
-      })
+    // ファイルがすでに存在する場合はエンコードを行わずにpathを返す。
+    if (fs.existsSync(tempTatiePic)) {
+      return {
+        stdout: '',
+        stderr: '',
+      }
+    } else {
+      return await execFile(convertPath, [inputTatie].concat(tatieResizeCom, [tempTatiePic]))
+        .then((value) => {
+          return value
+        })
+        .catch((e) => {
+          return e
+        })
+    }
   } else {
     return {
       stdout: '',
@@ -76,7 +85,7 @@ export const createImgFile = async (
   const makePicPath = async (): Promise<PicPathType> => {
     return {
       inputTatie: path.join(kyaraTatieDirPath, picFileName + '.png'), // 立ち絵のUUIDから立ち絵のパスを作る
-      tempTatiePic: path.join(tempDir, 'pictemp.png'), // 立ち絵を縮小した立ち絵ファイル
+      tempTatiePic: path.join(tempDir, CreateSHA256Hash(picFileName + '.png' + comList.tatieResizeCom) + '.png'), // 立ち絵を縮小した立ち絵ファイル
       baseTempPic: path.join(tempDir, 'basetemp.png'), // 動画の画面サイズの透明な画像
       cnvBackPic: path.join(outDir, voiceFileName), // 画面に立ち絵を合成したファイルのパス
     }
