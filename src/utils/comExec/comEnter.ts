@@ -33,6 +33,37 @@ export const LoadFFmpegVersion = async (ffmpegPath: string): Promise<string[]> =
   return ffmpegVer
 }
 
+// 画像エンコードの実行を行う。
+// 出力ファイル名がすでに存在する場合は実行しない。
+const MakeConvertExec = async (
+  convertPath: string,
+  commandLine: string[],
+  outFileName: string,
+  errString: string,
+): Promise<{
+  stdout: string
+  stderr: string
+}> => {
+  // ファイルがすでに存在する場合はエンコードを行わずにpathを返す。
+  if (fs.existsSync(outFileName)) {
+    return {
+      stdout: '',
+      stderr: '',
+    }
+  } else {
+    return await execFile(convertPath, commandLine)
+      .then((value) => {
+        return value
+      })
+      .catch((e) => {
+        return {
+          stdout: '',
+          stderr: errString,
+        }
+      })
+  }
+}
+
 // 立ち絵画像を縮小する処理
 // UUIDが DEFAULT_KYARA_TATIE_UUID なら存在しないので、処理を実行しない
 export const resizeTatiePath = async (
@@ -47,20 +78,13 @@ export const resizeTatiePath = async (
 }> => {
   if (picFileName !== DEFAULT_KYARA_TATIE_UUID) {
     // ファイルがすでに存在する場合はエンコードを行わずにpathを返す。
-    if (fs.existsSync(tempTatiePic)) {
-      return {
-        stdout: '',
-        stderr: '',
-      }
-    } else {
-      return await execFile(convertPath, [inputTatie].concat(tatieResizeCom, [tempTatiePic]))
-        .then((value) => {
-          return value
-        })
-        .catch((e) => {
-          return e
-        })
-    }
+
+    return await MakeConvertExec(
+      convertPath,
+      [inputTatie].concat(tatieResizeCom, [tempTatiePic]),
+      tempTatiePic,
+      '立ち絵画像を縮小する処理に失敗',
+    )
   } else {
     return {
       stdout: '',
@@ -122,70 +146,28 @@ export const createImgFile = async (
   }
 
   console.log('動画の画面サイズの透明な画像を生成する')
-  // 動画の画面サイズの透明な画像を生成する
 
-  const MakeBaseTempPath = async (): Promise<{
-    stdout: string
-    stderr: string
-  }> => {
-    // ファイルがすでに存在する場合はエンコードを行わずにpathを返す。
-    if (fs.existsSync(picPath.baseTempPic)) {
-      return {
-        stdout: '',
-        stderr: '',
-      }
-    } else {
-      return await execFile(convertPath, comList.baseTempPicCom.concat([picPath.baseTempPic]))
-        .then((value) => {
-          return value
-        })
-        .catch((e) => {
-          return {
-            stdout: '',
-            stderr: '動画の画面サイズの透明な画像を生成に失敗',
-          }
-        })
-    }
-  }
-
-  const baseTempPic = await MakeBaseTempPath()
+  const baseTempPic = await MakeConvertExec(
+    convertPath,
+    comList.baseTempPicCom.concat([picPath.baseTempPic]),
+    picPath.baseTempPic,
+    '動画の画面サイズの透明な画像を生成に失敗',
+  )
   if (baseTempPic.stderr !== '') {
     return 'Error: ' + baseTempPic.stderr.toString()
   }
 
   console.log('動画の画面サイズの透明な画像を生成するok')
 
-  const MakeVoiceFilePicPath = async (): Promise<{
-    stdout: string
-    stderr: string
-  }> => {
-    // ファイルがすでに存在する場合はエンコードを行わずにpathを返す。
-    if (fs.existsSync(picPath.cnvBackPic)) {
-      return {
-        stdout: '',
-        stderr: '',
-      }
-    } else {
-      return await execFile(
-        convertPath,
-        [picPath.baseTempPic, picPath.tempTatiePic].concat(comList.cnvBackPicmakeCom).concat([picPath.cnvBackPic]),
-      )
-        .then((value) => {
-          return value
-        })
-        .catch((e) => {
-          return {
-            stdout: '',
-            stderr: '画面サイズの透明画像と立ち絵の画像を合成に失敗',
-          }
-        })
-    }
-  }
-
   // 画面サイズの透明画像と立ち絵の画像を合成する
   // UUIDが DEFAULT_KYARA_TATIE_UUID かnoTatieFileがtrueなら存在しないので、画面サイズの透明画像のパスを返す
   if (picFileName !== DEFAULT_KYARA_TATIE_UUID && !noTatieFile) {
-    const cnvBackPic = await MakeVoiceFilePicPath()
+    const cnvBackPic = await MakeConvertExec(
+      convertPath,
+      [picPath.baseTempPic, picPath.tempTatiePic].concat(comList.cnvBackPicmakeCom).concat([picPath.cnvBackPic]),
+      picPath.cnvBackPic,
+      '画面サイズの透明画像と立ち絵の画像を合成に失敗',
+    )
     if (cnvBackPic.stderr !== '') {
       return 'Error: ' + cnvBackPic.stderr.toString()
     } else {
@@ -290,12 +272,7 @@ export const enterEncodeSmallTatie = async (
 
 // 作成済みの立ち絵画像を配列に入っている順番で合成して、その絶対パス（拡張子入り）を返す。
 // imgListのファイルパスは絶対パス（拡張子入り）にする。
-export const imgCompositeFile = async (
-  convertPath: string,
-  imgList: string[],
-  outDir: string,
-  outFileName: string,
-): Promise<string> => {
+export const imgCompositeFile = async (convertPath: string, imgList: string[], outDir: string): Promise<string> => {
   // 配列を逆順にする
   imgList.reverse()
 
@@ -312,7 +289,18 @@ export const imgCompositeFile = async (
 
   console.log('実行: ' + compImage[0] + ', ' + compImage[1] + ', ' + compImage[2] + ', ' + compImage[3])
 
-  await execFile(convertPath, compImage.concat([path.join(outDir, outFileName + '.png')]))
+  // 出力ファイル名
+  const outFileName = path.join(outDir, CreateSHA256Hash(compImage.toString()) + '.png')
 
-  return path.join(outDir, outFileName + '.png')
+  const ans = await MakeConvertExec(
+    convertPath,
+    compImage.concat([outFileName]),
+    outFileName,
+    '作成済みの立ち絵画像の合成に失敗',
+  )
+  if (ans.stderr !== '') {
+    return 'Error: ' + ans.stderr.toString()
+  } else {
+    return outFileName
+  }
 }

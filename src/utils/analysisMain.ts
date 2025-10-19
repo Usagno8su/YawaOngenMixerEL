@@ -519,12 +519,7 @@ export const enterEncodePicFileData = async (
   } else if (imgList.length > 1) {
     console.log('ふくすう')
     // 2つ以上の場合は合成する。
-    const ansPath = await imgCompositeFile(
-      globalSetting.exeFilePath.convert,
-      imgList,
-      tempDirPath,
-      'tenpCompositeMoveSizePic',
-    )
+    const ansPath = await imgCompositeFile(globalSetting.exeFilePath.convert, imgList, tempDirPath)
     // 作成したファイルを返す
     const buffer = await fs.promises.readFile(ansPath)
     return {
