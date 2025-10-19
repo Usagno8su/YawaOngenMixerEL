@@ -85,8 +85,11 @@ export const createImgFile = async (
   const makePicPath = async (): Promise<PicPathType> => {
     return {
       inputTatie: path.join(kyaraTatieDirPath, picFileName + '.png'), // 立ち絵のUUIDから立ち絵のパスを作る
-      tempTatiePic: path.join(tempDir, CreateSHA256Hash(picFileName + '.png' + comList.tatieResizeCom) + '.png'), // 立ち絵を縮小した立ち絵ファイル
-      baseTempPic: path.join(tempDir, 'basetemp.png'), // 動画の画面サイズの透明な画像
+      tempTatiePic: path.join(
+        tempDir,
+        CreateSHA256Hash(picFileName + '.png' + comList.tatieResizeCom.toString()) + '.png',
+      ), // 立ち絵を縮小した立ち絵ファイル
+      baseTempPic: path.join(tempDir, CreateSHA256Hash(comList.baseTempPicCom.toString()) + '.png'), // 動画の画面サイズの透明な画像
       cnvBackPic: path.join(outDir, voiceFileName), // 画面に立ち絵を合成したファイルのパス
     }
   }
@@ -111,13 +114,32 @@ export const createImgFile = async (
 
   console.log('動画の画面サイズの透明な画像を生成する')
   // 動画の画面サイズの透明な画像を生成する
-  const baseTempPic = await execFile(convertPath, comList.baseTempPicCom.concat([picPath.baseTempPic]))
-    .then((value) => {
-      return value
-    })
-    .catch((e) => {
-      return e
-    })
+
+  const MakeBaseTempPath = async (): Promise<{
+    stdout: string
+    stderr: string
+  }> => {
+    // ファイルがすでに存在する場合はエンコードを行わずにpathを返す。
+    if (fs.existsSync(picPath.baseTempPic)) {
+      return {
+        stdout: '',
+        stderr: '',
+      }
+    } else {
+      return await execFile(convertPath, comList.baseTempPicCom.concat([picPath.baseTempPic]))
+        .then((value) => {
+          return value
+        })
+        .catch((e) => {
+          return {
+            stdout: '',
+            stderr: '動画の画面サイズの透明な画像を生成に失敗',
+          }
+        })
+    }
+  }
+
+  const baseTempPic = await MakeBaseTempPath()
   if (baseTempPic.stderr !== '') {
     return 'Error: ' + baseTempPic.stderr.toString()
   }
