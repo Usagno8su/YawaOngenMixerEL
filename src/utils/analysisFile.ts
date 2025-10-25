@@ -234,6 +234,19 @@ export const enterEncodeTatiePicFile = async (
   )
 }
 
+// 指定された立ち絵ファイルの変換を行う。
+export const EnterEncodeTatieFile = async (
+  outSetting: outSettingType,
+  tatieSituation: tatieSituationType,
+): Promise<{ buffer: Uint8Array; path: string }> => {
+  return yomAPI.getEncodePicFileData([
+    {
+      outJsonData: JSON.stringify(outSetting, undefined, 2),
+      tatieSituation: tatieSituation,
+    },
+  ])
+}
+
 // 立ち絵の表示順リスト（TatieOrderList）へ、outSettingTtemの内容を入れる。
 // 既存のリストの内容を変更する際には、TatieOrderListのuuidを引数で指定して、同じUUIDが入るようにする。
 // tatieSituation で会話中か待機中どちらの立ち絵を表示するか指定されているときはそれを指定、
