@@ -48,6 +48,7 @@ import DisplaySettingSampleView from '@/components/accessories/DisplaySettingSam
 import MaterialIcons from '@/components/accessories/icons/MaterialIcons.vue'
 import DisplayHigherUpKyaraSettingView from '@/components/accessories/DisplayHigherUpKyaraSettingView.vue'
 import DialogEncode from '@/components/unit/DialogEncode.vue'
+import DisplaySampleList from '@/components/accessories/DisplaySampleList.vue'
 
 import { ref, watch } from 'vue'
 
@@ -833,7 +834,7 @@ watch(
 <template>
   <div class="flex">
     <div class="mx-1">
-      <DisplaySettingSampleView
+      <DisplaySampleList
         :dateList="dateList"
         :settype="settype"
         :higherUpList="higherUpList"
@@ -841,6 +842,7 @@ watch(
         :infoData="infoData"
         :tatieOrderList="editTatieOrderList"
         :isFileTatieOrderSetting="isFileTatieOrderSetting"
+        :size="{ w: 256, h: 144 }"
         ref="refEnterEncodeTatie"
       />
       <setKyaraList
