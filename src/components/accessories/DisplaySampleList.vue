@@ -35,7 +35,7 @@ const encodeSetting = ref<outSettingType>(
   resizeKyaraDateDisplay(createVoiceFileEncodeSetting(props.selectKyara, props.dateList), props.size),
 )
 
-let reversedtatieOrderList: tatieOrderListType[] = [...props.tatieOrderList].reverse()
+const reversedtatieOrderList = ref<tatieOrderListType[]>([...props.tatieOrderList].reverse())
 
 // settypeによって、表示する立ち絵を決める。
 // "defo"か"kyara"か"kyast"の場合は立ち絵をselectKyaraで指定したものだけ表示させる。
@@ -63,10 +63,16 @@ const checkConf = ref<{ [key: string]: string }>({})
 const onEncodeTatie = setInterval(() => {
   // 複数立ち絵が必要な場合はtatieOrderListを見る
   if (props.settype === 'tatieOrder' || props.settype === 'seid') {
-    reversedtatieOrderList = [...props.tatieOrderList].reverse()
-    console.log(reversedtatieOrderList)
+    // tatieOrderList の順番や数に変更があれば reversedtatieOrderList を上書きする
+    const tempReversedtatieOrderList = [...props.tatieOrderList].reverse()
+    const checkNewTatieOrderList = reversedtatieOrderList.value.findIndex(
+      (e, i) => e.uuid !== tempReversedtatieOrderList[i].uuid,
+    )
+    if (checkNewTatieOrderList !== -1) {
+      reversedtatieOrderList.value = [...tempReversedtatieOrderList]
+    }
 
-    for (const item of reversedtatieOrderList) {
+    for (const item of reversedtatieOrderList.value) {
       const tatieKyara = props.dateList.findIndex((e) => item.settingUUID === e.uuid)
       const itemSituation = props.selectKyara === tatieKyara ? tatieSituation.value : item.tatieSituation
 
