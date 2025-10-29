@@ -24,8 +24,11 @@ import { onUnmounted, ref, watch, onMounted } from 'vue'
 import DisplaySampleView from '@/components/accessories/DisplaySampleView.vue'
 import { MakeClassString, resizeKyaraDateDisplay } from '@/utils/analysisGeneral'
 
+// サムネイル用
 const refDisplaySampleView = ref<{ [key: string]: InstanceType<typeof DisplaySampleView> | null }>({})
 const refShowSingle = ref<InstanceType<typeof DisplaySampleView> | null>(null)
+// 設定変更の比較チェックのため、内容を文字列に変換して保存する変数
+const checkConf = ref<{ [key: string]: string }>({})
 
 // 会話中・待機中のどちらの立ち絵を表示するか指定
 const tatieSituation = ref<tatieSituationType>('tatieUUID')
@@ -88,7 +91,7 @@ const onEncodeTatie = setInterval(() => {
           const ans = JSON.stringify(encodeSetting.value, undefined, 2) + itemSituation.toString()
 
           // 比較して前回の内容と異なっていれば立ち絵画像の表示を更新する。
-          if (checkConf.value[item.uuid] !== ans && refDisplaySampleView.value[0] !== null) {
+          if (checkConf.value[item.uuid] !== ans && refDisplaySampleView.value[item.uuid] !== undefined) {
             console.log('エンコード実行')
             refDisplaySampleView.value[item.uuid].getKyaraImg(encodeSetting.value, itemSituation)
             checkConf.value[item.uuid] = ans
@@ -118,7 +121,7 @@ const onEncodeTatie = setInterval(() => {
 }, 3000)
 
 // 設定通りのサイズでエンコードした立ち絵画像を保存
-const SaveRawImg = async () => {
+const RawSaveTatie = async () => {
   // const ans = await enterSaveUint8ArrayFileData(data.value.buffer, defoDir.value)
   // 保存に成功していたら、保存ダイアログ表示時のディレクトリを更新
   // if (ans !== null) {
@@ -179,7 +182,7 @@ watch(
         </div>
       </div>
       <div v-show="!showOrderList && showKyaraUUID !== null">
-        <DisplaySampleView ref="refShowSingle" />
+        <DisplaySampleView imgClass="max-h-[150px] w-full" ref="refShowSingle" />
       </div>
     </div>
   </div>
