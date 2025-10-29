@@ -43,24 +43,16 @@ const reversedtatieOrderList = ref<tatieOrderListType[]>([...props.tatieOrderLis
 // settypeによって、表示する立ち絵を決める。
 // "defo"か"kyara"か"kyast"の場合は立ち絵をselectKyaraで指定したものだけ表示させる。
 // "seid"か"tatieOrder"の場合はtatieOrderListで指定したものを表示させる。
-let showOrderList: boolean = false
-let showKyaraUUID: string = props.dateList[props.selectKyara].uuid
+const showOrderList = ref<boolean>(false)
+const showKyaraUUID = ref<string>(props.selectKyara !== -1 ? props.dateList[props.selectKyara].uuid : null)
 const SelectSettypeKyaraUUID = () => {
   if (props.settype === 'tatieOrder' || props.settype === 'seid') {
-    showOrderList = true
-    showKyaraUUID = null
-  } else if (props.selectKyara !== -1) {
-    showOrderList = false
-    showKyaraUUID = props.dateList[props.selectKyara].uuid
+    showOrderList.value = true
   } else {
-    // selectKyaraが-1の場合は何も表示しない
-    showOrderList = false
-    showKyaraUUID = null
+    showOrderList.value = false
   }
+  showKyaraUUID.value = props.selectKyara !== -1 ? props.dateList[props.selectKyara].uuid : null
 }
-
-// 設定変更の比較チェックのため、内容を文字列に変換して保存する変数
-const checkConf = ref<{ [key: string]: string }>({})
 
 // 指定時間ごとに確認し、立ち絵の設定が変わったら表示を変更する
 const onEncodeTatie = setInterval(() => {
