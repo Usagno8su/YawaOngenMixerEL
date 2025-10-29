@@ -1,5 +1,7 @@
 <script setup lang="ts">
-const props = defineProps<{}>()
+const props = defineProps<{
+  imgClass?: string
+}>()
 // outSettingで指定された立ち絵画像のみ変換を行って表示する
 // createVoiceFileEncodeSetting()を通した情報を使用する。
 // 縮小する場合は、さらにresizeKyaraDateDisplay()を通すこと
@@ -8,6 +10,7 @@ import type { outSettingType, tatieSituationType } from '@/type/data-type'
 import { ref } from 'vue'
 import { EnterEncodeTatieFile } from '@/utils/analysisFile'
 import { DEFAULT_KYARA_TATIE_UUID } from '@/data/data'
+import { MakeClassString } from '@/utils/analysisGeneral'
 
 // getKyaraImgが二重起動するのを防止する。
 const runMakeImg = ref<boolean>(true)
@@ -65,8 +68,8 @@ defineExpose({ getKyaraImg })
 
 <template>
   <div v-if="typeof rawImg === 'string' && noRawTatieFile === false">
-    <div class="absolute top-0 left-1/2 h-full w-full -translate-x-3/7">
-      <img :src="rawImg" class="border border-gray-800" />
+    <div class="absolute top-0 left-0">
+      <img :src="rawImg" :class="MakeClassString('border border-gray-800', imgClass)" />
     </div>
   </div>
   <div v-else class="absolute top-1 left-3 rounded-md border-gray-200 bg-white px-6 py-3">読み込み中</div>
