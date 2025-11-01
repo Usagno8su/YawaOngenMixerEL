@@ -642,6 +642,45 @@ export const saveUint8ArrayFileData = (
   }
 }
 
+// outStateで指定された内容のファイルをエンコードして保存する
+// 保存が完了したら保存したディレクトリを返す。
+export const SaveOutSettingFileData = async (
+  kyaraTatieDirPath: string,
+  globalSetting: globalSettingType,
+  fileFiltersName: string, // 対象ファイルの種類名
+  fileFiltersExtensions: string[], // 対象ファイルの拡張子
+  outState: { outJsonData: string; tatieSituation: string }[],
+  defoDir?: string,
+): Promise<string> => {
+  // 選択画面で表示するディレクトリを決める
+  const defaultPath = fs.existsSync(defoDir) ? defoDir : app.getPath('home')
+
+  // 保存ダイヤログで保存場所を指定する。
+  const savePath = await dialog.showSaveDialog(null, {
+    title: '保存場所を選択',
+    defaultPath: path.join(defaultPath, 'tatie-img-' + NowTimeData('todaybumber') + '.png'),
+    buttonLabel: '保存',
+    filters: [{ name: fileFiltersName, extensions: fileFiltersExtensions }],
+  })
+
+  // 保存場所が指定されていたらエンコードを行い、一時保存しているファイルのフルパスを返す。
+  // キャンセルされていた場合はそのままnullを返して終了する。
+  if (savePath.canceled) {
+    return null
+  } else {
+    // 画像をエンコード
+    const fileData = await enterEncodePicFileData(outState, kyaraTatieDirPath, globalSetting)
+
+    // 保存処理
+    try {
+      fs.writeFileSync(savePath.filePath, fileData.buffer)
+      return path.dirname(savePath.filePath)
+    } catch {
+      return null
+    }
+  }
+}
+
 // 指定された字幕テキストファイルの内容を取得して返す。
 // ファイルがない場合はfalseを返す。
 export const loadSubTextString = (dir: string, fileName: string): { val: string; active: boolean } => {
