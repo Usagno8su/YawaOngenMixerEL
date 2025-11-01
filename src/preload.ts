@@ -70,6 +70,20 @@ contextBridge.exposeInMainWorld('yomAPI', {
       infoSettingJsonData,
     )
   },
+  EnterEncodeTatiePicData: async (
+    outTatieState: { outJsonData: string; tatieSituation: string }[],
+    fileFiltersName: string,
+    fileFiltersExtensions: string[],
+    defoDir?: string,
+  ): Promise<string> => {
+    return await ipcRenderer.invoke(
+      'enterEncodeTatiePicData',
+      outTatieState,
+      fileFiltersName,
+      fileFiltersExtensions,
+      defoDir,
+    )
+  },
   getGlobalSettingData: (): string => {
     return ipcRenderer.sendSync('loadGlobalSettingData')
   },

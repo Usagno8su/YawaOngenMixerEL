@@ -30,6 +30,12 @@ export interface WGyomAPI {
     outTatieState: { outJsonData: string; tatieSituation: string }[],
     infoSettingJsonData: string,
   ) => string
+  EnterEncodeTatiePicData: (
+    outTatieState: { outJsonData: string; tatieSituation: string }[],
+    fileFiltersName: string,
+    fileFiltersExtensions: string[],
+    defoDir?: string,
+  ) => string
   getGlobalSettingData: () => string
   writeGlobalSettingData: (outJsonData: string) => boolean
   openGlobalSetting: (listener: () => void) => void
