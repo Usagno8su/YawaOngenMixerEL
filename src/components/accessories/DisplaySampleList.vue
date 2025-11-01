@@ -19,8 +19,9 @@ import type {
   dataTextType,
 } from '@/type/data-type'
 import { createVoiceFileEncodeSetting } from '@/utils/analysisData'
+import { makeTatiePicEncodeList, EnterEncodeSaveTatieFile } from '@/utils/analysisFile'
 import { DEFAULT_KYARA_TATIE_UUID } from '@/data/data'
-import { onUnmounted, ref, watch, onMounted } from 'vue'
+import { onUnmounted, ref, watch } from 'vue'
 import DisplaySampleView from '@/components/accessories/DisplaySampleView.vue'
 import DialogRawLIstFileView from '@/components/unit/DialogRawLIstFileView.vue'
 import { MakeClassString, resizeKyaraDateDisplay } from '@/utils/analysisGeneral'
@@ -38,6 +39,9 @@ const openDialog = ref<boolean>(false)
 
 // 立ち絵の拡大表示時の背景色を保存
 const tatieBgColor = ref<string>('#ffffff')
+
+// 保存ダイアログ表示時のディレクトリを指定
+const defoDir = ref<string>(undefined)
 
 // 会話中・待機中のどちらの立ち絵を表示するか指定
 const tatieSituation = ref<tatieSituationType>('tatieUUID')
@@ -167,11 +171,24 @@ const ClickRawClose = (bgColor: string) => {
 
 // 設定通りのサイズでエンコードした立ち絵画像を保存
 const RawSaveTatie = async () => {
-  // const ans = await enterSaveUint8ArrayFileData(data.value.buffer, defoDir.value)
+  // 設定を変換して送付
+  const ans = await EnterEncodeSaveTatieFile(
+    makeTatiePicEncodeList(
+      tatieSituation.value,
+      props.dateList,
+      props.settype,
+      props.tatieOrderList,
+      !showOrderList.value ? props.selectKyara : undefined,
+    ),
+    'Image',
+    ['png'],
+    defoDir.value,
+  )
+
   // 保存に成功していたら、保存ダイアログ表示時のディレクトリを更新
-  // if (ans !== null) {
-  //   defoDir.value = ans
-  // }
+  if (ans !== null) {
+    defoDir.value = ans
+  }
 }
 
 // コンポーネントが表示されなくなったらsetIntervalを停止

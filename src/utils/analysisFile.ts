@@ -247,6 +247,17 @@ export const EnterEncodeTatieFile = async (
   ])
 }
 
+// 指定された立ち絵ファイルの変換を行って、そのファイルの保存を行う。
+// 保存したら、ディレクトリのパスを返す（行わなかったらnull）。
+export const EnterEncodeSaveTatieFile = async (
+  outState: { outJsonData: string; tatieSituation: string }[],
+  fileFiltersName: string,
+  fileFiltersExtensions: string[],
+  defoDir?: string,
+): Promise<string> => {
+  return yomAPI.EnterEncodeTatiePicData(outState, fileFiltersName, fileFiltersExtensions, defoDir)
+}
+
 // 立ち絵の表示順リスト（TatieOrderList）へ、outSettingTtemの内容を入れる。
 // 既存のリストの内容を変更する際には、TatieOrderListのuuidを引数で指定して、同じUUIDが入るようにする。
 // tatieSituation で会話中か待機中どちらの立ち絵を表示するか指定されているときはそれを指定、
