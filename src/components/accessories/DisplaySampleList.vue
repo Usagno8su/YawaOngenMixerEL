@@ -67,6 +67,35 @@ const SelectSettypeKyaraUUID = () => {
   showKyaraUUID.value = props.selectKyara !== -1 ? props.dateList[props.selectKyara].uuid : null
 }
 
+// どのtatieSituationを選択するか決める。
+// settype が'seid'の場合は、selectKyaraの音声ファイルで会話中のキャラは、tatieSituation.valueで指定された値にする必要がある。
+// また、そのときにはcreateVoiceFileEncodeSetting()に渡すdateListの配列番号もprops.selectKyaraにする必要がある
+const ItemSelectSituation = (
+  item: tatieOrderListType,
+  encodeKyara: number,
+  actKyara: outSettingType,
+): { tatieSituation: tatieSituationType; selectKyara: boolean } => {
+  if (props.settype === 'tatieOrder') {
+    return { tatieSituation: item.tatieSituation, selectKyara: false }
+  } else {
+    // キャラ名が一致するかと、立ち絵の設定が有効になっているか確認する。
+    const tatieKyara =
+      FindAllString(props.dateList[encodeKyara].name, [actKyara.name]) &&
+      props.dateList[encodeKyara].tatie[tatieSituation.value].active
+
+    if (item.dataType === 'kyara') {
+      return tatieKyara
+        ? { tatieSituation: tatieSituation.value, selectKyara: true }
+        : { tatieSituation: item.tatieSituation, selectKyara: false }
+    } else {
+      // dataType が 'kyast' の場合にはスタイルも一致するか確認する
+      return tatieKyara && actKyara.kyaraStyle === props.dateList[encodeKyara].kyaraStyle
+        ? { tatieSituation: tatieSituation.value, selectKyara: true }
+        : { tatieSituation: item.tatieSituation, selectKyara: false }
+    }
+  }
+}
+
 // 指定時間ごとに確認し、立ち絵の設定が変わったら表示を変更する
 const onEncodeTatie = setInterval(() => {
   // 複数立ち絵が必要な場合はtatieOrderListを見る
