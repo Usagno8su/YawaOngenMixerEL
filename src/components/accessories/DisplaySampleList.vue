@@ -18,7 +18,7 @@ import type {
   tatieOrderListType,
   dataTextType,
 } from '@/type/data-type'
-import { createVoiceFileEncodeSetting } from '@/utils/analysisData'
+import { createVoiceFileEncodeSetting, FindAllString } from '@/utils/analysisData'
 import { makeTatiePicEncodeList, EnterEncodeSaveTatieFile } from '@/utils/analysisFile'
 import { DEFAULT_KYARA_TATIE_UUID } from '@/data/data'
 import { onUnmounted, ref, watch } from 'vue'
@@ -99,7 +99,7 @@ const ItemSelectSituation = (
 // 指定時間ごとに確認し、立ち絵の設定が変わったら表示を変更する
 const onEncodeTatie = setInterval(() => {
   // 複数立ち絵が必要な場合はtatieOrderListを見る
-  if (props.settype === 'tatieOrder' || props.settype === 'seid') {
+  if (props.selectKyara !== -1 && (props.settype === 'tatieOrder' || props.settype === 'seid')) {
     // tatieOrderList の順番や数に変更があれば reversedtatieOrderList を上書きする
     const tempReversedtatieOrderList = [...props.tatieOrderList].reverse()
     const checkNewTatieOrderList = reversedtatieOrderList.value.findIndex(
@@ -109,31 +109,41 @@ const onEncodeTatie = setInterval(() => {
       reversedtatieOrderList.value = [...tempReversedtatieOrderList]
     }
 
-    for (const item of reversedtatieOrderList.value) {
-      const tatieKyara = props.dateList.findIndex((e) => item.settingUUID === e.uuid)
-      const itemSituation = props.selectKyara === tatieKyara ? tatieSituation.value : item.tatieSituation
+    // 現在選択中のキャラ設定か音声ファイルの情報を取得
+    const actKyara = props.dateList[props.selectKyara]
 
-      if (tatieKyara != -1) {
+    for (const item of reversedtatieOrderList.value) {
+      // UUIDからどのキャラをエンコードするか確認する
+      const encodeKyara = props.dateList.findIndex((e) => e.uuid === item.settingUUID)
+
+      // tatieSituationの設定を決める。
+      const itemSituation = ItemSelectSituation(item, encodeKyara, actKyara)
+
+      if (encodeKyara != -1) {
+        // 立ち絵のエンコード情報を作成する。
         encodeSetting.value = resizeKyaraDateDisplay(
-          createVoiceFileEncodeSetting(tatieKyara, props.dateList),
+          createVoiceFileEncodeSetting(
+            props.settype === 'seid' && itemSituation.selectKyara ? props.selectKyara : encodeKyara,
+            props.dateList,
+          ),
           props.size,
         )
 
         // キャラが未選択でなければ実行
-        if (props.selectKyara !== -1 && encodeSetting.value.tatie[itemSituation].val !== DEFAULT_KYARA_TATIE_UUID) {
+        if (encodeSetting.value.tatie[itemSituation.tatieSituation].val !== DEFAULT_KYARA_TATIE_UUID) {
           // 比較のために設定内容をJSON形式に変換
           const ans = JSON.stringify(encodeSetting.value, undefined, 2) + itemSituation.toString()
 
           // 比較して前回の内容と異なっていれば立ち絵画像の表示を更新する。
           if (checkConf.value[item.uuid] !== ans && refDisplaySampleView.value[item.uuid] !== undefined) {
             console.log('エンコード実行')
-            refDisplaySampleView.value[item.uuid].getKyaraImg(encodeSetting.value, itemSituation)
+            refDisplaySampleView.value[item.uuid].getKyaraImg(encodeSetting.value, itemSituation.tatieSituation)
             checkConf.value[item.uuid] = ans
           }
         }
       }
     }
-  } else {
+  } else if (props.selectKyara !== -1) {
     encodeSetting.value = resizeKyaraDateDisplay(
       createVoiceFileEncodeSetting(props.selectKyara, props.dateList),
       props.size,
@@ -145,7 +155,7 @@ const onEncodeTatie = setInterval(() => {
       const ans = JSON.stringify(encodeSetting.value, undefined, 2) + tatieSituation.value.toString()
 
       // 比較して前回の内容と異なっていれば立ち絵画像の表示を更新する。
-      if (checkConf.value['refShowSingle'] !== ans && refDisplaySampleView.value[0] !== null) {
+      if (checkConf.value['refShowSingle'] !== ans && refShowSingle.value !== null) {
         console.log('エンコード実行')
         refShowSingle.value.getKyaraImg(encodeSetting.value, tatieSituation.value)
         checkConf.value['refShowSingle'] = ans
@@ -158,22 +168,32 @@ const onEncodeTatie = setInterval(() => {
 // 設定された元のサイズで立ち絵画像のエンコードを実施する。
 const RawEncodeTatie = () => {
   // 複数立ち絵が必要な場合はtatieOrderListを見る
-  if (props.settype === 'tatieOrder' || props.settype === 'seid') {
-    for (const item of reversedtatieOrderList.value) {
-      const tatieKyara = props.dateList.findIndex((e) => item.settingUUID === e.uuid)
-      const itemSituation = props.selectKyara === tatieKyara ? tatieSituation.value : item.tatieSituation
+  if (props.selectKyara !== -1 && (props.settype === 'tatieOrder' || props.settype === 'seid')) {
+    // 現在選択中のキャラ設定か音声ファイルの情報を取得
+    const actKyara = props.dateList[props.selectKyara]
 
-      if (tatieKyara != -1) {
-        encodeSetting.value = createVoiceFileEncodeSetting(tatieKyara, props.dateList)
+    for (const item of reversedtatieOrderList.value) {
+      // UUIDからどのキャラをエンコードするか確認する
+      const encodeKyara = props.dateList.findIndex((e) => e.uuid === item.settingUUID)
+
+      // tatieSituationの設定を決める。
+      const itemSituation = ItemSelectSituation(item, encodeKyara, actKyara)
+
+      if (encodeKyara != -1) {
+        // 立ち絵のエンコード情報を作成する。
+        encodeSetting.value = createVoiceFileEncodeSetting(
+          props.settype === 'seid' && itemSituation.selectKyara ? props.selectKyara : encodeKyara,
+          props.dateList,
+        )
 
         // キャラが未選択でなければ実行
-        if (props.selectKyara !== -1 && encodeSetting.value.tatie[itemSituation].val !== DEFAULT_KYARA_TATIE_UUID) {
+        if (encodeSetting.value.tatie[itemSituation.tatieSituation].val !== DEFAULT_KYARA_TATIE_UUID) {
           console.log('エンコード実行')
-          refDisplayRawView.value[item.uuid].getKyaraImg(encodeSetting.value, itemSituation)
+          refDisplayRawView.value[item.uuid].getKyaraImg(encodeSetting.value, itemSituation.tatieSituation)
         }
       }
     }
-  } else {
+  } else if (props.selectKyara !== -1) {
     encodeSetting.value = createVoiceFileEncodeSetting(props.selectKyara, props.dateList)
 
     // キャラが未選択でなければ実行
