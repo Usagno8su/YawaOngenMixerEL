@@ -291,12 +291,13 @@ watch(
       <div v-show="showOrderList">
         <div v-for="(item, index) in reversedtatieOrderList" :key="item.uuid">
           <DisplaySampleView
+            absoluteClass="top-0.5 left-1"
             :ref="(el) => (refDisplaySampleView[item.uuid] = el as InstanceType<typeof DisplaySampleView> | null)"
           />
         </div>
       </div>
       <div v-show="!showOrderList && showKyaraUUID !== null">
-        <DisplaySampleView imgClass="max-h-[150px] w-full" ref="refShowSingle" />
+        <DisplaySampleView absoluteClass="top-0.5 left-1" imgClass="max-h-[150px] w-full" ref="refShowSingle" />
       </div>
     </button>
     <DialogRawLIstFileView

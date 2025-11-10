@@ -93,7 +93,7 @@ const seveProfile = (): void => {
         </button>
       </div>
     </div>
-    <div class="h-full border border-gray-800 px-1 pt-5">
+    <div class="h-full border border-gray-800 px-1 pt-3">
       <makeComList
         :settype="settype"
         :setTypeChange="setClick"

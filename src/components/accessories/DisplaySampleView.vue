@@ -1,7 +1,11 @@
 <script setup lang="ts">
-const props = defineProps<{
-  imgClass?: string
-}>()
+const props = withDefaults(
+  defineProps<{
+    absoluteClass?: string
+    imgClass?: string
+  }>(),
+  { absoluteClass: 'top-0 left-0' },
+)
 // outSettingで指定された立ち絵画像のみ変換を行って表示する
 // createVoiceFileEncodeSetting()を通した情報を使用する。
 // 縮小する場合は、さらにresizeKyaraDateDisplay()を通すこと
@@ -68,9 +72,9 @@ defineExpose({ getKyaraImg })
 
 <template>
   <div v-if="typeof rawImg === 'string' && noRawTatieFile === false">
-    <div class="absolute top-0 left-0">
+    <div :class="MakeClassString('absolute', absoluteClass)">
       <img :src="rawImg" :class="MakeClassString('border border-gray-800', imgClass)" />
     </div>
   </div>
-  <div v-else class="absolute top-1 left-3 rounded-md border-gray-200 bg-white px-6 py-3">読み込み中</div>
+  <div v-else class="absolute top-1 left-1/3 rounded-md border-gray-200 bg-white px-6 py-3">未選択</div>
 </template>
