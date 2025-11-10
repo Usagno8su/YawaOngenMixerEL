@@ -103,7 +103,8 @@ const onEncodeTatie = setInterval(() => {
     // tatieOrderList の順番や数に変更があれば reversedtatieOrderList を上書きする
     const tempReversedtatieOrderList = [...props.tatieOrderList].reverse()
     const checkNewTatieOrderList = reversedtatieOrderList.value.findIndex(
-      (e, i) => e.uuid !== tempReversedtatieOrderList[i].uuid,
+      (e, i) =>
+        e.uuid !== tempReversedtatieOrderList[i].uuid && e.settingUUID !== tempReversedtatieOrderList[i].settingUUID,
     )
     if (checkNewTatieOrderList !== -1) {
       reversedtatieOrderList.value = [...tempReversedtatieOrderList]
@@ -132,7 +133,7 @@ const onEncodeTatie = setInterval(() => {
         // キャラが未選択でなければ実行
         if (encodeSetting.value.tatie[itemSituation.tatieSituation].val !== DEFAULT_KYARA_TATIE_UUID) {
           // 比較のために設定内容をJSON形式に変換
-          const ans = JSON.stringify(encodeSetting.value, undefined, 2) + itemSituation.toString()
+          const ans = JSON.stringify(encodeSetting.value, undefined, 2) + itemSituation.tatieSituation.toString()
 
           // 比較して前回の内容と異なっていれば立ち絵画像の表示を更新する。
           if (checkConf.value[item.uuid] !== ans && refDisplaySampleView.value[item.uuid] !== undefined) {
