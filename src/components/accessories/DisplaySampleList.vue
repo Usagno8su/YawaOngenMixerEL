@@ -96,19 +96,27 @@ const ItemSelectSituation = (
   }
 }
 
+// tatieOrderList の順番や数に変更があれば reversedtatieOrderList を上書きする
+const CheckNewTatieOrderList = () => {
+  const tempReversedtatieOrderList = [...props.tatieOrderList].reverse()
+  const checkNewTatieOrderList = reversedtatieOrderList.value.findIndex(
+    (e, i) =>
+      e.uuid !== tempReversedtatieOrderList[i].uuid && e.settingUUID !== tempReversedtatieOrderList[i].settingUUID,
+  )
+  if (checkNewTatieOrderList !== -1 || reversedtatieOrderList.value.length !== tempReversedtatieOrderList.length) {
+    reversedtatieOrderList.value = [...tempReversedtatieOrderList]
+  }
+}
+
+// enterEncodeTatie を親コンポーネントから呼び出せるようにします
+defineExpose({ CheckNewTatieOrderList })
+
 // 指定時間ごとに確認し、立ち絵の設定が変わったら表示を変更する
 const onEncodeTatie = setInterval(() => {
   // 複数立ち絵が必要な場合はtatieOrderListを見る
   if (props.selectKyara !== -1 && (props.settype === 'tatieOrder' || props.settype === 'seid')) {
     // tatieOrderList の順番や数に変更があれば reversedtatieOrderList を上書きする
-    const tempReversedtatieOrderList = [...props.tatieOrderList].reverse()
-    const checkNewTatieOrderList = reversedtatieOrderList.value.findIndex(
-      (e, i) =>
-        e.uuid !== tempReversedtatieOrderList[i].uuid && e.settingUUID !== tempReversedtatieOrderList[i].settingUUID,
-    )
-    if (checkNewTatieOrderList !== -1) {
-      reversedtatieOrderList.value = [...tempReversedtatieOrderList]
-    }
+    CheckNewTatieOrderList()
 
     // 現在選択中のキャラ設定か音声ファイルの情報を取得
     const actKyara = props.dateList[props.selectKyara]
@@ -137,7 +145,6 @@ const onEncodeTatie = setInterval(() => {
 
           // 比較して前回の内容と異なっていれば立ち絵画像の表示を更新する。
           if (checkConf.value[item.uuid] !== ans && refDisplaySampleView.value[item.uuid] !== undefined) {
-            console.log('エンコード実行')
             refDisplaySampleView.value[item.uuid].getKyaraImg(encodeSetting.value, itemSituation.tatieSituation)
             checkConf.value[item.uuid] = ans
           }
