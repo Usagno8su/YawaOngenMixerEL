@@ -101,7 +101,7 @@ const CheckNewTatieOrderList = () => {
   const tempReversedtatieOrderList = [...props.tatieOrderList].reverse()
   const checkNewTatieOrderList = reversedtatieOrderList.value.findIndex(
     (e, i) =>
-      e.uuid !== tempReversedtatieOrderList[i].uuid && e.settingUUID !== tempReversedtatieOrderList[i].settingUUID,
+      e.uuid !== tempReversedtatieOrderList[i].uuid || e.settingUUID !== tempReversedtatieOrderList[i].settingUUID,
   )
   if (checkNewTatieOrderList !== -1 || reversedtatieOrderList.value.length !== tempReversedtatieOrderList.length) {
     reversedtatieOrderList.value = [...tempReversedtatieOrderList]
