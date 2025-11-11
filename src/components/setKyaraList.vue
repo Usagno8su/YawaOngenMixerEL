@@ -25,14 +25,14 @@ const props = defineProps<{
 }>()
 import { watch, ref, nextTick } from 'vue'
 import { outSettingType, dataTextType, editKyaraNameType } from '@/type/data-type'
-import { checkSameValues, FindAllString, getPlatform } from '@/utils/analysisData'
+import { checkSameValues, getPlatform } from '@/utils/analysisData'
 import AccEditKyaraName from '@/components/accessories/AccEditKyaraName.vue'
 import MaterialIcons from '@/components/accessories/icons/MaterialIcons.vue'
 import SelectProfileList from '@/components/unit/SelectProfileList.vue'
 import SearchInputUnit from '@/components/unit/SearchInputUnit.vue'
 import SelectDisplayKyaraRightClickMenu from '@/components/accessories/SelectDisplayKyaraRightClickMenu.vue'
 import SelectSeidList from '@/components/unit/SelectSeidList.vue'
-import { MakeClassString, createNewDateList } from '@/utils/analysisGeneral'
+import { MakeClassString, createNewDateList, FindAllString } from '@/utils/analysisGeneral'
 
 const { yomAPI } = window
 

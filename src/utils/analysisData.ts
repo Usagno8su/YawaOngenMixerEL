@@ -402,28 +402,3 @@ export const loadProfile = (profileName?: string): inputProfileSendReType => {
   // JSONファイル読み込み
   return yomAPI.getKyaraProfileData(inputProfileName)
 }
-
-// 第１引数で指定された文字列で、第２引数で指定された文字列を検索する。
-// 第１引数の文字列は半角・全角スペースで分割しAND検索を行う。
-export const FindAllString = (searchString: string | undefined, findList: string[]): boolean => {
-  // 検索文字列がない場合はtrueを返す
-  if (searchString === undefined || searchString === '') {
-    return true
-  }
-
-  const splitSearchString = searchString.replaceAll('　', ' ').split(' ')
-
-  // 検索対象文字列を半角スペースで区切って一つの文字列にする
-  const findString = findList.join(' ')
-
-  // 検索対象文字列を検索して、ひとつでも検索文字列が見つからなければfalseを返す。
-  // and検索のため
-  for (const val of splitSearchString) {
-    if (findString.indexOf(val) === -1) {
-      return false
-    }
-  }
-
-  // 検索文字列がすべてあればtrueを返す。
-  return true
-}
