@@ -44,7 +44,6 @@ import { createDefoKyaraDateList, createNewDateList } from '@/utils/analysisGene
 import type { deleteDialogRefType } from 'src/components/accessories/deleteDialog.vue'
 import deleteDialog from '@/components/accessories/deleteDialog.vue'
 import DisplaySelectFileView from '@/components/accessories/DisplaySelectFileView.vue'
-import DisplaySettingSampleView from '@/components/accessories/DisplaySettingSampleView.vue'
 import MaterialIcons from '@/components/accessories/icons/MaterialIcons.vue'
 import DisplayHigherUpKyaraSettingView from '@/components/accessories/DisplayHigherUpKyaraSettingView.vue'
 import DialogEncode from '@/components/unit/DialogEncode.vue'
