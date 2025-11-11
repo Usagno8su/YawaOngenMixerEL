@@ -18,8 +18,7 @@ import type { fileListTatieType } from 'src/type/data-type'
 import MaterialIcons from '@/components/accessories/icons/MaterialIcons.vue'
 import DisplayTatiePicFile from '@/components/accessories/DisplayTatiePicFile.vue'
 import { DEFAULT_KYARA_TATIE_UUID } from '@/data/data'
-import { MakeClassString } from '@/utils/analysisGeneral'
-import { FindAllString } from '@/utils/analysisData'
+import { MakeClassString, FindAllString } from '@/utils/analysisGeneral'
 import SearchInputUnit from '@/components/unit/SearchInputUnit.vue'
 
 const refSearchString = ref<{ searchString: string }>({ searchString: undefined })

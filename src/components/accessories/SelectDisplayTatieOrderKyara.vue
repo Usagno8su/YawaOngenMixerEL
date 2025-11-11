@@ -16,8 +16,7 @@ const props = defineProps<{
 import { ref } from 'vue'
 import type { outSettingType, dataTextType } from 'src/type/data-type'
 import { typeColor, DEFAULT_KYARA_SETTING_DISPLAY_NAME } from '@/data/data'
-import { MakeClassString } from '@/utils/analysisGeneral'
-import { FindAllString } from '@/utils/analysisData'
+import { MakeClassString, FindAllString } from '@/utils/analysisGeneral'
 import SearchInputUnit from '@/components/unit/SearchInputUnit.vue'
 
 // 検索用
