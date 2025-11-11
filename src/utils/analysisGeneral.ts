@@ -305,7 +305,7 @@ export const resizeKyaraDateDisplay = (setting: outSettingType, size?: { w: numb
       setting.tatie.moviW.val = size.w
       setting.tatie.moviH.val = sizeAns
 
-      console.log('縮小結果w: ' + setting.tatie.moviW.val + ' ' + setting.tatie.moviH.val)
+      // console.log('縮小結果w: ' + setting.tatie.moviW.val + ' ' + setting.tatie.moviH.val)
 
       return setting
 
@@ -315,7 +315,7 @@ export const resizeKyaraDateDisplay = (setting: outSettingType, size?: { w: numb
       setting.tatie.moviW.val = sizeAns
       setting.tatie.moviH.val = size.h
 
-      console.log('縮小結果h: ' + setting.tatie.moviW.val + ' ' + setting.tatie.moviH.val)
+      // console.log('縮小結果h: ' + setting.tatie.moviW.val + ' ' + setting.tatie.moviH.val)
 
       return setting
     }

@@ -44,10 +44,10 @@ import { createDefoKyaraDateList, createNewDateList } from '@/utils/analysisGene
 import type { deleteDialogRefType } from 'src/components/accessories/deleteDialog.vue'
 import deleteDialog from '@/components/accessories/deleteDialog.vue'
 import DisplaySelectFileView from '@/components/accessories/DisplaySelectFileView.vue'
-import DisplaySettingSampleView from '@/components/accessories/DisplaySettingSampleView.vue'
 import MaterialIcons from '@/components/accessories/icons/MaterialIcons.vue'
 import DisplayHigherUpKyaraSettingView from '@/components/accessories/DisplayHigherUpKyaraSettingView.vue'
 import DialogEncode from '@/components/unit/DialogEncode.vue'
+import DisplaySampleList from '@/components/accessories/DisplaySampleList.vue'
 
 import { ref, watch } from 'vue'
 
@@ -118,7 +118,7 @@ const dragStartIndex = ref<number>(-1)
 
 const dragChangeIndex = ref<number>(-1)
 
-const refEnterEncodeTatie = ref<InstanceType<typeof DisplaySettingSampleView> | null>(null)
+const refEnterEncodeTatie = ref<InstanceType<typeof DisplaySampleList> | null>(null)
 
 // エンコードダイアログを閉じる
 const closeEncodeDialog = (): void => {
@@ -578,7 +578,7 @@ const TatieOrderAdd = (outSettingTtems: outSettingType[]) => {
     editTatieOrderList.value.push(TatieOrderListAddValue(item))
   }
   // 立ち絵の変換サンプルを更新
-  refEnterEncodeTatie.value?.enterEncodeTatie()
+  refEnterEncodeTatie.value?.CheckNewTatieOrderList()
 }
 
 // editTatieOrderListに表示する立ち絵を、選択されたキャラに変更する。
@@ -590,14 +590,14 @@ const TatieOrderChange = (uuid: string, outSettingTtem: outSettingType) => {
     editTatieOrderList.value[changeItemindex] = TatieOrderListAddValue(outSettingTtem, uuid)
   }
   // 立ち絵の変換サンプルを更新
-  refEnterEncodeTatie.value?.enterEncodeTatie()
+  refEnterEncodeTatie.value?.CheckNewTatieOrderList()
 }
 
 // editTatieOrderListに表示する立ち絵を削除する。
 const TatieOrderDel = (index: number) => {
   editTatieOrderList.value.splice(index, 1)
   // 立ち絵の変換サンプルを更新
-  refEnterEncodeTatie.value?.enterEncodeTatie()
+  refEnterEncodeTatie.value?.CheckNewTatieOrderList()
 }
 
 // プロファイルの立ち絵順序の設定に選択中のキャラ設定がある場合は、trueを返して削除を行わないようにする。
@@ -660,7 +660,7 @@ const TatieOrderChangeSituation = (index: number) => {
     editTatieOrderList.value[index].tatieSituation = 'tatieUUID'
   }
   // 立ち絵の変換サンプルを更新
-  refEnterEncodeTatie.value?.enterEncodeTatie()
+  refEnterEncodeTatie.value?.CheckNewTatieOrderList()
 }
 
 // キャラ名やスタイル名で検索したときに、
@@ -833,7 +833,7 @@ watch(
 <template>
   <div class="flex">
     <div class="mx-1">
-      <DisplaySettingSampleView
+      <DisplaySampleList
         :dateList="dateList"
         :settype="settype"
         :higherUpList="higherUpList"
@@ -841,6 +841,7 @@ watch(
         :infoData="infoData"
         :tatieOrderList="editTatieOrderList"
         :isFileTatieOrderSetting="isFileTatieOrderSetting"
+        :size="{ w: 256, h: 144 }"
         ref="refEnterEncodeTatie"
       />
       <setKyaraList

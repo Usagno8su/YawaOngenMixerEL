@@ -12,6 +12,7 @@ import {
   makeUUID,
   initializationFileListTatie,
   enterEncodeVideoData,
+  SaveOutSettingFileData,
   initializationGlobalSetting,
   loadDirPath,
   loadFilePath,
@@ -569,6 +570,32 @@ ipcMain.handle(
     defoDir?: string,
   ) => {
     return saveUint8ArrayFileData(fileData, fileName, fileFiltersName, fileFiltersExtensions, defoDir)
+  },
+)
+
+// outJsonDataで指定された内容で画像エンコードのみを実施し、
+// 作成した画像ファイルを指定した場所に保存する。
+// 保存したファイルのあるディレクトリのパスを返す。
+ipcMain.handle(
+  'enterEncodeTatiePicData',
+  async (
+    event,
+    outTatieState: { outJsonData: string; tatieSituation: string }[],
+    fileFiltersName: string,
+    fileFiltersExtensions: string[],
+    defoDir?: string,
+  ) => {
+    // 全体設定を読み込んで、コマンドのパス情報を取得する。
+    const globalSettingData: globalSettingExportType = JSON.parse(readJsonData(globalSettingFilePathGLB))
+
+    return await SaveOutSettingFileData(
+      kyaraTatieDirPathGLB,
+      globalSettingData.globalSetting,
+      fileFiltersName,
+      fileFiltersExtensions,
+      outTatieState,
+      defoDir,
+    )
   },
 )
 
