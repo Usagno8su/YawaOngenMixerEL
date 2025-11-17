@@ -12,7 +12,7 @@ import {
   kyaraProfileListExportType,
   kyaraProfileListType,
 } from '../type/data-type'
-import { NowTimeData, createNewDateList } from './analysisGeneral'
+import { NowTimeData, createNewDateList, FindAllString } from './analysisGeneral'
 import { DEFAULT_KYARA_PROFILE_NAME } from '../data/data'
 import { ref } from 'vue'
 
@@ -80,10 +80,12 @@ export const ansFindIndex = (kyaraType: 'kyast' | 'kyara', dateList: outSettingT
       (e) =>
         e.dataType === 'kyast' &&
         e.kyaraStyle === dateList[selectKyara]?.kyaraStyle &&
-        e.name === dateList[selectKyara]?.name,
+        FindAllString(e.name, [dateList[selectKyara]?.name]),
     )
   } else {
-    ansFindIndex.value = dateList.findIndex((e) => e.dataType === 'kyara' && e.name === dateList[selectKyara]?.name)
+    ansFindIndex.value = dateList.findIndex(
+      (e) => e.dataType === 'kyara' && FindAllString(e.name, [dateList[selectKyara]?.name]),
+    )
   }
 
   if (ansFindIndex.value !== -1) {
