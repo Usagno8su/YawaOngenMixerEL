@@ -18,35 +18,10 @@ import { ref } from 'vue'
 
 const { yomAPI } = window
 
-// outSettingType形式の変数を比較し同一かどうか判定する。
-export const analysisDataComparisonOutSettingType = (element: outSettingType, target: outSettingType): boolean => {
-  return (
-    element.dataType === target.dataType && element.name === target.name && element.kyaraStyle === target.kyaraStyle
-  )
-}
-
 // 与えられた文字列からハッシュを作成
 // ID用に使う
 export const createStringHash = (data: string): number => {
   return yomAPI.getHashData(data)
-}
-
-// dateListに新しいデータを入れる際に、他と衝突していないIDを作成する
-export const createNewDataID = (dateList: outSettingType[], newName: string): number => {
-  let newID = <number>0
-
-  newID = createStringHash(newName) // 重ならないように現在時刻を追加
-
-  // 同じIDが作られたら、現在時刻を加えて再作成、それでだめならエラー
-  if (dateList.findIndex((e) => e.uuid === newID.toString()) !== -1) {
-    newID = createStringHash(newName + new Date().getTime()) // 重ならないように現在時刻を追加
-
-    if (dateList.findIndex((e) => e.uuid === newID.toString()) !== -1) {
-      return -1
-    }
-  }
-
-  return newID
 }
 
 // 動作環境がlinuxかWindowsか取得する
