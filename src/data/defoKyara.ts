@@ -523,6 +523,7 @@ export const initializationSettingData: initializationSettingType[] = [
     kyaraName: 'galaco',
     subColor: '#9a0d7c',
     subOrdercr: '#ffffff',
+    kyaraStyle: ['平静', '喜び', '怒り', '悲しみ'],
   },
   // CeVIO AI
   {
@@ -557,6 +558,11 @@ export const initializationSettingData: initializationSettingType[] = [
     subColor: '#bbe2f1',
     subOrdercr: '#0075c2',
   },
+  {
+    kyaraName: 'ついなちゃん',
+    subColor: '#ff0f0f',
+    subOrdercr: '#383838',
+  },
   // ガイノイドTalk
   {
     kyaraName: 'flower',
@@ -567,10 +573,12 @@ export const initializationSettingData: initializationSettingType[] = [
     kyaraName: '鳴花ヒメ',
     subColor: '#e7609e',
     subOrdercr: '#ffffff',
+    kyaraStyle: ['平静', '喜び', '怒り', '悲しみ', 'デカボイス'],
   },
   {
     kyaraName: '鳴花ミコト',
     subColor: '#bbbcde',
     subOrdercr: '#0d0015',
+    kyaraStyle: ['平静', '喜び', '怒り', '悲しみ', 'デカボイス'],
   },
 ]

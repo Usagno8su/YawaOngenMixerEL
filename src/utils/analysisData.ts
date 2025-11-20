@@ -12,41 +12,16 @@ import {
   kyaraProfileListExportType,
   kyaraProfileListType,
 } from '../type/data-type'
-import { NowTimeData, createNewDateList } from './analysisGeneral'
+import { NowTimeData, createNewDateList, FindAllString } from './analysisGeneral'
 import { DEFAULT_KYARA_PROFILE_NAME } from '../data/data'
 import { ref } from 'vue'
 
 const { yomAPI } = window
 
-// outSettingType形式の変数を比較し同一かどうか判定する。
-export const analysisDataComparisonOutSettingType = (element: outSettingType, target: outSettingType): boolean => {
-  return (
-    element.dataType === target.dataType && element.name === target.name && element.kyaraStyle === target.kyaraStyle
-  )
-}
-
 // 与えられた文字列からハッシュを作成
 // ID用に使う
 export const createStringHash = (data: string): number => {
   return yomAPI.getHashData(data)
-}
-
-// dateListに新しいデータを入れる際に、他と衝突していないIDを作成する
-export const createNewDataID = (dateList: outSettingType[], newName: string): number => {
-  let newID = <number>0
-
-  newID = createStringHash(newName) // 重ならないように現在時刻を追加
-
-  // 同じIDが作られたら、現在時刻を加えて再作成、それでだめならエラー
-  if (dateList.findIndex((e) => e.uuid === newID.toString()) !== -1) {
-    newID = createStringHash(newName + new Date().getTime()) // 重ならないように現在時刻を追加
-
-    if (dateList.findIndex((e) => e.uuid === newID.toString()) !== -1) {
-      return -1
-    }
-  }
-
-  return newID
 }
 
 // 動作環境がlinuxかWindowsか取得する
@@ -80,10 +55,12 @@ export const ansFindIndex = (kyaraType: 'kyast' | 'kyara', dateList: outSettingT
       (e) =>
         e.dataType === 'kyast' &&
         e.kyaraStyle === dateList[selectKyara]?.kyaraStyle &&
-        e.name === dateList[selectKyara]?.name,
+        FindAllString(e.name, [dateList[selectKyara]?.name]),
     )
   } else {
-    ansFindIndex.value = dateList.findIndex((e) => e.dataType === 'kyara' && e.name === dateList[selectKyara]?.name)
+    ansFindIndex.value = dateList.findIndex(
+      (e) => e.dataType === 'kyara' && FindAllString(e.name, [dateList[selectKyara]?.name]),
+    )
   }
 
   if (ansFindIndex.value !== -1) {
@@ -401,29 +378,4 @@ export const loadProfile = (profileName?: string): inputProfileSendReType => {
 
   // JSONファイル読み込み
   return yomAPI.getKyaraProfileData(inputProfileName)
-}
-
-// 第１引数で指定された文字列で、第２引数で指定された文字列を検索する。
-// 第１引数の文字列は半角・全角スペースで分割しAND検索を行う。
-export const FindAllString = (searchString: string | undefined, findList: string[]): boolean => {
-  // 検索文字列がない場合はtrueを返す
-  if (searchString === undefined || searchString === '') {
-    return true
-  }
-
-  const splitSearchString = searchString.replaceAll('　', ' ').split(' ')
-
-  // 検索対象文字列を半角スペースで区切って一つの文字列にする
-  const findString = findList.join(' ')
-
-  // 検索対象文字列を検索して、ひとつでも検索文字列が見つからなければfalseを返す。
-  // and検索のため
-  for (const val of splitSearchString) {
-    if (findString.indexOf(val) === -1) {
-      return false
-    }
-  }
-
-  // 検索文字列がすべてあればtrueを返す。
-  return true
 }

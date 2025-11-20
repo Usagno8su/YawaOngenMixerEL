@@ -36,11 +36,10 @@ import {
   loadProfile,
   writeGlobalSetting,
   getPlatform,
-  FindAllString,
   CreateCopyDateList,
 } from '@/utils/analysisData'
 import { DEFAULT_KYARA_SETTING_UUID } from '@/data/data'
-import { createDefoKyaraDateList, createNewDateList } from '@/utils/analysisGeneral'
+import { createDefoKyaraDateList, createNewDateList, FindAllString } from '@/utils/analysisGeneral'
 import type { deleteDialogRefType } from 'src/components/accessories/deleteDialog.vue'
 import deleteDialog from '@/components/accessories/deleteDialog.vue'
 import DisplaySelectFileView from '@/components/accessories/DisplaySelectFileView.vue'
@@ -157,8 +156,9 @@ const addNewKyara = (dataType: dataTextType, kyaraName: string, kyaraStyle: stri
   try {
     // 同じキャラ設定がない場合は追加する。
     if (
-      dateList.value.find((e) => e.name === kyaraName && e.dataType === dataType && e.kyaraStyle === kyaraStyle) ===
-      undefined
+      dateList.value.find(
+        (e) => FindAllString(e.name, [kyaraName]) && e.dataType === dataType && e.kyaraStyle === kyaraStyle,
+      ) === undefined
     ) {
       console.log('追加')
       dateList.value.push(
