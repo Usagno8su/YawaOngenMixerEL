@@ -59,7 +59,7 @@ contextBridge.exposeInMainWorld('yomAPI', {
   enterEncodeVideoData: async (
     dirPathName: string,
     outJsonData: string,
-    outTatieState: { outJsonData: string; tatieSituation: string }[],
+    outTatieState: { outJsonData: string; tatieSituation: string; tatieOrderListUUID: string }[],
     infoSettingJsonData: string,
   ): Promise<string> => {
     return await ipcRenderer.invoke(
@@ -71,7 +71,7 @@ contextBridge.exposeInMainWorld('yomAPI', {
     )
   },
   EnterEncodeTatiePicData: async (
-    outTatieState: { outJsonData: string; tatieSituation: string }[],
+    outTatieState: { outJsonData: string; tatieSituation: string; tatieOrderListUUID: string }[],
     fileFiltersName: string,
     fileFiltersExtensions: string[],
     defoDir?: string,
@@ -98,7 +98,7 @@ contextBridge.exposeInMainWorld('yomAPI', {
     return ipcRenderer.sendSync('saveJsonString', fileType, outJsonData, fileName)
   },
   getEncodePicFileData: (
-    outState: { outJsonData: string; tatieSituation: string }[],
+    outState: { outJsonData: string; tatieSituation: string; tatieOrderListUUID: string }[],
   ): { buffer: Uint8Array; path: string } => {
     return ipcRenderer.sendSync('loadEncodePicFileData', outState)
   },

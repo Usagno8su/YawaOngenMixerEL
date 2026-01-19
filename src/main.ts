@@ -530,7 +530,7 @@ ipcMain.handle(
     event: IpcMainEvent,
     dirPathName: string,
     outJsonData: string,
-    outTatieState: { outJsonData: string; tatieSituation: string }[],
+    outTatieState: { outJsonData: string; tatieSituation: string; tatieOrderListUUID: string }[],
     infoSettingJsonData: string,
   ) => {
     // 全体設定を読み込んで、コマンドのパス情報を取得する。
@@ -550,7 +550,10 @@ ipcMain.handle(
 // 画像エンコードのみを実施し、作成した画像ファイルとファイルパスを返す。
 ipcMain.on(
   'loadEncodePicFileData',
-  async (event: IpcMainEvent, outState: { outJsonData: string; tatieSituation: string }[]) => {
+  async (
+    event: IpcMainEvent,
+    outState: { outJsonData: string; tatieSituation: string; tatieOrderListUUID: string }[],
+  ) => {
     // 全体設定を読み込んで、コマンドのパス情報を取得する。
     const globalSettingData: globalSettingExportType = JSON.parse(readJsonData(globalSettingFilePathGLB))
 
@@ -580,7 +583,7 @@ ipcMain.handle(
   'enterEncodeTatiePicData',
   async (
     event,
-    outTatieState: { outJsonData: string; tatieSituation: string }[],
+    outTatieState: { outJsonData: string; tatieSituation: string; tatieOrderListUUID: string }[],
     fileFiltersName: string,
     fileFiltersExtensions: string[],
     defoDir?: string,
