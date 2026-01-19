@@ -27,11 +27,11 @@ export interface WGyomAPI {
   enterEncodeVideoData: (
     dirPathName: string,
     outJsonData: string,
-    outTatieState: { outJsonData: string; tatieSituation: string }[],
+    outTatieState: { outJsonData: string; tatieSituation: string; tatieOrderListUUID: string }[],
     infoSettingJsonData: string,
   ) => string
   EnterEncodeTatiePicData: (
-    outTatieState: { outJsonData: string; tatieSituation: string }[],
+    outTatieState: { outJsonData: string; tatieSituation: string; tatieOrderListUUID: string }[],
     fileFiltersName: string,
     fileFiltersExtensions: string[],
     defoDir?: string,
@@ -41,7 +41,7 @@ export interface WGyomAPI {
   openGlobalSetting: (listener: () => void) => void
   getJsonFileData: (fileType: string, fileName?: string) => string
   writeJsonFileData: (fileType: string, outJsonData: string, fileName?: string) => boolean
-  getEncodePicFileData: (outState: { outJsonData: string; tatieSituation: string }[]) => {
+  getEncodePicFileData: (outState: { outJsonData: string; tatieSituation: string; tatieOrderListUUID: string }[]) => {
     buffer: Uint8Array
     path: string
   }

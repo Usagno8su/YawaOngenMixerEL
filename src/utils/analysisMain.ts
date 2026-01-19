@@ -417,7 +417,7 @@ export const enterEncodeImageData = async (
 export const enterEncodeVideoData = async (
   voiceFileDirPath: string,
   outJsonData: string,
-  outTatieState: { outJsonData: string; tatieSituation: string }[],
+  outTatieState: { outJsonData: string; tatieSituation: string; tatieOrderListUUID: string }[],
   infoSettingJsonData: string,
   kyaraTatieDirPath: string,
   globalSetting: globalSettingType,
@@ -464,7 +464,7 @@ export const enterEncodeVideoData = async (
 
 // 画像エンコードのみを実施し、作成した画像ファイルとファイルパスを返す。
 export const enterEncodePicFileData = async (
-  outState: { outJsonData: string; tatieSituation: string }[],
+  outState: { outJsonData: string; tatieSituation: string; tatieOrderListUUID: string }[],
   kyaraTatieDirPath: string,
   globalSetting: globalSettingType,
 ): Promise<{ buffer: Uint8Array; path: string }> => {
@@ -649,7 +649,7 @@ export const SaveOutSettingFileData = async (
   globalSetting: globalSettingType,
   fileFiltersName: string, // 対象ファイルの種類名
   fileFiltersExtensions: string[], // 対象ファイルの拡張子
-  outState: { outJsonData: string; tatieSituation: string }[],
+  outState: { outJsonData: string; tatieSituation: string; tatieOrderListUUID: string }[],
   defoDir?: string,
 ): Promise<string> => {
   // 選択画面で表示するディレクトリを決める

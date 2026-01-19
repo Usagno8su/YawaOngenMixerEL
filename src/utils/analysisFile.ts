@@ -243,6 +243,7 @@ export const EnterEncodeTatieFile = async (
     {
       outJsonData: JSON.stringify(outSetting, undefined, 2),
       tatieSituation: tatieSituation,
+      tatieOrderListUUID: '',
     },
   ])
 }
@@ -250,7 +251,7 @@ export const EnterEncodeTatieFile = async (
 // 指定された立ち絵ファイルの変換を行って、そのファイルの保存を行う。
 // 保存したら、ディレクトリのパスを返す（行わなかったらnull）。
 export const EnterEncodeSaveTatieFile = async (
-  outState: { outJsonData: string; tatieSituation: string }[],
+  outState: { outJsonData: string; tatieSituation: string; tatieOrderListUUID: string }[],
   fileFiltersName: string,
   fileFiltersExtensions: string[],
   defoDir?: string,
@@ -330,6 +331,7 @@ export const makeTatiePicEncodeList = (
 ): {
   outJsonData: string
   tatieSituation: string
+  tatieOrderListUUID: string
 }[] => {
   const selectSetting =
     selectKyara !== undefined
@@ -348,6 +350,7 @@ export const makeTatiePicEncodeList = (
     const encodeList: {
       outJsonData: string
       tatieSituation: string
+      tatieOrderListUUID: string
     }[] = MakeEncodeTatieOrderList(tatieSituation, dateList, useTatieOrderList, selectKyara)
       .map((e) => {
         // dateListに一致するものを探し、立ち絵の設定をencodeListに入れる。
@@ -360,6 +363,7 @@ export const makeTatiePicEncodeList = (
               2,
             ),
             tatieSituation: e.tatieSituation,
+            tatieOrderListUUID: e.uuid,
           }
         }
       })
@@ -370,6 +374,7 @@ export const makeTatiePicEncodeList = (
           | {
               outJsonData: string
               tatieSituation: string
+              tatieOrderListUUID: string
             }
           | undefined[] => {
           // mapで出るundefinedを消す
@@ -382,7 +387,13 @@ export const makeTatiePicEncodeList = (
     return encodeList
   } else {
     console.log('encodeList ではない: selectSetting: ' + selectSetting.name)
-    return [{ outJsonData: JSON.stringify(selectSetting, undefined, 2), tatieSituation: tatieSituation }]
+    return [
+      {
+        outJsonData: JSON.stringify(selectSetting, undefined, 2),
+        tatieSituation: tatieSituation,
+        tatieOrderListUUID: '',
+      },
+    ]
   }
 }
 
