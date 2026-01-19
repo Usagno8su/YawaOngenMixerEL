@@ -32,6 +32,9 @@ const refShowSingle = ref<InstanceType<typeof DisplaySampleView> | null>(null)
 // 設定変更の比較チェックのため、内容を文字列に変換して保存する変数
 const checkConf = ref<{ [key: string]: string }>({})
 
+// reversedtatieOrderList にselectKyaraのキャラがない場合はtrueにする
+const actSelectKyara = ref<boolean>(false)
+
 // 原寸大用
 const refDisplayRawView = ref<{ [key: string]: InstanceType<typeof DisplaySampleView> | null }>({})
 const refShowRawSingle = ref<{ [key: string]: InstanceType<typeof DisplaySampleView> | null }>({})
@@ -118,39 +121,45 @@ const onEncodeTatie = setInterval(() => {
     // tatieOrderList の順番や数に変更があれば reversedtatieOrderList を上書きする
     CheckNewTatieOrderList()
 
-    // 現在選択中のキャラ設定か音声ファイルの情報を取得
-    const actKyara = props.dateList[props.selectKyara]
+    // 立ち絵の変換を行うために、reversedtatieOrderListのデータをcreateVoiceFileEncodeSetting()に通したデータを作成する。
+    // 変換した中にselectKyaraの立ち絵がない場合は追加される
+    const outSettinglist = makeTatiePicEncodeList(
+      tatieSituation.value,
+      props.dateList,
+      props.settype,
+      reversedtatieOrderList.value,
+      !showOrderList.value ? props.selectKyara : undefined,
+    )
 
-    for (const item of reversedtatieOrderList.value) {
-      // UUIDからどのキャラをエンコードするか確認する
-      const encodeKyara = props.dateList.findIndex((e) => e.uuid === item.settingUUID)
+    // reversedtatieOrderListの中にselectKyaraのキャラが入っているか確認する数値
+    let chkSelectKyara = -1
 
-      // tatieSituationの設定を決める。
-      const itemSituation = ItemSelectSituation(item, encodeKyara, actKyara)
+    // リストを調査して、変更があれば立ち絵のエンコードを行う。
+    for (const item of outSettinglist) {
+      const outSetting: outSettingType = JSON.parse(item.outJsonData)
+      const tatieSituation: tatieSituationType = item.tatieSituation === 'tatieUUID' ? 'tatieUUID' : 'waitTatieUUID'
 
-      if (encodeKyara != -1) {
-        // 立ち絵のエンコード情報を作成する。
-        encodeSetting.value = resizeKyaraDateDisplay(
-          createVoiceFileEncodeSetting(
-            props.settype === 'seid' && itemSituation.selectKyara ? props.selectKyara : encodeKyara,
-            props.dateList,
-          ),
-          props.size,
-        )
+      // キャラが未選択でなければ実行
+      if (outSetting.tatie[tatieSituation].val !== DEFAULT_KYARA_TATIE_UUID) {
+        // 比較して前回の内容と異なっていれば立ち絵画像の表示を更新する。
+        if (
+          checkConf.value[item.tatieOrderListUUID] !== item.outJsonData &&
+          refDisplaySampleView.value[item.tatieOrderListUUID] !== undefined
+        ) {
+          refDisplaySampleView.value[item.tatieOrderListUUID].getKyaraImg(outSetting, tatieSituation)
+          checkConf.value[item.tatieOrderListUUID] = item.outJsonData
+        } else if (item.tatieOrderListUUID === '' && checkConf.value['refShowNull'] !== item.outJsonData) {
+          // tatieOrderListUUIDが"""の場合の設定を入れる
+          refShowSingle.value.getKyaraImg(encodeSetting.value, tatieSituation)
+          checkConf.value['refShowNull'] = item.outJsonData
 
-        // キャラが未選択でなければ実行
-        if (encodeSetting.value.tatie[itemSituation.tatieSituation].val !== DEFAULT_KYARA_TATIE_UUID) {
-          // 比較のために設定内容をJSON形式に変換
-          const ans = JSON.stringify(encodeSetting.value, undefined, 2) + itemSituation.tatieSituation.toString()
-
-          // 比較して前回の内容と異なっていれば立ち絵画像の表示を更新する。
-          if (checkConf.value[item.uuid] !== ans && refDisplaySampleView.value[item.uuid] !== undefined) {
-            refDisplaySampleView.value[item.uuid].getKyaraImg(encodeSetting.value, itemSituation.tatieSituation)
-            checkConf.value[item.uuid] = ans
-          }
+          chkSelectKyara = 1
         }
       }
     }
+
+    // reversedtatieOrderListの中にselectKyaraのキャラが入っていない場合はtrue
+    actSelectKyara.value = chkSelectKyara === 1 ? true : false
   } else if (props.selectKyara !== -1) {
     encodeSetting.value = resizeKyaraDateDisplay(
       createVoiceFileEncodeSetting(props.selectKyara, props.dateList),
@@ -300,8 +309,12 @@ watch(
         <div v-for="(item, index) in reversedtatieOrderList" :key="item.uuid">
           <DisplaySampleView
             absoluteClass="top-0.5 left-1"
+            imgClass="max-h-[150px] w-full"
             :ref="(el) => (refDisplaySampleView[item.uuid] = el as InstanceType<typeof DisplaySampleView> | null)"
           />
+        </div>
+        <div v-show="actSelectKyara">
+          <DisplaySampleView absoluteClass="top-0.5 left-1" imgClass="max-h-[150px] w-full" ref="refShowSingle" />
         </div>
       </div>
       <div v-show="!showOrderList && showKyaraUUID !== null">

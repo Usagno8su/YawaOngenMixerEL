@@ -614,6 +614,7 @@ const checkIntoTatieOrderList = (uuid: string): boolean => {
 // プロファイルの立ち絵順序の設定を、指定したファイルの個別ファイルの立ち絵順序にコピーする
 const CopyTatieOrderListToFileList = (index: number): void => {
   dateList.value[index].fileTatieOrderList.val = JSON.parse(JSON.stringify(tatieOrderList.value))
+  dateList.value[index].fileTatieOrderList.active = true
   editTatieOrderList.value = dateList.value[index].fileTatieOrderList.val
 }
 
@@ -798,6 +799,11 @@ watch(
     // 選択中のキャラ設定の上位設定がどれか格納
     if (dateList.value[selectKyara.value] !== undefined) {
       higherUpList.value = SelectHigherUpIndexList(props.settype, dateList.value, selectKyara.value)
+
+      // seidのときは立ち絵順所の設定を読み込む
+      if (props.settype === 'seid') {
+        selectFileTatieOrderSetting()
+      }
     }
   },
 )
