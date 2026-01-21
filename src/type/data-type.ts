@@ -253,6 +253,7 @@ export type globalSettingType = {
     convert: string
   }
   useSubText: boolean // 音声ファイルリストで字幕の内容を表示するかどうか
+  cacheDirPath: string // 加工済み立ち絵画像ファイル等を保存するディレクトリの絶対パス
 }
 
 // var 0.2.1 以下の場合
