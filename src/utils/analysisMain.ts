@@ -37,13 +37,14 @@ import path from 'path'
 import fs from 'fs'
 
 // 作業用の一時ファイルを設置するディレクトリを作成する。
-export const createTempDir = async (): Promise<string> => {
+export const createTempDir = async (dirPath?: string): Promise<string> => {
   const makeTempDir = async (dir: string) => {
-    fs.mkdirSync(dir)
+    fs.mkdirSync(dir, { recursive: true })
   }
 
   // temp領域に専用のディレクトリを作成してそのパスを返す。
-  const yomTempRoot = path.join(app.getPath('temp'), 'YOMtempDir')
+  // dirPathが設定されている場合はその値をそのまま入れる。
+  const yomTempRoot = dirPath !== undefined ? dirPath : path.join(app.getPath('temp'), 'YOMtempDir')
 
   // ディレクトリがあるか確認する
   new Promise((resolve) => {
@@ -179,6 +180,7 @@ export const initializationGlobalSetting = (): globalSettingExportType => {
             : '/usr/bin/convert',
       },
       useSubText: true,
+      cacheDirPath: path.join(app.getPath('temp'), 'YOMcacheDir'),
     },
   }
 }
@@ -427,7 +429,7 @@ export const enterEncodeVideoData = async (
   const infoSetting: infoSettingType = JSON.parse(infoSettingJsonData)
 
   // 一時ファイルのディレクトリを作成してpathを取得
-  const tempDirPath = await createTempDir()
+  const tempDirPath = await createTempDir(globalSetting.cacheDirPath)
 
   //// 画像ファイルの作成
 
@@ -469,7 +471,7 @@ export const enterEncodePicFileData = async (
   globalSetting: globalSettingType,
 ): Promise<{ buffer: Uint8Array; path: string }> => {
   // 一時ファイルのディレクトリを作成してpathを取得
-  const tempDirPath = await createTempDir()
+  const tempDirPath = await createTempDir(globalSetting.cacheDirPath)
 
   console.log('長さ; ' + outState.length)
 
@@ -724,8 +726,8 @@ export const loadGlobalSettingData = async (confPath: string): Promise<string> =
   await new Promise((resolve, reject) => {
     if (inputJsonData.softVer[0] <= 0 && inputJsonData.softVer[1] <= 2 && inputJsonData.softVer[2] <= 1) {
       console.log('var 0.2.1 以下の場合')
-      const inputJsonV021Data: globalSettingExportV021Type = JSON.parse(jsonData.value)
-      resolve(inputJsonV021Data.globalSetting)
+      const inputJsonTempData: globalSettingExportType = JSON.parse(jsonData.value)
+      resolve(inputJsonTempData.globalSetting)
     } else {
       reject()
     }
@@ -741,6 +743,49 @@ export const loadGlobalSettingData = async (confPath: string): Promise<string> =
           globalSetting: {
             ...result,
             useSubText: true,
+          },
+        },
+        undefined,
+        2,
+      )
+    })
+    .then((result: string) => {
+      return writeJsonData(confPath, result)
+    })
+    .then(() => {
+      console.log('再読込')
+      jsonData.value = readJsonData(confPath)
+    })
+    .catch(() => {
+      console.log('問題なし')
+    })
+
+  // var 0.3.0 以下の場合
+  // cacheDirPath がないので追加する
+  await new Promise((resolve, reject) => {
+    if (inputJsonData.softVer[0] <= 0 && inputJsonData.softVer[1] <= 3 && inputJsonData.softVer[2] <= 0) {
+      console.log('var 0.3.0 以下の場合')
+      const inputJsonTempData: globalSettingExportType = JSON.parse(jsonData.value)
+      resolve(inputJsonTempData.globalSetting)
+    } else {
+      reject()
+    }
+  })
+    .then((result: globalSettingType) => {
+      console.log('追加したデータを書き込む')
+      // 追加したデータを書き込む
+      const out = outSoftVersion()
+
+      // 最新のデフォルト設定を作成
+      const defoData = initializationGlobalSetting()
+
+      return JSON.stringify(
+        <globalSettingExportType>{
+          exportStatus: out.exportStatus,
+          softVer: [0, 3, 1],
+          globalSetting: {
+            ...result,
+            cacheDirPath: defoData.globalSetting.cacheDirPath,
           },
         },
         undefined,

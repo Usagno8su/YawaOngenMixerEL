@@ -7,6 +7,7 @@ import { ref, watch } from 'vue'
 import { globalSettingType } from '@/type/data-type'
 import { getGlobalSetting, writeGlobalSetting } from '@/utils/analysisData'
 import { MakeClassString } from '@/utils/analysisGeneral'
+import { changeDirPath } from '@/utils/analysisFile'
 
 // 全体設定を読み込み
 const globalSettingList = ref<globalSettingType>(getGlobalSetting())
@@ -18,6 +19,17 @@ const seveStatus = ref<boolean>(false)
 const saveEnter = (): void => {
   const ans = writeGlobalSetting(globalSettingList.value)
   seveStatus.value = !ans
+}
+
+const changeDir = async (path: string, title: string): Promise<void> => {
+  const ans = await changeDirPath(path, title)
+
+  console.log(ans)
+
+  // null やundefinedでなければ書き込む
+  if (ans ?? false) {
+    globalSettingList.value.cacheDirPath = ans
+  }
 }
 
 // 設定に編集があったときにはtrueを入れる
@@ -70,6 +82,21 @@ watch(
           <div class="mx-2 my-1 text-xl font-medium">ファイルリストで字幕の内容を表示</div>
           <div class="mx-2 mt-1 flex items-center p-1">
             <input class="" type="checkbox" v-model="globalSettingList.useSubText" />
+          </div>
+        </div>
+      </div>
+      <div class="mt-1 bg-gray-100 py-2">
+        <div class="text-2xl">キャッシュ保存領域の設定</div>
+        <div>
+          <div class="mt-3 text-xl font-medium">キャッシュ保存場所</div>
+          <div class="mx-2 mt-1 p-1">
+            <button
+              class="w-full truncate rounded-md border border-gray-600 bg-sky-300 px-2 py-1 hover:bg-sky-500"
+              title="キャッシュ保存場所を変更できます"
+              @click="changeDir('test', 'キャッシュ保存場所')"
+            >
+              {{ globalSettingList.cacheDirPath }}
+            </button>
           </div>
         </div>
       </div>
