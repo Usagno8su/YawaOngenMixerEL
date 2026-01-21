@@ -37,13 +37,14 @@ import path from 'path'
 import fs from 'fs'
 
 // 作業用の一時ファイルを設置するディレクトリを作成する。
-export const createTempDir = async (): Promise<string> => {
+export const createTempDir = async (dirPath?: string): Promise<string> => {
   const makeTempDir = async (dir: string) => {
-    fs.mkdirSync(dir)
+    fs.mkdirSync(dir, { recursive: true })
   }
 
   // temp領域に専用のディレクトリを作成してそのパスを返す。
-  const yomTempRoot = path.join(app.getPath('temp'), 'YOMtempDir')
+  // dirPathが設定されている場合はその値をそのまま入れる。
+  const yomTempRoot = dirPath !== undefined ? dirPath : path.join(app.getPath('temp'), 'YOMtempDir')
 
   // ディレクトリがあるか確認する
   new Promise((resolve) => {
@@ -179,6 +180,7 @@ export const initializationGlobalSetting = (): globalSettingExportType => {
             : '/usr/bin/convert',
       },
       useSubText: true,
+      cacheDirPath: path.join(app.getPath('temp'), 'YOMcacheDir'),
     },
   }
 }
@@ -427,7 +429,7 @@ export const enterEncodeVideoData = async (
   const infoSetting: infoSettingType = JSON.parse(infoSettingJsonData)
 
   // 一時ファイルのディレクトリを作成してpathを取得
-  const tempDirPath = await createTempDir()
+  const tempDirPath = await createTempDir(globalSetting.cacheDirPath)
 
   //// 画像ファイルの作成
 
@@ -469,7 +471,7 @@ export const enterEncodePicFileData = async (
   globalSetting: globalSettingType,
 ): Promise<{ buffer: Uint8Array; path: string }> => {
   // 一時ファイルのディレクトリを作成してpathを取得
-  const tempDirPath = await createTempDir()
+  const tempDirPath = await createTempDir(globalSetting.cacheDirPath)
 
   console.log('長さ; ' + outState.length)
 
