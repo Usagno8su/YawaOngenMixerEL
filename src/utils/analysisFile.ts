@@ -220,21 +220,6 @@ export const enterEncodeVideoFile = async (
 }
 
 // 指定された立ち絵ファイルの変換を行う。
-// 画面サイズが指定されている場合は、その情報も送付する。
-export const enterEncodeTatiePicFile = async (
-  tatieSituation: tatieSituationType,
-  dateList: outSettingType[],
-  settype: dataTextType,
-  tatieOrderList: tatieOrderListType[],
-  selectKyara?: number,
-  size?: { w: number; h: number },
-): Promise<{ buffer: Uint8Array; path: string }> => {
-  return yomAPI.getEncodePicFileData(
-    makeTatiePicEncodeList(tatieSituation, dateList, settype, tatieOrderList, selectKyara, size),
-  )
-}
-
-// 指定された立ち絵ファイルの変換を行う。
 export const EnterEncodeTatieFile = async (
   outSetting: outSettingType,
   tatieSituation: tatieSituationType,
