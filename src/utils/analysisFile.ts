@@ -337,7 +337,7 @@ export const makeTatiePicEncodeList = (
       tatieSituation: string
       tatieOrderListUUID: string
     }[] = MakeEncodeTatieOrderList(tatieSituation, dateList, useTatieOrderList, selectKyara)
-      .map((e) => {
+      .flatMap((e) => {
         // dateListに一致するものを探し、立ち絵の設定をencodeListに入れる。
         const ans = dateList.findIndex((f) => e.dataType + e.settingUUID === f.dataType + f.uuid)
         if (ans !== -1) {
@@ -350,22 +350,11 @@ export const makeTatiePicEncodeList = (
             tatieSituation: e.tatieSituation,
             tatieOrderListUUID: e.uuid,
           }
+        } else {
+          // mapで出るundefinedを消す
+          return []
         }
       })
-      .flatMap(
-        (
-          e,
-        ):
-          | {
-              outJsonData: string
-              tatieSituation: string
-              tatieOrderListUUID: string
-            }
-          | undefined[] => {
-          // mapで出るundefinedを消す
-          return e ?? []
-        },
-      )
 
     console.log('encodeList: ' + encodeList.length)
 
