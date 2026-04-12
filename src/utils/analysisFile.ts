@@ -311,7 +311,7 @@ export const makeTatiePicEncodeList = (
   dateList: outSettingType[],
   settype: dataTextType,
   tatieOrderList: tatieOrderListType[],
-  selectKyara?: number,
+  selectKyara: number,
   size?: { w: number; h: number },
 ): {
   outJsonData: string
@@ -319,9 +319,7 @@ export const makeTatiePicEncodeList = (
   tatieOrderListUUID: string
 }[] => {
   const selectSetting =
-    selectKyara !== undefined
-      ? resizeKyaraDateDisplay(createVoiceFileEncodeSetting(selectKyara, dateList), size)
-      : undefined
+    selectKyara !== -1 ? resizeKyaraDateDisplay(createVoiceFileEncodeSetting(selectKyara, dateList), size) : ''
 
   // seidキャラ設定のfileTatieOrderListを使用するか判断する
   // true ならfileTatieOrderList、falesならプロファイルのtatieOrderListとなる
@@ -336,31 +334,29 @@ export const makeTatiePicEncodeList = (
       outJsonData: string
       tatieSituation: string
       tatieOrderListUUID: string
-    }[] = MakeEncodeTatieOrderList(tatieSituation, dateList, useTatieOrderList, selectKyara)
-      .flatMap((e) => {
-        // dateListに一致するものを探し、立ち絵の設定をencodeListに入れる。
-        const ans = dateList.findIndex((f) => e.dataType + e.settingUUID === f.dataType + f.uuid)
-        if (ans !== -1) {
-          return {
-            outJsonData: JSON.stringify(
-              resizeKyaraDateDisplay(createVoiceFileEncodeSetting(ans, dateList), size),
-              undefined,
-              2,
-            ),
-            tatieSituation: e.tatieSituation,
-            tatieOrderListUUID: e.uuid,
-          }
-        } else {
-          // mapで出るundefinedを消す
-          return []
+    }[] = MakeEncodeTatieOrderList(tatieSituation, dateList, useTatieOrderList, selectKyara).flatMap((e) => {
+      // dateListに一致するものを探し、立ち絵の設定をencodeListに入れる。
+      const ans = dateList.findIndex((f) => e.dataType + e.settingUUID === f.dataType + f.uuid)
+      if (ans !== -1) {
+        return {
+          outJsonData: JSON.stringify(
+            resizeKyaraDateDisplay(createVoiceFileEncodeSetting(ans, dateList), size),
+            undefined,
+            2,
+          ),
+          tatieSituation: e.tatieSituation,
+          tatieOrderListUUID: e.uuid,
         }
-      })
+      } else {
+        // mapで出るundefinedを消す
+        return []
+      }
+    })
 
     console.log('encodeList: ' + encodeList.length)
 
     return encodeList
   } else {
-    console.log('encodeList ではない: selectSetting: ' + selectSetting.name)
     return [
       {
         outJsonData: JSON.stringify(selectSetting, undefined, 2),
