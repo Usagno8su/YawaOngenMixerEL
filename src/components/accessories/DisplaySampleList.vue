@@ -29,8 +29,6 @@ import { MakeClassString, resizeKyaraDateDisplay, FindAllString } from '@/utils/
 // サムネイル用
 const refDisplaySampleView = ref<{ [key: string]: InstanceType<typeof DisplaySampleView> | null }>({})
 const refShowSingle = ref<InstanceType<typeof DisplaySampleView> | null>(null)
-// 設定変更の比較チェックのため、内容を文字列に変換して保存する変数
-const checkConf = ref<{ [key: string]: string }>({})
 
 // reversedtatieOrderList にselectKyaraのキャラがない場合はtrueにする
 const actSelectKyara = ref<boolean>(false)
@@ -44,7 +42,7 @@ const openDialog = ref<boolean>(false)
 const tatieBgColor = ref<string>('#ffffff')
 
 // 保存ダイアログ表示時のディレクトリを指定
-const defoDir = ref<string>(undefined)
+const defoDir = ref<string>('')
 
 // 会話中・待機中のどちらの立ち絵を表示するか指定
 const tatieSituation = ref<tatieSituationType>('tatieUUID')
@@ -60,14 +58,14 @@ const reversedtatieOrderList = ref<tatieOrderListType[]>([...props.tatieOrderLis
 // "defo"か"kyara"か"kyast"の場合は立ち絵をselectKyaraで指定したものだけ表示させる。
 // "seid"か"tatieOrder"の場合はtatieOrderListで指定したものを表示させる。
 const showOrderList = ref<boolean>(false)
-const showKyaraUUID = ref<string>(props.selectKyara !== -1 ? props.dateList[props.selectKyara].uuid : null)
+const showKyaraUUID = ref<string>(props.selectKyara !== -1 ? props.dateList[props.selectKyara].uuid : '')
 const SelectSettypeKyaraUUID = () => {
   if (props.settype === 'tatieOrder' || props.settype === 'seid') {
     showOrderList.value = true
   } else {
     showOrderList.value = false
   }
-  showKyaraUUID.value = props.selectKyara !== -1 ? props.dateList[props.selectKyara].uuid : null
+  showKyaraUUID.value = props.selectKyara !== -1 ? props.dateList[props.selectKyara].uuid : ''
 }
 
 // どのtatieSituationを選択するか決める。
@@ -118,7 +116,7 @@ defineExpose({ CheckNewTatieOrderList })
 // 指定時間ごとに確認し、立ち絵の設定が変わったら表示を変更する
 const onEncodeTatie = setInterval(() => {
   // 複数立ち絵が必要な場合はtatieOrderListを見る
-  if (props.selectKyara !== -1 && (props.settype === 'tatieOrder' || props.settype === 'seid')) {
+  if (props.settype === 'tatieOrder' || props.settype === 'seid') {
     // tatieOrderList の順番や数に変更があれば reversedtatieOrderList を上書きする
     CheckNewTatieOrderList()
 
@@ -129,7 +127,8 @@ const onEncodeTatie = setInterval(() => {
       props.dateList,
       props.settype,
       reversedtatieOrderList.value,
-      !showOrderList.value ? props.selectKyara : undefined,
+      props.settype === 'seid' ? props.selectKyara : -1,
+      props.size,
     )
 
     // reversedtatieOrderListの中にselectKyaraのキャラが入っているか確認する数値
@@ -143,18 +142,12 @@ const onEncodeTatie = setInterval(() => {
       // キャラが未選択でなければ実行
       if (outSetting.tatie[tatieSituation].val !== DEFAULT_KYARA_TATIE_UUID) {
         // 比較して前回の内容と異なっていれば立ち絵画像の表示を更新する。
-        if (
-          checkConf.value[item.tatieOrderListUUID] !== item.outJsonData &&
-          refDisplaySampleView.value[item.tatieOrderListUUID] !== undefined
-        ) {
-          refDisplaySampleView.value[item.tatieOrderListUUID].getKyaraImg(outSetting, tatieSituation)
-          checkConf.value[item.tatieOrderListUUID] = item.outJsonData
-        } else if (item.tatieOrderListUUID === '' && checkConf.value['refShowNull'] !== item.outJsonData) {
+        if (item.tatieOrderListUUID === '') {
           // tatieOrderListUUIDが"""の場合の設定を入れる
-          refShowSingle.value.getKyaraImg(encodeSetting.value, tatieSituation)
-          checkConf.value['refShowNull'] = item.outJsonData
-
+          refShowSingle.value?.getKyaraImg(outSetting, tatieSituation)
           chkSelectKyara = 1
+        } else {
+          refDisplaySampleView.value[item.tatieOrderListUUID]?.getKyaraImg(outSetting, tatieSituation)
         }
       }
     }
@@ -168,15 +161,12 @@ const onEncodeTatie = setInterval(() => {
     )
 
     // キャラが未選択でなければ実行
-    if (props.selectKyara !== -1 && encodeSetting.value.tatie[tatieSituation.value].val !== DEFAULT_KYARA_TATIE_UUID) {
-      // 比較のために設定内容をJSON形式に変換
-      const ans = JSON.stringify(encodeSetting.value, undefined, 2) + tatieSituation.value.toString()
+    if (encodeSetting.value.tatie[tatieSituation.value].val !== DEFAULT_KYARA_TATIE_UUID) {
 
       // 比較して前回の内容と異なっていれば立ち絵画像の表示を更新する。
-      if (checkConf.value['refShowSingle'] !== ans && refShowSingle.value !== null) {
+      if (refShowSingle.value !== null) {
         console.log('エンコード実行')
         refShowSingle.value.getKyaraImg(encodeSetting.value, tatieSituation.value)
-        checkConf.value['refShowSingle'] = ans
       }
     }
   }
@@ -207,7 +197,7 @@ const RawEncodeTatie = () => {
         // キャラが未選択でなければ実行
         if (encodeSetting.value.tatie[itemSituation.tatieSituation].val !== DEFAULT_KYARA_TATIE_UUID) {
           console.log('エンコード実行')
-          refDisplayRawView.value[item.uuid].getKyaraImg(encodeSetting.value, itemSituation.tatieSituation)
+          refDisplayRawView.value[item.uuid]?.getKyaraImg(encodeSetting.value, itemSituation.tatieSituation)
         }
       }
     }
@@ -216,7 +206,7 @@ const RawEncodeTatie = () => {
 
     // キャラが未選択でなければ実行
     if (props.selectKyara !== -1 && encodeSetting.value.tatie[tatieSituation.value].val !== DEFAULT_KYARA_TATIE_UUID) {
-      refShowRawSingle.value.refSingle.getKyaraImg(encodeSetting.value, tatieSituation.value)
+      refShowRawSingle.value.refSingle?.getKyaraImg(encodeSetting.value, tatieSituation.value)
     }
   }
 }
@@ -245,7 +235,7 @@ const RawSaveTatie = async () => {
       props.dateList,
       props.settype,
       props.tatieOrderList,
-      !showOrderList.value ? props.selectKyara : undefined,
+      !showOrderList.value ? props.selectKyara : -1,
     ),
     'Image',
     ['png'],

@@ -16,15 +16,12 @@ import { EnterEncodeTatieFile } from '@/utils/analysisFile'
 import { DEFAULT_KYARA_TATIE_UUID } from '@/data/data'
 import { MakeClassString } from '@/utils/analysisGeneral'
 
-// getKyaraImgが二重起動するのを防止する。
-const runMakeImg = ref<boolean>(true)
-
-// 立ち絵の存在チェック
-const noRawTatieFile = ref<boolean>(true)
+// 設定変更の比較チェックのため、内容を文字列に変換して保存する変数
+const checkConf = ref<string>('')
 
 // 変換した立ち絵画像を取得
-const rawImg = ref<string | ArrayBuffer>()
-const data = ref<{ buffer: Uint8Array; path: string }>({ buffer: null, path: '' })
+const rawImg = ref<string | ArrayBuffer | null>()
+const data = ref<{ buffer: Uint8Array; path: string }>({ buffer: new Uint8Array(), path: '' })
 
 const ChangeKyaraImg = () => {
   // データが取得（nullではない）できれば表示する
@@ -36,33 +33,25 @@ const ChangeKyaraImg = () => {
     // 読み込み完了時の処理を設定
     reader.onload = () => {
       rawImg.value = reader.result
-      // 立ち絵が存在するのでfalesにする
-      noRawTatieFile.value = false
-
-      // 終わったので戻す
-      runMakeImg.value = true
     }
 
     reader.readAsDataURL(bobData)
-  } else {
-    // 立ち絵が存在しない
-    noRawTatieFile.value = true
   }
 }
 
 const getKyaraImg = async (outSetting: outSettingType, tatieSituation: tatieSituationType) => {
-  // 立ち絵があり、他の画像取得が動作していない場合のみ実施
-  if (outSetting.tatie[tatieSituation].val !== DEFAULT_KYARA_TATIE_UUID && runMakeImg) {
-    // 二重起動しないように値を変更
-    runMakeImg.value = false
+  // 比較のために設定内容をJSON形式に変換
+  const ans = JSON.stringify(outSetting, undefined, 2) + tatieSituation.toString()
 
-    console.log('エンコード開始')
+  // 立ち絵があり、confの内容が異なる場合のみ実施
+  if (outSetting.tatie[tatieSituation].val !== DEFAULT_KYARA_TATIE_UUID && checkConf.value !== ans) {
+    console.log('エンコード開始: ' + outSetting.name)
     // 立ち絵画像を変換して取得
     data.value = await EnterEncodeTatieFile(outSetting, tatieSituation)
     ChangeKyaraImg()
-  } else {
-    // 立ち絵が存在しない
-    noRawTatieFile.value = true
+
+    // 結果を保存
+    checkConf.value = ans
   }
 }
 
@@ -71,9 +60,9 @@ defineExpose({ getKyaraImg })
 </script>
 
 <template>
-  <div v-if="typeof rawImg === 'string' && noRawTatieFile === false">
+  <div v-if="typeof rawImg === 'string'">
     <div :class="MakeClassString('absolute', absoluteClass)">
-      <img :src="rawImg" :class="MakeClassString('border border-gray-800', imgClass)" />
+      <img :src="rawImg" :class="MakeClassString('border border-gray-800', imgClass ?? '')" />
     </div>
   </div>
   <div v-else class="absolute top-1 left-1/3 rounded-md border-gray-200 bg-white px-6 py-3">未選択</div>

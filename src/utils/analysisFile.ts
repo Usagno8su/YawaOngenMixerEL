@@ -11,7 +11,13 @@ import {
 } from '../type/data-type'
 import { ref } from 'vue'
 import { createVoiceFileEncodeSetting, getPlatform } from './analysisData'
-import { createDefoFileListTatie, NowTimeData, resizeKyaraDateDisplay, createNewDateList } from './analysisGeneral'
+import {
+  createDefoFileListTatie,
+  NowTimeData,
+  resizeKyaraDateDisplay,
+  createNewDateList,
+  createDefoKyaraDateList,
+} from './analysisGeneral'
 import { DEFAULT_KYARA_TATIE_UUID } from '../data/data'
 const { yomAPI } = window
 
@@ -258,7 +264,7 @@ export const TatieOrderListAddValue = (
     dataType: outSettingTtem.dataType,
     settingUUID: outSettingTtem.uuid,
     name: outSettingTtem.name,
-    kyaraStyle: outSettingTtem.dataType === 'kyast' ? outSettingTtem.kyaraStyle : undefined,
+    kyaraStyle: outSettingTtem.dataType === 'kyast' ? outSettingTtem.kyaraStyle : '',
     tatieSituation:
       tatieSituation !== undefined
         ? tatieSituation
@@ -274,9 +280,10 @@ export const MakeEncodeTatieOrderList = (
   tatieSituation: tatieSituationType,
   dateList: outSettingType[],
   tatieOrderList: tatieOrderListType[],
-  selectKyara?: number,
+  selectKyara: number,
 ): tatieOrderListType[] => {
-  const selectSetting = selectKyara !== undefined ? createVoiceFileEncodeSetting(selectKyara, dateList) : undefined
+  const selectSetting =
+    selectKyara !== -1 ? createVoiceFileEncodeSetting(selectKyara, dateList) : createDefoKyaraDateList(getPlatform())
 
   // seid のときに、selectKyaraのキャラがencodeListに入っているか確認する数値
   let chkSelectKyara = -1
@@ -285,8 +292,9 @@ export const MakeEncodeTatieOrderList = (
     // ただ、会話中のキャラ(selectSetting)含まれている場合は、tatieSituationで指定されている状態の画像を選択させる。
     // そうではない場合は、そのまま出力する。
     if (
+      selectKyara !== -1 &&
       e.name + (e.dataType === 'kyast' ? e.kyaraStyle : '') ===
-      selectSetting?.name + (e.dataType === 'kyast' ? selectSetting?.kyaraStyle : '')
+        selectSetting.name + (e.dataType === 'kyast' ? selectSetting.kyaraStyle : '')
     ) {
       chkSelectKyara = 1
       return TatieOrderListAddValue(selectSetting, e.uuid, tatieSituation)
@@ -296,7 +304,7 @@ export const MakeEncodeTatieOrderList = (
   })
 
   // selectKyaraでキャラが指定されているときに、outListにselectSettingのキャラがない場合は追加する
-  if (selectKyara !== undefined && chkSelectKyara !== 1) {
+  if (selectKyara !== -1 && chkSelectKyara !== 1) {
     outList.unshift(TatieOrderListAddValue(selectSetting, undefined, tatieSituation))
   }
 
