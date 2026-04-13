@@ -122,7 +122,7 @@ export const CreateCopyDateList = (kyraData: outSettingType, dataType: dataTextT
     dataType: dataType,
     uuid: yomAPI.getUUID(),
     name: kyraData.name + (dataType === 'kyara' ? 'コピー' + NowTimeData('todaybumber') : ''),
-    kyaraStyle: dataType === 'kyast' ? 'コピー' + NowTimeData('todaybumber') : undefined,
+    kyaraStyle: dataType === 'kyast' ? kyraData.kyaraStyle + '_コピー' + NowTimeData('todaybumber') : '',
     tatie: JSON.parse(JSON.stringify(kyraData.tatie)),
     subtitle: JSON.parse(JSON.stringify(kyraData.subtitle)),
     fileName: '',
