@@ -102,9 +102,10 @@ const ItemSelectSituation = (
 // tatieOrderList の順番や数に変更があれば reversedtatieOrderList を上書きする
 const CheckNewTatieOrderList = () => {
   const tempReversedtatieOrderList = [...props.tatieOrderList].reverse()
-  const checkNewTatieOrderList = reversedtatieOrderList.value.findIndex(
+  const checkNewTatieOrderList = tempReversedtatieOrderList.findIndex(
     (e, i) =>
-      e.uuid !== tempReversedtatieOrderList[i].uuid || e.settingUUID !== tempReversedtatieOrderList[i].settingUUID,
+      e.uuid !== reversedtatieOrderList.value[i]?.uuid ||
+      e.settingUUID !== reversedtatieOrderList.value[i]?.settingUUID,
   )
   if (checkNewTatieOrderList !== -1 || reversedtatieOrderList.value.length !== tempReversedtatieOrderList.length) {
     reversedtatieOrderList.value = [...tempReversedtatieOrderList]
