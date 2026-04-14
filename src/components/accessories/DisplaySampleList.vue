@@ -235,7 +235,7 @@ const RawSaveTatie = async () => {
       props.dateList,
       props.settype,
       props.tatieOrderList,
-      !showOrderList.value ? props.selectKyara : -1,
+      props.settype === 'seid' ? props.selectKyara : -1,
     ),
     'Image',
     ['png'],
